@@ -20,3 +20,11 @@ def test_register_and_list_tools() -> None:
 def test_list_tools_empty_registry() -> None:
     """Verifies an empty registry lists nothing."""
     assert ToolRegistry().list_tools() == []
+
+
+def test_register_overwrites_same_name() -> None:
+    """Verifies re-registering a name replaces the spec."""
+    registry = ToolRegistry()
+    registry.register(ToolSpec(name="t", description="first"))
+    registry.register(ToolSpec(name="t", description="second"))
+    assert registry.list_tools()[0].description == "second"
