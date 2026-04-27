@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+"""
+test_state_machine.py --- unit tests for the orchestration state machine
+
+Contains:
+    test_graph_has_three_nodes(): verifies planner/executor/critic nodes exist
+    test_planner_seeds_plan_with_task(): verifies the planner puts the task in the plan
+"""
+
+from apps.api.orchestration.state_machine import build_graph, planner_node
+
+
+def make_state(**overrides: object) -> dict:
+    """Builds a graph state dict for tests.
+
+    Args:
+        overrides: Field overrides applied on the default state.
+
+    Returns:
+        state: Graph state dict with sensible defaults.
+    """
+    state = {"task": "t", "plan": [], "results": [], "critique": "", "iterations": 0}
+    state.update(overrides)
+    return state
+
+
+def test_graph_has_three_nodes() -> None:
+    """Verifies planner/executor/critic nodes exist."""
+    graph = build_graph()
+    assert {"planner", "executor", "critic"} <= set(graph.nodes)
+
+
+def test_planner_seeds_plan_with_task() -> None:
+    """Verifies the planner puts the task in the plan."""
+    assert planner_node(make_state(task="ship it"))["plan"] == ["ship it"]
