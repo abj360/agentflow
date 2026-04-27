@@ -49,3 +49,10 @@ main {
   max-width: 72rem;
   margin: 0 auto;
 }
+
+
+@media (max-width: 640px) {
+  main {
+    padding: 1rem;
+  }
+}
