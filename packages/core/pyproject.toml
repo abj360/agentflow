@@ -1,0 +1,9 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentflow-core"
+version = "0.1.0"
+description = "Shared types and interfaces for agentflow services"
+requires-python = ">=3.12"
