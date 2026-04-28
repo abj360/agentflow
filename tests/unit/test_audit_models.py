@@ -27,3 +27,8 @@ def test_audit_event_trace_id_not_empty() -> None:
     """Verifies constructed events carry a non-empty trace id."""
     event = AuditEvent(trace_id="trace-2", kind=EventKind.CRITIQUE, payload={"ok": True})
     assert event.trace_id != ""
+
+
+def test_event_kind_covers_approval_flow() -> None:
+    """Verifies approval lifecycle kinds exist for human-in-the-loop auditing."""
+    assert EventKind.APPROVAL_REQUESTED.value == "approval_requested"
