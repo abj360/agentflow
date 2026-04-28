@@ -42,3 +42,14 @@ async def test_discard_removes_connection() -> None:
     await hub.register("run-1", socket)
     hub.discard("run-1", socket)
     assert hub.connections["run-1"] == set()
+
+
+async def test_broadcast_sends_to_all_viewers() -> None:
+    """Verifies a broadcast reaches every viewer of a run."""
+    hub = TraceHub()
+    first, second = FakeSocket(), FakeSocket()
+    await hub.register("run-1", first)
+    await hub.register("run-1", second)
+    await hub.broadcast("run-1", {"kind": "plan"})
+    assert first.sent == [{"kind": "plan"}]
+    assert second.sent == [{"kind": "plan"}]
