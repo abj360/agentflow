@@ -17,8 +17,7 @@ class OrchestratorUser(HttpUser):
     @task(4)
     def fetch_trace(self) -> None:
         """Fetches an audit trace by id."""
-        trace_id = "trace-load-1"
-        self.client.get(f"/audit/{trace_id}", name="/audit/{trace_id}")
+        self.client.get("/audit/trace-load-1", name="/audit/{trace_id}")
 
     @task(1)
     def list_sessions(self) -> None:
