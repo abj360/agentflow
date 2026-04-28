@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+"""
+engine.py --- YAML policy engine for MCP tool governance
+
+Contains:
+    Decision: outcome of a policy evaluation
+    PolicyEngine: evaluates tool calls against YAML policy rules
+"""
+
+import fnmatch
+from dataclasses import dataclass
+
+import yaml
+
+
+@dataclass(frozen=True)
+class Decision:
+    """Represents the outcome of a policy evaluation.
+
+    Attributes:
+        action: One of allow, deny, or human_approval.
+        rule: The policy rule that produced the decision, if any matched.
+        reason: Human-readable explanation of the decision.
+    """
+
+    action: str
+    rule: str | None
+    reason: str = ""
+
+
+class PolicyEngine:
+    """Evaluates tool calls against YAML policy rules.
+
+    Attributes:
+        schema_path: Path to the YAML policy schema evaluated per call.
+    """
+
+    def __init__(self, schema_path: str) -> None:
+        """Initializes the engine with a policy schema path.
+
+        Args:
+            schema_path: Path to the YAML policy schema evaluated per call.
+        """
+        self.schema_path = schema_path
+
+    @classmethod
+    def from_dict(cls, rules: list[dict]) -> "PolicyEngine":
+        """Builds an engine from an in-memory rule list.
+
+        Args:
+            rules: Policy rules as plain dicts with match and action keys.
+
+        Returns:
+            engine: Policy engine evaluating the given rules.
+        """
+        engine = cls.__new__(cls)
+        engine.schema_path = None
+        engine._inline_rules = rules
+        return engine
+
+    def _load_rules(self) -> list[dict]:
+        """Loads the current rule set.
+
+        Returns:
+            rules: Policy rules as plain dicts.
+        """
+        if self.schema_path is None:
+            return self._inline_rules
+        with open(self.schema_path) as handle:
+            return yaml.safe_load(handle)["rules"]
+
+    def evaluate(self, tool_name: str, args: dict) -> Decision:
+        """Evaluates a tool call against the current policy rules.
+
+        Args:
+            tool_name: Name of the tool being called.
+            args: Arguments passed to the tool.
+
+        Returns:
+            decision: Allow, deny, or human_approval with the matched rule.
+        """
+        for rule in self._load_rules():
+            if fnmatch.fnmatchcase(tool_name, rule["match"]):
+                return Decision(action=rule["action"], rule=rule["match"])
+        return Decision(action="deny", rule=None, reason="no matching rule")

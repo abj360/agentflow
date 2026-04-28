@@ -1,0 +1,24 @@
+# MCP tool governance policy
+version: 1
+rules:
+  - match: "search.*"
+    action: allow
+    risk: low
+  - match: "fs.read"
+    action: allow
+    risk: low
+  - match: "fs.write"
+    action: human_approval
+    risk: medium
+  - match: "shell.*"
+    action: human_approval
+    risk: high
+  - match: "db.*"
+    action: human_approval
+    risk: medium
+  - match: "net.*"
+    action: deny
+    risk: high
+  - match: "*"
+    action: deny
+    risk: unknown
