@@ -21,3 +21,9 @@ def test_audit_event_defaults() -> None:
     event = AuditEvent(trace_id="trace-1", kind=EventKind.PLAN_CREATED, payload={})
     assert event.trace_id == "trace-1"
     assert event.payload == {}
+
+
+def test_audit_event_trace_id_not_empty() -> None:
+    """Verifies constructed events carry a non-empty trace id."""
+    event = AuditEvent(trace_id="trace-2", kind=EventKind.CRITIQUE, payload={"ok": True})
+    assert event.trace_id != ""
