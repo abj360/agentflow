@@ -32,3 +32,9 @@ def test_audit_event_trace_id_not_empty() -> None:
 def test_event_kind_covers_approval_flow() -> None:
     """Verifies approval lifecycle kinds exist for human-in-the-loop auditing."""
     assert EventKind.APPROVAL_REQUESTED.value == "approval_requested"
+
+
+def test_audit_event_kind_assignment() -> None:
+    """Verifies the kind passed at construction is the kind stored."""
+    event = AuditEvent(trace_id="trace-3", kind=EventKind.TOOL_RESULT, payload={})
+    assert event.kind is EventKind.TOOL_RESULT
