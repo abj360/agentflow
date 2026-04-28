@@ -1,0 +1,24 @@
+# ADR-001: Orchestration pattern — planner/executor/synthesizer/critic loop
+
+- Status: Accepted
+- Date: 2026-04-28
+- Deciders: Peter
+
+## Context
+
+agentflow runs multi-step agent work that must stay auditable, budgeted, and
+interruptible. A single monolithic agent call gives us none of those levers:
+no per-step audit events, no per-tool policy checks, and no place for a human
+to intervene mid-run.
+
+## Decision
+
+Orchestration runs as an explicit state machine with four roles:
+
+1. **Planner** turns the task into an ordered plan.
+2. **Executor** runs each plan step through the governed MCP tool layer.
+3. **Synthesizer** merges step outputs into the final answer.
+4. **Critic** reviews plans and outputs, accepting or requesting revision.
+
+The loop is implemented as a LangGraph `StateGraph` so transitions are
+explicit, testable, and replayable from the audit log.
