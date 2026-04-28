@@ -29,7 +29,8 @@ export function useTraceSocket(runId: string): TraceEvent[] {
       `${process.env.NEXT_PUBLIC_WS_URL}/ws/traces?run_id=${runId}`
     );
     socket.onmessage = (message) => {
-      setEvents((prev) => [...prev, JSON.parse(message.data)]);
+      const event = JSON.parse(message.data);
+      setEvents((prev) => [...prev, event]);
     };
   }, [runId]);
 
