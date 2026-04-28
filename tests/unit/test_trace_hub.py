@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+"""
+test_trace_hub.py --- unit tests for the trace WebSocket fan-out hub
+
+Contains:
+    test_register_adds_connection(): verifies registering tracks the socket
+    test_discard_removes_connection(): verifies discarding drops the socket
+"""
+
+from apps.api.trace_hub import TraceHub
+
+
+class FakeSocket:
+    """Mimics the WebSocket interface the hub uses."""
+
+    def __init__(self) -> None:
+        """Initializes the fake socket."""
+        self.accepted = False
+        self.sent: list = []
+
+    async def accept(self) -> None:
+        """Marks the socket accepted."""
+        self.accepted = True
+
+    async def send_json(self, event: dict) -> None:
+        """Captures broadcast events."""
+        self.sent.append(event)
+
+
+async def test_register_adds_connection() -> None:
+    """Verifies registering tracks the socket."""
+    hub = TraceHub()
+    socket = FakeSocket()
+    await hub.register("run-1", socket)
+    assert socket in hub.connections["run-1"]
+
+
+async def test_discard_removes_connection() -> None:
+    """Verifies discarding drops the socket."""
+    hub = TraceHub()
+    socket = FakeSocket()
+    await hub.register("run-1", socket)
+    hub.discard("run-1", socket)
+    assert hub.connections["run-1"] == set()
