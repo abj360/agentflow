@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+"""
+trace_hub.py --- server-side fan-out hub for live trace WebSocket streams
+
+Contains:
+    TraceHub: tracks connected trace viewers and broadcasts events
+"""
+
+from fastapi import WebSocket
+
+
+class TraceHub:
+    """Tracks connected trace viewers and broadcasts events.
+
+    Attributes:
+        connections: Live viewer sockets keyed by run id.
+    """
+
+    def __init__(self) -> None:
+        """Initializes the hub with no viewers."""
+        self.connections: dict[str, set[WebSocket]] = {}
+
+    async def register(self, run_id: str, socket: WebSocket) -> None:
+        """Accepts and registers a viewer socket for a run.
+
+        Args:
+            run_id: Run the viewer wants to stream.
+            socket: The viewer's WebSocket connection.
+        """
+        await socket.accept()
+        self.connections.setdefault(run_id, set()).add(socket)
+
+    def discard(self, run_id: str, socket: WebSocket) -> None:
+        """Removes a viewer socket.
+
+        Args:
+            run_id: Run the viewer was streaming.
+            socket: The viewer's WebSocket connection.
+        """
+        self.connections.get(run_id, set()).discard(socket)
+
+    async def broadcast(self, run_id: str, event: dict) -> None:
+        """Sends one event to every viewer of a run.
+
+        Args:
+            run_id: Run the event belongs to.
+            event: The trace event to broadcast.
+        """
+        for socket in self.connections.get(run_id, set()):
+            await socket.send_json(event)

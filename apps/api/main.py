@@ -10,6 +10,7 @@ Contains:
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from apps.api.config import get_settings
+from apps.api.trace_hub import TraceHub
 
 
 def create_app() -> FastAPI:
@@ -20,6 +21,7 @@ def create_app() -> FastAPI:
     """
     settings = get_settings()
     app = FastAPI(title="agentflow", version=settings.app_version)
+    hub = TraceHub()
 
     @app.get("/health")
     async def health() -> dict[str, str]:
@@ -27,14 +29,14 @@ def create_app() -> FastAPI:
         return {"status": "ok"}
 
     @app.websocket("/ws/traces")
-    async def trace_stream(socket: WebSocket) -> None:
+    async def trace_stream(socket: WebSocket, run_id: str = "default") -> None:
         """Streams live orchestration trace events to console clients."""
-        await socket.accept()
+        await hub.register(run_id, socket)
         try:
             while True:
                 await socket.receive_text()
         except WebSocketDisconnect:
-            await socket.close()
+            hub.discard(run_id, socket)
 
     return app
 
