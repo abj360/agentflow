@@ -53,3 +53,12 @@ async def test_broadcast_sends_to_all_viewers() -> None:
     await hub.broadcast("run-1", {"kind": "plan"})
     assert first.sent == [{"kind": "plan"}]
     assert second.sent == [{"kind": "plan"}]
+
+
+async def test_broadcast_isolated_per_run() -> None:
+    """Verifies broadcasts stay within their run."""
+    hub = TraceHub()
+    socket = FakeSocket()
+    await hub.register("run-2", socket)
+    await hub.broadcast("run-1", {"kind": "plan"})
+    assert socket.sent == []
