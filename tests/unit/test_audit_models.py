@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+"""
+test_audit_models.py --- unit tests for the audit schema models
+
+Contains:
+    test_event_kind_values(): verifies the persisted enum values stay stable
+    test_audit_event_defaults(): verifies defaults applied on construction
+"""
+
+from apps.api.audit.models import AuditEvent, EventKind
+
+
+def test_event_kind_values() -> None:
+    """Verifies the persisted enum values stay stable."""
+    assert EventKind.TOOL_CALL == "tool_call"
+    assert EventKind.APPROVAL_RESOLVED == "approval_resolved"
+
+
+def test_audit_event_defaults() -> None:
+    """Verifies defaults applied on construction."""
+    event = AuditEvent(trace_id="trace-1", kind=EventKind.PLAN_CREATED, payload={})
+    assert event.trace_id == "trace-1"
+    assert event.payload == {}
