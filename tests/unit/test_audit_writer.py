@@ -89,3 +89,11 @@ async def test_enqueue_returns_event_with_trace() -> None:
     event = await writer.enqueue("trace-9", EventKind.CRITIQUE, {"score": 0.8})
     assert event.trace_id == "trace-9"
     assert event.kind is EventKind.CRITIQUE
+
+
+async def test_pending_count_tracks_buffer() -> None:
+    """Verifies pending_count reflects every enqueue until flush."""
+    writer = AuditWriter(FakeSessionFactory(), batch_size=16)
+    for idx in range(3):
+        await writer.enqueue("trace-1", EventKind.TOOL_CALL, {"idx": idx})
+    assert writer.pending_count == 3
