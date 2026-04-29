@@ -63,3 +63,11 @@ async def test_flush_writes_pending_events() -> None:
     assert flushed == 1
     assert writer.pending_count == 0
     assert factory.session.commits == 1
+
+
+async def test_flush_on_empty_buffer_is_noop() -> None:
+    """Verifies flushing an empty buffer writes nothing and commits nothing."""
+    factory = FakeSessionFactory()
+    writer = AuditWriter(factory)
+    assert await writer.flush() == 0
+    assert factory.session.commits == 0
