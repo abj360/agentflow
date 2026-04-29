@@ -81,3 +81,11 @@ async def test_batch_size_triggers_flush() -> None:
     await writer.enqueue("trace-1", EventKind.TOOL_RESULT, {})
     assert writer.pending_count == 0
     assert factory.session.commits == 1
+
+
+async def test_enqueue_returns_event_with_trace() -> None:
+    """Verifies the returned event carries the given trace id and kind."""
+    writer = AuditWriter(FakeSessionFactory())
+    event = await writer.enqueue("trace-9", EventKind.CRITIQUE, {"score": 0.8})
+    assert event.trace_id == "trace-9"
+    assert event.kind is EventKind.CRITIQUE
