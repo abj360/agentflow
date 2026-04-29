@@ -54,3 +54,9 @@ def test_authorize_url_scopes_joined() -> None:
     """Verifies scopes are space-joined in the consent URL."""
     url = build_client().build_authorize_url(state="s")
     assert "scope=tools:read tools:call" in url
+
+
+def test_authorize_url_starts_with_endpoint() -> None:
+    """Verifies the consent URL targets the configured endpoint."""
+    url = build_client().build_authorize_url(state="s")
+    assert url.startswith("https://idp.example/authorize?")
