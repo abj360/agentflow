@@ -13,7 +13,7 @@ import { ApprovalQueue } from "../../components/ApprovalQueue";
 export default function ApprovalsPage() {
   return (
     <section>
-      <h1>Approvals</h1>
+      <h1>Approval queue</h1>
       <ApprovalQueue />
     </section>
   );
