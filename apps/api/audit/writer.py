@@ -14,6 +14,8 @@ from apps.api.audit.models import AuditEvent, EventKind
 
 SessionFactory = async_sessionmaker[AsyncSession]
 
+DEFAULT_BATCH_SIZE = 64
+
 
 class AuditWriter:
     """Buffers audit events and flushes them to Postgres in batches.
@@ -23,7 +25,9 @@ class AuditWriter:
         batch_size: Number of buffered events that triggers an automatic flush.
     """
 
-    def __init__(self, session_factory: SessionFactory, batch_size: int = 64) -> None:
+    def __init__(
+        self, session_factory: SessionFactory, batch_size: int = DEFAULT_BATCH_SIZE
+    ) -> None:
         """Initializes the writer with a session factory and batch size.
 
         Args:
