@@ -38,6 +38,7 @@ body {
 .topbar a {
   color: var(--muted);
   text-decoration: none;
+  transition: color 120ms ease;
 }
 
 .topbar a:hover {
