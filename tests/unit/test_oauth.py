@@ -48,3 +48,9 @@ def test_is_expired_future_token() -> None:
     tokens = TokenSet(access_token="t", refresh_token=None,
                       expires_at=9_999_999_999.0)
     assert tokens.is_expired() is False
+
+
+def test_authorize_url_scopes_joined() -> None:
+    """Verifies scopes are space-joined in the consent URL."""
+    url = build_client().build_authorize_url(state="s")
+    assert "scope=tools:read tools:call" in url
