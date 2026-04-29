@@ -71,3 +71,13 @@ async def test_flush_on_empty_buffer_is_noop() -> None:
     writer = AuditWriter(factory)
     assert await writer.flush() == 0
     assert factory.session.commits == 0
+
+
+async def test_batch_size_triggers_flush() -> None:
+    """Verifies reaching batch size flushes automatically."""
+    factory = FakeSessionFactory()
+    writer = AuditWriter(factory, batch_size=2)
+    await writer.enqueue("trace-1", EventKind.TOOL_CALL, {})
+    await writer.enqueue("trace-1", EventKind.TOOL_RESULT, {})
+    assert writer.pending_count == 0
+    assert factory.session.commits == 1
