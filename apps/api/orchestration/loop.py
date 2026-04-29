@@ -22,7 +22,13 @@ async def run_session(session_id: str, task: str) -> dict:
     """
     state = get_session_state(session_id)
     graph = build_graph()
-    graph_state = {"task": task, "plan": [], "results": [], "critique": "", "iterations": 0}
+    graph_state = {
+        "task": task,
+        "plan": [],
+        "results": [],
+        "critique": "",
+        "iterations": 0,
+    }
     while True:
         graph_state = await graph.ainvoke(graph_state)
         state["plan"] = graph_state["plan"]
