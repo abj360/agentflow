@@ -10,6 +10,7 @@ Contains:
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from apps.api.config import get_settings
+from apps.api.audit.routes import router as audit_router
 from apps.api.observability.tracing import setup_tracing
 from apps.api.trace_hub import TraceHub
 
@@ -24,6 +25,7 @@ def create_app() -> FastAPI:
     app = FastAPI(title="agentflow", version=settings.app_version)
     hub = TraceHub()
     setup_tracing(app, service_name="agentflow-api")
+    app.include_router(audit_router)
 
     @app.get("/health")
     async def health() -> dict[str, str]:
