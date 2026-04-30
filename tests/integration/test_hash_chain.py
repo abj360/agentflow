@@ -39,3 +39,8 @@ def test_tampering_breaks_verification() -> None:
     _, hash_1 = ChainLinker().link("trace-1", "plan_created", {"step": 1})
     tampered = compute_event_hash("trace-1", "plan_created", {"step": 2}, GENESIS_HASH)
     assert tampered != hash_1
+
+
+def test_genesis_hash_is_zero_padded() -> None:
+    """Verifies the genesis sentinel is a 64-char zero digest."""
+    assert GENESIS_HASH == "0" * 64
