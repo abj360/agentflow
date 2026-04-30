@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+"""
+test_metrics.py --- unit tests for the Prometheus metrics exporter
+
+Contains:
+    test_metrics_endpoint_returns_payload(): verifies the scrape endpoint renders
+    test_sessions_counter_increments(): verifies the sessions counter moves
+"""
+
+from apps.api.observability.metrics import metrics_endpoint, sessions_total
+
+
+def test_metrics_endpoint_returns_payload() -> None:
+    """Verifies the scrape endpoint renders."""
+    response = metrics_endpoint(None)
+    assert b"agentflow_sessions_total" in response.body
+
+
+def test_sessions_counter_increments() -> None:
+    """Verifies the sessions counter moves."""
+    before = sessions_total._value.get()
+    sessions_total.inc()
+    assert sessions_total._value.get() == before + 1
