@@ -119,3 +119,10 @@ def test_trace_events_returns_chain() -> None:
     body = response.json()
     assert body["trace_id"] == "trace-1"
     assert body["chain_valid"] is True
+
+
+def test_trace_events_empty_chain_valid_flag() -> None:
+    """Verifies a single-event trace still verifies as a valid chain."""
+    client = make_client(make_events("trace-2", 1))
+    response = client.get("/audit/trace-2")
+    assert response.json()["chain_valid"] is True
