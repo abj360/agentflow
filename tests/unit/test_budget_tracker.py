@@ -29,3 +29,10 @@ def test_tool_call_recording_accumulates() -> None:
     tracker.record_tool_call()
     tracker.record_tool_call()
     assert tracker.tool_calls_made == 2
+
+
+def test_remaining_decreases_with_use() -> None:
+    """Verifies remaining headroom shrinks as budget is consumed."""
+    tracker = BudgetTracker(BudgetLimits(max_tokens=1000, max_tool_calls=10))
+    tracker.record_tokens(400)
+    assert tracker.remaining()["tokens"] == 600
