@@ -16,6 +16,8 @@ from sqlalchemy import DateTime, Enum, String, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
+from apps.api.audit.chain import GENESIS_HASH
+
 
 class Base(DeclarativeBase):
     """Provides the declarative base for all audit schema models."""
@@ -55,6 +57,10 @@ class AuditEvent(Base):
         Enum(EventKind, name="event_kind"), nullable=False
     )
     payload: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
+    prev_hash: Mapped[str] = mapped_column(
+        String(64), nullable=False, default=GENESIS_HASH
+    )
+    event_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
