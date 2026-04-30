@@ -21,3 +21,11 @@ def test_recording_tokens_accumulates() -> None:
     tracker.record_tokens(100)
     tracker.record_tokens(50)
     assert tracker.tokens_used == 150
+
+
+def test_tool_call_recording_accumulates() -> None:
+    """Verifies tool-call recording accumulates."""
+    tracker = BudgetTracker()
+    tracker.record_tool_call()
+    tracker.record_tool_call()
+    assert tracker.tool_calls_made == 2
