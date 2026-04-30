@@ -44,3 +44,11 @@ def test_tampering_breaks_verification() -> None:
 def test_genesis_hash_is_zero_padded() -> None:
     """Verifies the genesis sentinel is a 64-char zero digest."""
     assert GENESIS_HASH == "0" * 64
+
+
+def test_linker_isolates_traces() -> None:
+    """Verifies events of different traces chain independently."""
+    linker = ChainLinker()
+    prev_a, _ = linker.link("trace-a", "plan_created", {})
+    prev_b, _ = linker.link("trace-b", "plan_created", {})
+    assert prev_a == prev_b == GENESIS_HASH
