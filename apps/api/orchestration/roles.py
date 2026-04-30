@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+"""
+roles.py --- Planner/Executor/Synthesizer/Critic role interfaces
+
+Contains:
+    AgentRole: protocol every orchestration role implements
+    Planner: breaks the task into an ordered plan
+    Executor: runs plan steps through governed tools
+    Synthesizer: merges step outputs into the final answer
+    Critic: reviews plans and outputs, requesting revisions
+"""
+
+from typing import Protocol
+
+
+class AgentRole(Protocol):
+    """Defines the contract every orchestration role implements."""
+
+    async def run(self, state: dict) -> dict:
+        """Executes the role against the current orchestration state.
+
+        Args:
+            state: Current shared orchestration state.
+
+        Returns:
+            update: Partial state update produced by this role.
+        """
+        ...
+
+
+class Planner:
+    """Breaks the task into an ordered plan."""
+
+    async def run(self, state: dict) -> dict:
+        """Produces a plan from the task in the current state.
+
+        Args:
+            state: Current shared orchestration state.
+
+        Returns:
+            update: State update carrying the plan steps.
+        """
+        return {"plan": [state["task"]]}
+
+
+class Executor:
+    """Runs plan steps through governed tools."""
+
+    async def run(self, state: dict) -> dict:
+        """Executes every plan step and collects the outputs.
+
+        Args:
+            state: Current shared orchestration state.
+
+        Returns:
+            update: State update carrying one result per plan step.
+        """
+        return {"results": [f"done: {step}" for step in state["plan"]]}
+
+
+class Synthesizer:
+    """Merges step outputs into the final answer."""
+
+    async def run(self, state: dict) -> dict:
+        """Merges the collected step outputs into one answer.
+
+        Args:
+            state: Current shared orchestration state.
+
+        Returns:
+            update: State update carrying the synthesized output.
+        """
+        return {"output": "\n".join(state["results"])}
+
+
+class Critic:
+    """Reviews plans and outputs, requesting revisions."""
+
+    async def run(self, state: dict) -> dict:
+        """Reviews the current results and returns a verdict.
+
+        Args:
+            state: Current shared orchestration state.
+
+        Returns:
+            update: State update carrying the critique verdict.
+        """
+        return {"critique": "accept"}
