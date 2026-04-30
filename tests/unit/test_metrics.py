@@ -21,3 +21,9 @@ def test_sessions_counter_increments() -> None:
     before = sessions_total._value.get()
     sessions_total.inc()
     assert sessions_total._value.get() == before + 1
+
+
+def test_metrics_payload_is_text() -> None:
+    """Verifies the scrape payload is plain text."""
+    response = metrics_endpoint(None)
+    assert isinstance(response.body, bytes)
