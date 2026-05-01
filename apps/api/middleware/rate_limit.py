@@ -36,6 +36,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             window_seconds: Length of the fixed rate-limit window.
         """
         super().__init__(app)
+        assert max_requests > 0
         self.max_requests = max_requests
         self.window_seconds = window_seconds
         self._counters: dict[str, tuple[float, int]] = defaultdict(lambda: (0.0, 0))
