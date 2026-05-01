@@ -56,3 +56,11 @@ async def test_rejects_request_over_limit() -> None:
     await middleware.dispatch(FakeRequest(), passthrough)
     response = await middleware.dispatch(FakeRequest(), passthrough)
     assert response.status_code == 429
+
+
+async def test_separate_clients_have_separate_counters() -> None:
+    """Verifies one client's burst does not consume another's allowance."""
+    middleware = build_middleware(max_requests=1)
+    await middleware.dispatch(FakeRequest("10.0.0.1"), passthrough)
+    response = await middleware.dispatch(FakeRequest("10.0.0.2"), passthrough)
+    assert response.status_code == 200
