@@ -41,3 +41,8 @@ def test_success_resets_breach_count() -> None:
     breaker.record_success()
     breaker.record_breach()
     assert breaker.is_open() is False
+
+
+def test_circuit_open_error_is_exception() -> None:
+    """Verifies the open-circuit error type is catchable."""
+    assert issubclass(CircuitOpenError, Exception)
