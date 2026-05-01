@@ -32,3 +32,12 @@ def test_check_raises_when_open() -> None:
     except CircuitOpenError:
         return
     raise AssertionError("expected CircuitOpenError")
+
+
+def test_success_resets_breach_count() -> None:
+    """Verifies a success clears the running breach count."""
+    breaker = BudgetCircuitBreaker(failure_threshold=2)
+    breaker.record_breach()
+    breaker.record_success()
+    breaker.record_breach()
+    assert breaker.is_open() is False
