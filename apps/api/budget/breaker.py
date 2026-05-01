@@ -38,7 +38,8 @@ class BudgetCircuitBreaker:
         """Records one budget breach, opening the circuit at the threshold."""
         self._failures += 1
         if self._failures >= self.failure_threshold:
-            self._opened_at = time.time()
+            if self._opened_at is None:
+                self._opened_at = time.time()
 
     def record_success(self) -> None:
         """Records one successful call, resetting the breach count."""
