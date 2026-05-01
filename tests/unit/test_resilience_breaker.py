@@ -22,3 +22,12 @@ def test_breaker_opens_after_threshold() -> None:
     breaker.record_failure()
     breaker.record_failure()
     assert breaker.allows_call() is False
+
+
+def test_success_closes_breaker() -> None:
+    """Verifies a success after failures closes the breaker."""
+    breaker = ServerCircuitBreaker("srv", failure_threshold=2)
+    breaker.record_failure()
+    breaker.record_failure()
+    breaker.record_success()
+    assert breaker.allows_call() is True
