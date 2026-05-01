@@ -31,3 +31,10 @@ def test_success_closes_breaker() -> None:
     breaker.record_failure()
     breaker.record_success()
     assert breaker.allows_call() is True
+
+
+def test_breaker_recovers_after_cooldown() -> None:
+    """Verifies the breaker allows calls again after the cooldown."""
+    breaker = ServerCircuitBreaker("srv", failure_threshold=1, reset_seconds=0)
+    breaker.record_failure()
+    assert breaker.allows_call() is True
