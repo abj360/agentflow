@@ -64,3 +64,11 @@ async def test_separate_clients_have_separate_counters() -> None:
     await middleware.dispatch(FakeRequest("10.0.0.1"), passthrough)
     response = await middleware.dispatch(FakeRequest("10.0.0.2"), passthrough)
     assert response.status_code == 200
+
+
+async def test_429_body_says_rate_limited() -> None:
+    """Verifies the rejection body explains why the request failed."""
+    middleware = build_middleware(max_requests=1)
+    await middleware.dispatch(FakeRequest(), passthrough)
+    response = await middleware.dispatch(FakeRequest(), passthrough)
+    assert b"rate limit exceeded" in response.body
