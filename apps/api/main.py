@@ -11,6 +11,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from apps.api.config import get_settings
 from apps.api.audit.routes import router as audit_router
+from apps.api.middleware.rate_limit import RateLimitMiddleware
 from apps.api.observability.metrics import metrics_endpoint
 from apps.api.observability.tracing import setup_tracing
 from apps.api.trace_hub import TraceHub
@@ -28,6 +29,7 @@ def create_app() -> FastAPI:
     setup_tracing(app, service_name="agentflow-api")
     app.include_router(audit_router)
     app.add_route("/metrics", metrics_endpoint)
+    app.add_middleware(RateLimitMiddleware)
 
     @app.get("/health")
     async def health() -> dict[str, str]:
