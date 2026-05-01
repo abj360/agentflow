@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+"""
+session.py --- versioned session records for the orchestration loop
+
+Contains:
+    SessionRecord: immutable record of a session's state at one version
+    SessionRegistry: tracks sessions and their current version
+"""
+
+import time
+from dataclasses import dataclass, field, replace
+
+
+@dataclass(frozen=True)
+class SessionRecord:
+    """Represents an immutable record of a session's state at one version.
+
+    Attributes:
+        session_id: Identifier of the orchestration session.
+        version: Monotonic version incremented on every state transition.
+        trace_id: Audit trace identifier linked to the session.
+        created_at: Epoch seconds when the session was created.
+    """
+
+    session_id: str
+    version: int
+    trace_id: str
+    created_at: float = field(default_factory=time.time)
+
+
+class SessionRegistry:
+    """Tracks sessions and their current version.
+
+    Attributes:
+        records: Latest record per session id.
+    """
+
+    def __init__(self) -> None:
+        """Initializes the registry with no sessions."""
+        self.records: dict[str, SessionRecord] = {}
+
+    def open_session(self, session_id: str, trace_id: str) -> SessionRecord:
+        """Registers a new session at version zero.
+
+        Args:
+            session_id: Identifier of the session being opened.
+            trace_id: Audit trace identifier linked to the session.
+
+        Returns:
+            record: The initial version-zero session record.
+        """
+        record = SessionRecord(session_id=session_id, version=0, trace_id=trace_id)
+        self.records[session_id] = record
+        return record
+
+    def bump_version(self, session_id: str) -> SessionRecord:
+        """Increments a session's version and stores the new record.
+
+        Args:
+            session_id: Identifier of the session to advance.
+
+        Returns:
+            record: The session record carrying the incremented version.
+        """
+        current = self.records[session_id]
+        updated = replace(current, version=current.version + 1)
+        self.records[session_id] = updated
+        return updated
