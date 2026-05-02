@@ -21,3 +21,14 @@ def test_resolve_falls_back_to_default() -> None:
     """Verifies unlisted tools get the default."""
     registry = RetryPolicyRegistry()
     assert registry.resolve("unknown.tool").max_attempts == 3
+
+
+def test_policy_is_frozen() -> None:
+    """Verifies retry policies are immutable after creation."""
+    from dataclasses import FrozenInstanceError
+
+    import pytest
+
+    policy = RetryPolicy(tool_name="t")
+    with pytest.raises(FrozenInstanceError):
+        policy.max_attempts = 9
