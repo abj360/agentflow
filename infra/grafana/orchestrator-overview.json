@@ -1,6 +1,7 @@
 {
   "title": "agentflow — Orchestrator Overview",
   "uid": "agentflow-overview",
+  "tags": ["agentflow", "orchestrator"],
   "schemaVersion": 39,
   "panels": [
     {
