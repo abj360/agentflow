@@ -20,7 +20,7 @@
       "targets": [
         { "expr": "histogram_quantile(0.95, rate(agentflow_loop_iterations_bucket[5m]))" }
       ],
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 }
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 0 }
     }
   ]
 }
