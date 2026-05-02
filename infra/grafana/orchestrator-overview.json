@@ -7,7 +7,7 @@
     {
       "id": 1,
       "title": "Sessions per minute",
-      "type": "timeseries",
+      "type": "barchart",
       "targets": [
         { "expr": "rate(agentflow_sessions_total[1m])" }
       ],
