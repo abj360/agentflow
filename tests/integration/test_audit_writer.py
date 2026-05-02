@@ -31,3 +31,12 @@ async def test_flush_persists_events(session_factory) -> None:
             select(AuditEvent).where(AuditEvent.trace_id == "it-trace-1")
         )
         assert len(list(result.scalars())) == 1
+
+
+async def test_empty_flush_persists_nothing(session_factory) -> None:
+    """Verifies flushing an empty buffer writes no rows."""
+    writer = AuditWriter(session_factory)
+    await writer.flush()
+    async with session_factory() as session:
+        result = await session.execute(select(AuditEvent))
+        assert list(result.scalars()) == []
