@@ -1,0 +1,25 @@
+{
+  "title": "agentflow — Orchestrator Overview",
+  "uid": "agentflow-overview",
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Sessions per minute",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "rate(agentflow_sessions_total[1m])" }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 }
+    },
+    {
+      "id": 2,
+      "title": "Loop iterations p95",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "histogram_quantile(0.95, rate(agentflow_loop_iterations_bucket[5m]))" }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 }
+    }
+  ]
+}
