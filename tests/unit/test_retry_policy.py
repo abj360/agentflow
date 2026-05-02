@@ -32,3 +32,9 @@ def test_policy_is_frozen() -> None:
     policy = RetryPolicy(tool_name="t")
     with pytest.raises(FrozenInstanceError):
         policy.max_attempts = 9
+
+
+def test_default_retryable_errors() -> None:
+    """Verifies the default retryable error categories."""
+    policy = RetryPolicy(tool_name="t")
+    assert "timeout" in policy.retryable_errors
