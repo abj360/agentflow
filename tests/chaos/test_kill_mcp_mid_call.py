@@ -12,7 +12,7 @@ import pytest
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("AGENTFLOW_CHAOS") != "1",
-    reason="chaos tests run only with AGENTFLOW_CHAOS=1",
+    reason="chaos tests run only with AGENTFLOW_CHAOS=1 (docker required)",
 )
 
 
