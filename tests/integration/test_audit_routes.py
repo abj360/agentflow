@@ -126,3 +126,10 @@ def test_trace_events_empty_chain_valid_flag() -> None:
     client = make_client(make_events("trace-2", 1))
     response = client.get("/audit/trace-2")
     assert response.json()["chain_valid"] is True
+
+
+def test_trace_events_limit_caps_page_size() -> None:
+    """Verifies the limit parameter caps how many events come back."""
+    client = make_client(make_events("trace-p1", 5))
+    body = client.get("/audit/trace-p1?limit=2").json()
+    assert body["event_count"] == 2
