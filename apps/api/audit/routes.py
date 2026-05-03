@@ -20,13 +20,18 @@ router = APIRouter(prefix="/audit", tags=["audit"])
 
 @router.get("/{trace_id}")
 async def get_trace_events(
-    trace_id: str, session: AsyncSession = Depends(get_session)
+    trace_id: str,
+    limit: int = 100,
+    offset: int = 0,
+    session: AsyncSession = Depends(get_session),
 ) -> dict:
     """Returns the ordered event chain for one trace.
 
     Args:
         trace_id: Identifier of the orchestration run to look up.
         session: Async database session injected by FastAPI.
+        limit: Maximum number of events to return per page.
+        offset: Number of events to skip before the page starts.
 
     Returns:
         trace: Ordered events plus a chain-integrity flag for the trace.
@@ -47,6 +52,6 @@ async def get_trace_events(
                 "kind": str(event.kind),
                 "payload": event.payload,
             }
-            for event in events
+            for event in events[offset : offset + limit]
         ],
     }
