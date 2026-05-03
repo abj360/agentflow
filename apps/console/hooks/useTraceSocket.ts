@@ -37,7 +37,7 @@ export function useTraceSocket(runId: string): TraceEvent[] {
       };
       socket.onclose = () => {
         if (attempts < 5) {
-          connect();
+          connect();  // immediate retry while the cap holds
         }
       };
     };
