@@ -133,3 +133,10 @@ def test_trace_events_limit_caps_page_size() -> None:
     client = make_client(make_events("trace-p1", 5))
     body = client.get("/audit/trace-p1?limit=2").json()
     assert body["event_count"] == 2
+
+
+def test_trace_events_offset_skips_events() -> None:
+    """Verifies the offset parameter skips leading events."""
+    client = make_client(make_events("trace-p2", 5))
+    body = client.get("/audit/trace-p2?limit=2&offset=2").json()
+    assert body["event_count"] == 2
