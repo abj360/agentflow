@@ -41,3 +41,9 @@ def test_empty_tool_name_denied() -> None:
     """Verifies an empty tool name fails closed."""
     engine = build_engine()
     assert engine.evaluate("", {}).action == "deny"
+
+
+def test_args_do_not_affect_match() -> None:
+    """Verifies call arguments don't change the matched rule."""
+    engine = build_engine()
+    assert engine.evaluate("search.query", {"q": "x"}).action == "allow"
