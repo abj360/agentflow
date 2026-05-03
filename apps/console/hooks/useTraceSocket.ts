@@ -25,13 +25,23 @@ export function useTraceSocket(runId: string): TraceEvent[] {
   const [events, setEvents] = useState<TraceEvent[]>([]);
 
   useEffect(() => {
-    const socket = new WebSocket(
-      `${process.env.NEXT_PUBLIC_WS_URL}/ws/traces?run_id=${runId}`
-    );
-    socket.onmessage = (message) => {
-      const event = JSON.parse(message.data);
-      setEvents((prev) => [...prev, event]);
+    let attempts = 0;
+    const connect = () => {
+      attempts += 1;
+      const socket = new WebSocket(
+        `${process.env.NEXT_PUBLIC_WS_URL}/ws/traces?run_id=${runId}`
+      );
+      socket.onmessage = (message) => {
+        const event = JSON.parse(message.data);
+        setEvents((prev) => [...prev, event]);
+      };
+      socket.onclose = () => {
+        if (attempts < 5) {
+          connect();
+        }
+      };
     };
+    connect();
   }, [runId]);
 
   return events;
