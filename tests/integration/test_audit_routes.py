@@ -140,3 +140,10 @@ def test_trace_events_offset_skips_events() -> None:
     client = make_client(make_events("trace-p2", 5))
     body = client.get("/audit/trace-p2?limit=2&offset=2").json()
     assert body["event_count"] == 2
+
+
+def test_trace_events_offset_past_end_returns_empty_page() -> None:
+    """Verifies paging past the end returns an empty events list."""
+    client = make_client(make_events("trace-p3", 2))
+    body = client.get("/audit/trace-p3?offset=10").json()
+    assert body["event_count"] == 0
