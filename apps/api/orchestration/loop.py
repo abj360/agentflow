@@ -9,6 +9,8 @@ Contains:
 from apps.api.orchestration.state import get_session_state
 from apps.api.orchestration.state_machine import build_graph
 
+MAX_REVISIONS = 3
+
 
 async def run_session(session_id: str, task: str) -> dict:
     """Runs one orchestration session to completion.
@@ -29,11 +31,13 @@ async def run_session(session_id: str, task: str) -> dict:
         "critique": "",
         "iterations": 0,
     }
-    while True:
+    revisions = 0
+    while revisions < MAX_REVISIONS:
         graph_state = await graph.ainvoke(graph_state)
         state["plan"] = graph_state["plan"]
         state["results"] = graph_state["results"]
         state["version"] += 1
         if graph_state["critique"] == "accept":
             break
+        revisions += 1
     return {"output": graph_state["results"], "iterations": graph_state["iterations"]}
