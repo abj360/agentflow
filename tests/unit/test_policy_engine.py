@@ -35,3 +35,9 @@ def test_unmatched_tool_denied() -> None:
     """Verifies tools with no matching rule are denied."""
     engine = build_engine()
     assert engine.evaluate("crypto.mine", {}).action == "deny"
+
+
+def test_empty_tool_name_denied() -> None:
+    """Verifies an empty tool name fails closed."""
+    engine = build_engine()
+    assert engine.evaluate("", {}).action == "deny"
