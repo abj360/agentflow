@@ -24,7 +24,7 @@ def upgrade() -> None:
     op.execute(
         """
         CREATE INDEX ix_audit_events_trace_id ON audit_events (trace_id)
-        CREATE INDEX ix_audit_events_created_at ON audit_events (created_at)
+        CREATE INDEX IF NOT EXISTS ix_audit_events_created_at ON audit_events (created_at)
         """
     )
 
