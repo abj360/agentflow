@@ -29,3 +29,9 @@ def test_required_params_listed() -> None:
     """Verifies required params land in required."""
     schema = to_mcp_schema(SPEC)
     assert schema["inputSchema"]["required"] == ["q"]
+
+
+def test_optional_params_not_required() -> None:
+    """Verifies optional params stay out of required."""
+    schema = to_mcp_schema(SPEC)
+    assert "limit" not in schema["inputSchema"]["required"]
