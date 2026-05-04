@@ -29,3 +29,10 @@ def test_planner_to_executor_edge() -> None:
     after_plan = planner_node(make_state(task="do it"))
     after_exec = executor_node(after_plan)
     assert after_exec["results"]
+
+
+def test_planner_update_only_touches_plan() -> None:
+    """Verifies the planner update leaves other fields intact."""
+    state = make_state(task="keep", results=["untouched"])
+    after = planner_node(state)
+    assert after["results"] == ["untouched"]
