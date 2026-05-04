@@ -28,3 +28,16 @@ def test_every_migration_has_revision_linkage() -> None:
         content = path.read_text()
         assert 'revision = "' in content, path.name
         assert "down_revision" in content, path.name
+
+
+def test_down_revision_chain_is_contiguous() -> None:
+    """Verifies down_revision pointers form one unbroken chain."""
+    revisions: dict[str, str | None] = {}
+    for path in migration_files():
+        content = path.read_text()
+        rev = re.search(r'revision = "(\d+)"', content)
+        down = re.search(r'down_revision = (?:"(\d+)"|None)', content)
+        revisions[rev.group(1)] = down.group(1) if down else None
+    for rev, down in revisions.items():
+        if down is not None:
+            assert down in revisions, f"{rev} points at missing {down}"
