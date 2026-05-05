@@ -35,3 +35,11 @@ def test_failing_server_gets_evicted() -> None:
     evictor.probe("srv-a", ok=False)
     assert evictor.probe("srv-a", ok=False) is False
     assert evictor.is_active("srv-a") is False
+
+
+def test_success_resets_failure_count() -> None:
+    """Verifies a successful probe clears the failure count."""
+    checker = HealthChecker(failure_threshold=2)
+    checker.record_probe("srv", ok=False)
+    checker.record_probe("srv", ok=True)
+    assert checker.failures["srv"] == 0
