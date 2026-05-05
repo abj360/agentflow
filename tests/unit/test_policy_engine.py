@@ -73,3 +73,8 @@ def test_inline_engine_ignores_tenant() -> None:
     assert engine.evaluate("shell.exec", {}, tenant_id="globex").action == (
         "human_approval"
     )
+
+
+def test_review_make_engine_is_callable() -> None:
+    """Verifies the shared engine factory returns a usable engine."""
+    assert make_engine() is not None
