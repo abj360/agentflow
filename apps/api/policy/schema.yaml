@@ -29,6 +29,7 @@ rules:
     risk: low
 
 
+# per-tenant rule sets shadow the base `rules` when the tenant matches
 tenant_overrides:
   acme:
     rules:
