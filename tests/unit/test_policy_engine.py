@@ -54,3 +54,11 @@ def test_evaluate_accepts_tenant_keyword() -> None:
     engine = build_engine()
     decision = engine.evaluate("search.query", {}, tenant_id="acme")
     assert decision.action == "allow"
+
+
+def test_inline_engine_ignores_tenant() -> None:
+    """Verifies dict-built engines apply their rules for any tenant."""
+    engine = build_engine()
+    assert engine.evaluate("shell.exec", {}, tenant_id="globex").action == (
+        "human_approval"
+    )
