@@ -47,3 +47,10 @@ def test_args_do_not_affect_match() -> None:
     """Verifies call arguments don't change the matched rule."""
     engine = build_engine()
     assert engine.evaluate("search.query", {"q": "x"}).action == "allow"
+
+
+def test_evaluate_accepts_tenant_keyword() -> None:
+    """Verifies evaluate accepts a tenant_id keyword argument."""
+    engine = build_engine()
+    decision = engine.evaluate("search.query", {}, tenant_id="acme")
+    assert decision.action == "allow"
