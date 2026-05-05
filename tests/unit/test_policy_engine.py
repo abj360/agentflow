@@ -78,3 +78,9 @@ def test_inline_engine_ignores_tenant() -> None:
 def test_review_make_engine_is_callable() -> None:
     """Verifies the shared engine factory returns a usable engine."""
     assert make_engine() is not None
+
+
+def test_review_deny_is_default_posture() -> None:
+    """Verifies the reviewed rule set fails closed by default."""
+    engine = make_engine()
+    assert engine.evaluate("unknown.tool", {}).action == "deny"
