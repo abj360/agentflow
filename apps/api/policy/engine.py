@@ -69,7 +69,9 @@ class PolicyEngine:
         with open(self.schema_path) as handle:
             return yaml.safe_load(handle)["rules"]
 
-    def evaluate(self, tool_name: str, args: dict) -> Decision:
+    def evaluate(
+        self, tool_name: str, args: dict, tenant_id: str | None = None
+    ) -> Decision:
         """Evaluates a tool call against the current policy rules.
 
         Args:
@@ -79,7 +81,25 @@ class PolicyEngine:
         Returns:
             decision: Allow, deny, or human_approval with the matched rule.
         """
-        for rule in self._load_rules():
+        rules = self._tenant_rules(tenant_id) if tenant_id else self._load_rules()
+        for rule in rules:
             if fnmatch.fnmatchcase(tool_name, rule["match"]):
                 return Decision(action=rule["action"], rule=rule["match"])
         return Decision(action="deny", rule=None, reason="no matching rule")
+
+
+    def _tenant_rules(self, tenant_id: str) -> list[dict]:
+        """Loads tenant-specific override rules, falling back to base rules.
+
+        Args:
+            tenant_id: Tenant whose overrides apply.
+
+        Returns:
+            rules: The tenant's override rules, or the base rule set.
+        """
+        if self.schema_path is None:
+            return self._inline_rules
+        with open(self.schema_path) as handle:
+            data = yaml.safe_load(handle)
+        overrides = data.get("tenant_overrides", {})
+        return overrides.get(tenant_id, {}).get("rules", data["rules"])

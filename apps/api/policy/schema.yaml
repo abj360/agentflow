@@ -27,3 +27,14 @@ rules:
   - match: "metrics.emit"
     action: allow
     risk: low
+
+
+tenant_overrides:
+  acme:
+    rules:
+      - match: "db.*"
+        action: allow
+        risk: low
+      - match: "*"
+        action: deny
+        risk: unknown
