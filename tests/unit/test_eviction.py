@@ -43,3 +43,12 @@ def test_success_resets_failure_count() -> None:
     checker.record_probe("srv", ok=False)
     checker.record_probe("srv", ok=True)
     assert checker.failures["srv"] == 0
+
+
+def test_reinstate_brings_server_back() -> None:
+    """Verifies reinstating returns an evicted server to the pool."""
+    evictor = build_evictor()
+    evictor.probe("srv", ok=False)
+    evictor.probe("srv", ok=False)
+    assert evictor.reinstate("srv") is True
+    assert evictor.is_active("srv") is True
