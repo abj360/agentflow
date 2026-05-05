@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+"""
+test_eviction.py --- unit tests for health-check-based server eviction
+
+Contains:
+    test_healthy_server_stays_active(): verifies passing probes keep a server active
+    test_failing_server_gets_evicted(): verifies repeated failures evict a server
+"""
+
+from apps.api.resilience.eviction import HealthChecker, ServerEvictor
+
+
+def build_evictor(threshold: int = 2) -> ServerEvictor:
+    """Builds an evictor with a low test threshold.
+
+    Args:
+        threshold: Consecutive failures before eviction.
+
+    Returns:
+        evictor: Configured server evictor.
+    """
+    return ServerEvictor(HealthChecker(failure_threshold=threshold))
+
+
+def test_healthy_server_stays_active() -> None:
+    """Verifies passing probes keep a server active."""
+    evictor = build_evictor()
+    assert evictor.probe("srv-a", ok=True) is True
+    assert evictor.is_active("srv-a") is True
+
+
+def test_failing_server_gets_evicted() -> None:
+    """Verifies repeated failures evict a server."""
+    evictor = build_evictor()
+    evictor.probe("srv-a", ok=False)
+    assert evictor.probe("srv-a", ok=False) is False
+    assert evictor.is_active("srv-a") is False
