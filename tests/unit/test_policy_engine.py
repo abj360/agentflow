@@ -9,6 +9,17 @@ Contains:
 
 from apps.api.policy.engine import PolicyEngine
 
+
+def make_engine() -> PolicyEngine:
+    """Builds an engine over a minimal in-memory rule set."""
+    return PolicyEngine.from_dict(
+        [
+            {"match": "search.*", "action": "allow"},
+            {"match": "shell.*", "action": "human_approval"},
+            {"match": "*", "action": "deny"},
+        ]
+    )
+
 RULES = [
     {"match": "search.*", "action": "allow"},
     {"match": "shell.*", "action": "human_approval"},
