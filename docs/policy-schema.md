@@ -9,6 +9,6 @@ evaluated before every governed tool call (see `apps/api/policy/engine.py`).
 |---|---|
 | `match` | Glob matched against the tool name, e.g. `search.*` |
 | `action` | `allow`, `deny`, or `human_approval` |
-| `risk` | Free-form risk label for reviewers: low, medium, high, critical |
+| `risk` | Risk label for reviewers: low, medium, high, critical |
 
 Rules evaluate top to bottom; the first match wins.
