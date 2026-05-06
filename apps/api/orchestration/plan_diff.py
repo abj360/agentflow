@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+"""
+plan_diff.py --- diffs planner revisions for the critic review view
+
+Contains:
+    PlanDiff: structured difference between two plan versions
+    diff_plans(): computes the difference between two plan versions
+"""
+
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class PlanDiff:
+    """Represents the structured difference between two plan versions.
+
+    Attributes:
+        added: Steps present in the new plan only.
+        removed: Steps present in the old plan only.
+        kept: Steps present in both plans.
+    """
+
+    added: tuple[str, ...] = ()
+    removed: tuple[str, ...] = ()
+    kept: tuple[str, ...] = ()
+
+
+def diff_plans(old: list[str], new: list[str]) -> PlanDiff:
+    """Computes the difference between two plan versions.
+
+    Args:
+        old: Previous plan step list.
+        new: Revised plan step list.
+
+    Returns:
+        diff: Structured difference between the two versions.
+    """
+    old_set, new_set = set(old), set(new)
+    return PlanDiff(
+        added=tuple(step for step in new if step not in old_set),
+        removed=tuple(step for step in old if step not in new_set),
+        kept=tuple(step for step in new if step in old_set),
+    )
