@@ -68,3 +68,10 @@ main {
     padding: 1rem;
   }
 }
+
+
+section > h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
