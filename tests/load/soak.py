@@ -27,7 +27,8 @@ class SoakUser(HttpUser):
     @task(2)
     def verify_trace(self) -> None:
         """Re-verifies a trace chain."""
-        self.client.get("/audit/trace-soak-7/verify", name="/audit/{trace_id}/verify")
+        self.client.get("/audit/trace-soak-7/verify",
+            name="/audit/{trace_id}/verify",)
 
     @task(1)
     def list_sessions(self) -> None:
