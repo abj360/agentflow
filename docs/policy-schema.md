@@ -12,3 +12,9 @@ evaluated before every governed tool call (see `apps/api/policy/engine.py`).
 | `risk` | Risk label for reviewers: low, medium, high, critical |
 
 Rules evaluate top to bottom; the first match wins.
+
+
+## Glob semantics
+
+Matching uses `fnmatch`: `*` crosses dots, so `search.*` covers
+`search.query.vector` as well as `search.query`.
