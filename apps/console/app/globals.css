@@ -75,3 +75,26 @@ section > h1 {
   font-weight: 600;
   margin-bottom: 0.75rem;
 }
+
+
+.trace-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.trace-event {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.trace-role {
+  color: var(--muted);
+  min-width: 6rem;
+}
