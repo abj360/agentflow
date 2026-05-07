@@ -98,3 +98,8 @@ section > h1 {
   color: var(--muted);
   min-width: 7rem;
 }
+
+
+.trace-kind {
+  font-weight: 500;
+}
