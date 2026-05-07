@@ -28,3 +28,11 @@ def test_register_overwrites_same_name() -> None:
     registry.register(ToolSpec(name="t", description="first"))
     registry.register(ToolSpec(name="t", description="second"))
     assert registry.list_tools()[0].description == "second"
+
+
+def test_default_registry_has_search_tool() -> None:
+    """Verifies the default registry ships the search tool."""
+    from apps.api.mcp_servers.sse_server import default_registry
+
+    registry = default_registry()
+    assert "search.query" in registry.tools
