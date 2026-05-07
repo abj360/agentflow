@@ -21,3 +21,8 @@ def test_put_then_get_returns_completion() -> None:
     key = cache_key("t", {})
     cache.put(key, "plan draft")
     assert cache.get(key) == "plan draft"
+
+
+def test_cache_key_differs_on_context() -> None:
+    """Verifies different contexts hash to different keys."""
+    assert cache_key("t", {"a": 1}) != cache_key("t", {"a": 2})
