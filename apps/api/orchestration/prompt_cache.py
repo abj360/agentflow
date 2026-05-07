@@ -21,7 +21,9 @@ def cache_key(task: str, context: dict) -> str:
     Returns:
         key: Hex-encoded content hash used as the cache key.
     """
-    canonical = json.dumps({"task": task, "context": context}, sort_keys=True)
+    canonical = json.dumps(
+        {"task": task, "context": context}, sort_keys=True, default=str
+    )
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
