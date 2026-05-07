@@ -81,3 +81,22 @@ class DistributedLock:
             exc_info: Exception details from the with block, if any.
         """
         await self.release()
+
+
+    async def extend(self, ttl_ms: int | None = None) -> bool:
+        """Extends the lock TTL while still held.
+
+        Args:
+            ttl_ms: New time-to-live; defaults to the original TTL.
+
+        Returns:
+            extended: True when the lock was still held and extended.
+        """
+        if self._token is None:
+            return False
+        ttl = ttl_ms if ttl_ms is not None else self.ttl_ms
+        current = await self.redis.get(self.key)
+        if current != self._token:
+            return False
+        await self.redis.pexpire(self.key, ttl)
+        return True
