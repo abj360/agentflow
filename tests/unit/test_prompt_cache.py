@@ -31,3 +31,10 @@ def test_cache_key_differs_on_context() -> None:
 def test_get_missing_key_returns_none() -> None:
     """Verifies a cache miss returns None."""
     assert PromptCache().get("nope") is None
+
+
+def test_cache_key_is_hex_digest() -> None:
+    """Verifies keys are hex-encoded digests."""
+    key = cache_key("task", {})
+    int(key, 16)
+    assert len(key) == 64
