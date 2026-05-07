@@ -51,3 +51,24 @@ class ToolRegistry:
             specs: All registered tool specs in registration order.
         """
         return list(self.tools.values())
+
+
+def default_registry() -> ToolRegistry:
+    """Builds the registry with the built-in demo tools.
+
+    Returns:
+        registry: Tool registry preloaded with the default tool set.
+    """
+    registry = ToolRegistry()
+    registry.register(
+        ToolSpec(
+            name="search.query",
+            description="Runs a search query and returns ranked results",
+            input_schema={
+                "type": "object",
+                "properties": {"q": {"type": "string"}},
+                "required": ["q"],
+            },
+        )
+    )
+    return registry
