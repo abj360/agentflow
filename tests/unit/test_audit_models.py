@@ -45,3 +45,8 @@ def test_audit_session_defaults() -> None:
     session = AuditSession(trace_id="trace-4")
     assert session.tenant_id == "default"
     assert session.ended_at is None
+
+
+def test_audit_session_trace_id_unique_intent() -> None:
+    """Verifies the trace_id column is declared unique on sessions."""
+    assert AuditSession.__table__.c.trace_id.unique is True
