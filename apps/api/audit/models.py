@@ -6,6 +6,7 @@ Contains:
     Base: declarative base shared by audit schema models
     EventKind: enumeration of audit event categories
     AuditEvent: append-only event row, one per state transition or tool call
+    AuditSession: one row per orchestration run, grouping its events
 """
 
 import uuid
@@ -64,3 +65,27 @@ class AuditEvent(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+
+
+class AuditSession(Base):
+    """Stores one row per orchestration run, grouping its events.
+
+    Attributes:
+        session_id: Unique identifier of the run.
+        trace_id: Trace identifier shared by all events of the run.
+        tenant_id: Tenant that owns the run.
+        started_at: Timestamp the run started at.
+        ended_at: Timestamp the run finished at, None while running.
+    """
+
+    __tablename__ = "audit_sessions"
+
+    session_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    trace_id: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    tenant_id: Mapped[str] = mapped_column(String(64), nullable=False, default="default")
+    started_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

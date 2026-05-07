@@ -6,6 +6,6 @@ Contains:
     re-exports of audit models for convenience imports
 """
 
-from apps.api.audit.models import AuditEvent, Base, EventKind
+from apps.api.audit.models import AuditEvent, AuditSession, Base, EventKind
 
-__all__ = ["AuditEvent", "Base", "EventKind"]
+__all__ = ["AuditEvent", "AuditSession", "Base", "EventKind"]
