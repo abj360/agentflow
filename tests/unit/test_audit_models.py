@@ -38,3 +38,10 @@ def test_audit_event_kind_assignment() -> None:
     """Verifies the kind passed at construction is the kind stored."""
     event = AuditEvent(trace_id="trace-3", kind=EventKind.TOOL_RESULT, payload={})
     assert event.kind is EventKind.TOOL_RESULT
+
+
+def test_audit_session_defaults() -> None:
+    """Verifies session rows default to the default tenant and an open run."""
+    session = AuditSession(trace_id="trace-4")
+    assert session.tenant_id == "default"
+    assert session.ended_at is None
