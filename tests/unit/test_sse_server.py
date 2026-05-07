@@ -36,3 +36,11 @@ def test_default_registry_has_search_tool() -> None:
 
     registry = default_registry()
     assert "search.query" in registry.tools
+
+
+def test_default_search_tool_schema_requires_query() -> None:
+    """Verifies the search tool declares its query argument."""
+    from apps.api.mcp_servers.sse_server import default_registry
+
+    spec = default_registry().tools["search.query"]
+    assert "q" in spec.input_schema["properties"]
