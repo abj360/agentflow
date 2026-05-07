@@ -38,3 +38,11 @@ def test_cache_key_is_hex_digest() -> None:
     key = cache_key("task", {})
     int(key, 16)
     assert len(key) == 64
+
+
+def test_put_overwrites_existing_entry() -> None:
+    """Verifies re-putting a key replaces the completion."""
+    cache = PromptCache()
+    cache.put("k", "first")
+    cache.put("k", "second")
+    assert cache.get("k") == "second"
