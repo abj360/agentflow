@@ -62,3 +62,11 @@ async def test_broadcast_isolated_per_run() -> None:
     await hub.register("run-2", socket)
     await hub.broadcast("run-1", {"kind": "plan"})
     assert socket.sent == []
+
+
+async def test_register_accepts_socket() -> None:
+    """Verifies registering accepts the socket connection."""
+    hub = TraceHub()
+    socket = FakeSocket()
+    await hub.register("run-1", socket)
+    assert socket.accepted is True
