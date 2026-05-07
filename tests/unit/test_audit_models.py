@@ -50,3 +50,8 @@ def test_audit_session_defaults() -> None:
 def test_audit_session_trace_id_unique_intent() -> None:
     """Verifies the trace_id column is declared unique on sessions."""
     assert AuditSession.__table__.c.trace_id.unique is True
+
+
+def test_audit_session_table_name() -> None:
+    """Verifies the sessions table name matches the migration."""
+    assert AuditSession.__tablename__ == "audit_sessions"
