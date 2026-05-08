@@ -34,5 +34,6 @@ class OrchestratorUser(HttpUser):
     def fetch_chain_head(self) -> None:
         """Fetches the head hash of a trace chain."""
         self.client.get(
-            "/audit/trace-load-1/head", name="/audit/{trace_id}/head"
+            "/audit/trace-load-1/head",
+            name="/audit/{trace_id}/head",
         )
