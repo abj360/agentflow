@@ -97,3 +97,10 @@ async def test_pending_count_tracks_buffer() -> None:
     for idx in range(3):
         await writer.enqueue("trace-1", EventKind.TOOL_CALL, {"idx": idx})
     assert writer.pending_count == 3
+
+
+async def test_drain_flushes_remaining_events() -> None:
+    """Verifies drain performs a final flush of the remaining buffer."""
+    writer = AuditWriter(FakeSessionFactory())
+    await writer.enqueue("trace-1", EventKind.SYNTHESIS, {})
+    assert await writer.drain() == 1
