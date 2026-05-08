@@ -6,6 +6,7 @@ Contains:
     AuditWriter: buffers audit events and flushes them to Postgres in batches
     AuditWriter.enqueue(): adds an event to the pending buffer
     AuditWriter.flush(): writes all pending events in one transaction
+    AuditWriter.drain(): flushes and disables further enqueue calls
 """
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -68,6 +69,15 @@ class AuditWriter:
             session.add_all(events)
             await session.commit()
         return len(events)
+
+    async def drain(self) -> int:
+        """Flushes remaining events and disables further enqueue calls.
+
+        Returns:
+            flushed_count: Number of events written by the final flush.
+        """
+        self._draining = True
+        return await self.flush()
 
     @property
     def pending_count(self) -> int:
