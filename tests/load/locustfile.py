@@ -24,7 +24,7 @@ class OrchestratorUser(HttpUser):
         """Lists recent orchestration sessions."""
         self.client.get("/audit/sessions")
 
-    @task(2)
+    @task(1)
     def health(self) -> None:
         """Hits the health endpoint."""
         self.client.get("/health")
