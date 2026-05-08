@@ -103,3 +103,42 @@ section > h1 {
 .trace-kind {
   font-weight: 500;
 }
+
+
+.approval-queue {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.approval-card {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.875rem;
+}
+
+.approval-card header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.625rem;
+}
+
+.approval-trace {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.approve {
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  margin-right: 0.5rem;
+}
+
+.reject {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+}
