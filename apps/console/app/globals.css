@@ -142,3 +142,9 @@ section > h1 {
   color: #fff;
   border: none;
 }
+
+
+.queue-empty {
+  color: var(--muted);
+  font-style: italic;
+}
