@@ -85,7 +85,9 @@ class PolicyEngine:
         for rule in rules:
             if fnmatch.fnmatchcase(tool_name, rule["match"]):
                 return Decision(action=rule["action"], rule=rule["match"])
-        return Decision(action="deny", rule=None, reason="no matching rule")
+        return Decision(
+            action="deny", rule=None, reason="no matching rule; default deny"
+        )
 
 
     def _tenant_rules(self, tenant_id: str) -> list[dict]:
