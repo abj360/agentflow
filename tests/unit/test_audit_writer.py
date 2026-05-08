@@ -104,3 +104,9 @@ async def test_drain_flushes_remaining_events() -> None:
     writer = AuditWriter(FakeSessionFactory())
     await writer.enqueue("trace-1", EventKind.SYNTHESIS, {})
     assert await writer.drain() == 1
+
+
+async def test_drain_on_empty_buffer_returns_zero() -> None:
+    """Verifies draining an empty writer is a no-op."""
+    writer = AuditWriter(FakeSessionFactory())
+    assert await writer.drain() == 0
