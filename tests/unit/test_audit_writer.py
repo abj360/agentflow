@@ -110,3 +110,13 @@ async def test_drain_on_empty_buffer_returns_zero() -> None:
     """Verifies draining an empty writer is a no-op."""
     writer = AuditWriter(FakeSessionFactory())
     assert await writer.drain() == 0
+
+
+async def test_flush_preserves_event_order() -> None:
+    """Verifies events flush in the order they were enqueued."""
+    factory = FakeSessionFactory()
+    writer = AuditWriter(factory, batch_size=16)
+    for idx in range(4):
+        await writer.enqueue("trace-1", EventKind.TOOL_CALL, {"idx": idx})
+    await writer.flush()
+    assert [e.payload["idx"] for e in factory.session.added] == [0, 1, 2, 3]
