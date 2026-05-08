@@ -8,7 +8,9 @@
 
 Every orchestration run must be reconstructable after the fact: for incident
 review, for cost attribution, for compliance, and for proving to enterprise
-system did what it claims. A plain log table can be edited without detection.
+system did what it claims.
+
+A plain log table can be edited without detection.
 
 ## Decision
 
