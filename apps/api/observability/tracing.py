@@ -38,3 +38,16 @@ def get_tracer(name: str = "agentflow"):
         tracer: Tracer for creating manual spans.
     """
     return trace.get_tracer(name)
+
+
+def current_trace_id() -> str:
+    """Returns the active span's trace id as hex.
+
+    Returns:
+        trace_id: Hex trace id of the current span, or empty when none.
+    """
+    span = trace.get_current_span()
+    context = span.get_span_context()
+    if context.trace_id == 0:
+        return ""
+    return format(context.trace_id, "032x")
