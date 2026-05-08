@@ -28,3 +28,11 @@ class OrchestratorUser(HttpUser):
     def health(self) -> None:
         """Hits the health endpoint."""
         self.client.get("/health")
+
+
+    @task(1)
+    def fetch_chain_head(self) -> None:
+        """Fetches the head hash of a trace chain."""
+        self.client.get(
+            "/audit/trace-load-1/head", name="/audit/{trace_id}/head"
+        )
