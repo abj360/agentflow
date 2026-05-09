@@ -11,6 +11,7 @@ Contains:
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from apps.api.audit.chain import ChainLinker
 from apps.api.audit.models import AuditEvent, EventKind
 
 SessionFactory = async_sessionmaker[AsyncSession]
@@ -38,6 +39,7 @@ class AuditWriter:
         self.session_factory = session_factory
         self.batch_size = batch_size
         self._pending: list[AuditEvent] = []
+        self._linker = ChainLinker()
 
     async def enqueue(self, trace_id: str, kind: EventKind, payload: dict) -> AuditEvent:
         """Adds an event to the pending buffer, flushing at batch size.
@@ -50,7 +52,14 @@ class AuditWriter:
         Returns:
             event: The buffered audit event, not yet persisted.
         """
-        event = AuditEvent(trace_id=trace_id, kind=kind, payload=payload)
+        prev_hash, event_hash = self._linker.link(trace_id, kind, payload)
+        event = AuditEvent(
+            trace_id=trace_id,
+            kind=kind,
+            payload=payload,
+            prev_hash=prev_hash,
+            event_hash=event_hash,
+        )
         self._pending.append(event)
         if len(self._pending) >= self.batch_size:
             await self.flush()
