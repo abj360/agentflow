@@ -33,3 +33,10 @@ def test_graph_has_three_nodes() -> None:
 def test_planner_seeds_plan_with_task() -> None:
     """Verifies the planner puts the task in the plan."""
     assert planner_node(make_state(task="ship it"))["plan"] == ["ship it"]
+
+
+def test_route_after_critic_accepts_on_verdict() -> None:
+    """Verifies an accept verdict ends the run."""
+    from apps.api.orchestration.state_machine import route_after_critic
+
+    assert route_after_critic(make_state(critique="accept")) == "accept"
