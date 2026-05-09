@@ -8,6 +8,9 @@ Contains:
     OAuthClient: runs the authorization-code flow and refreshes tokens
 """
 
+import base64
+import hashlib
+import secrets
 import time
 from dataclasses import dataclass
 
@@ -137,3 +140,25 @@ class OAuthClient:
             refresh_token=body.get("refresh_token", tokens.refresh_token),
             expires_at=time.time() + body.get("expires_in", 3600),
         )
+
+
+def generate_code_verifier() -> str:
+    """Generates a PKCE code verifier.
+
+    Returns:
+        verifier: Random URL-safe verifier string.
+    """
+    return secrets.token_urlsafe(64)
+
+
+def code_challenge(verifier: str) -> str:
+    """Derives the PKCE S256 code challenge from a verifier.
+
+    Args:
+        verifier: The PKCE code verifier.
+
+    Returns:
+        challenge: Base64url-encoded SHA-256 of the verifier.
+    """
+    digest = hashlib.sha256(verifier.encode("ascii")).digest()
+    return base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
