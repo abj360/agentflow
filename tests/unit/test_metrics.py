@@ -34,3 +34,9 @@ def test_loop_iterations_histogram_observes() -> None:
     from apps.api.observability.metrics import loop_iterations
 
     loop_iterations.observe(2)
+
+
+def test_metrics_include_loop_histogram() -> None:
+    """Verifies the scrape payload includes the loop histogram."""
+    response = metrics_endpoint(None)
+    assert b"agentflow_loop_iterations" in response.body
