@@ -132,6 +132,7 @@ section > h1 {
 
 .approve {
   background: #16a34a;
+  font-weight: 500;
   color: #fff;
   border: none;
   margin-right: 0.5rem;
