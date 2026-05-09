@@ -27,3 +27,10 @@ def test_metrics_payload_is_text() -> None:
     """Verifies the scrape payload is plain text."""
     response = metrics_endpoint(None)
     assert isinstance(response.body, bytes)
+
+
+def test_loop_iterations_histogram_observes() -> None:
+    """Verifies the iterations histogram accepts observations."""
+    from apps.api.observability.metrics import loop_iterations
+
+    loop_iterations.observe(2)
