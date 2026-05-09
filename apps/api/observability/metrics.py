@@ -8,7 +8,12 @@ Contains:
     metrics_endpoint: ASGI handler serving the /metrics scrape endpoint
 """
 
-from prometheus_client import CollectorRegistry, Counter, generate_latest
+from prometheus_client import (
+    CollectorRegistry,
+    Counter,
+    Histogram,
+    generate_latest,
+)
 from starlette.responses import Response
 
 registry = CollectorRegistry()
@@ -30,3 +35,10 @@ def metrics_endpoint(request) -> Response:
         response: Prometheus text-format metrics payload.
     """
     return Response(generate_latest(registry), media_type="text/plain")
+
+
+loop_iterations = Histogram(
+    "agentflow_loop_iterations",
+    "Revise-loop iterations per session",
+    registry=registry,
+)
