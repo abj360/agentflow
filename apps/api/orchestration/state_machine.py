@@ -79,5 +79,21 @@ def build_graph() -> StateGraph:
     graph.set_entry_point("planner")
     graph.add_edge("planner", "executor")
     graph.add_edge("executor", "critic")
-    graph.add_edge("critic", END)
+    graph.add_conditional_edges(
+        "critic",
+        route_after_critic,
+        {"revise": "planner", "accept": END},
+    )
     return graph
+
+
+def route_after_critic(state: GraphState) -> str:
+    """Routes the graph based on the critic's verdict.
+
+    Args:
+        state: Current graph state containing the critique.
+
+    Returns:
+        route: "revise" to loop back to the planner, "accept" to finish.
+    """
+    return "accept" if state["critique"] == "accept" else "revise"
