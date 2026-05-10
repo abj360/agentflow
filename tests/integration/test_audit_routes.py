@@ -147,3 +147,9 @@ def test_trace_events_offset_past_end_returns_empty_page() -> None:
     client = make_client(make_events("trace-p3", 2))
     body = client.get("/audit/trace-p3?offset=10").json()
     assert body["event_count"] == 0
+
+
+def test_trace_events_reports_event_count() -> None:
+    """Verifies the response reports how many events the trace holds."""
+    client = make_client(make_events("trace-3", 3))
+    assert client.get("/audit/trace-3").json()["event_count"] == 3
