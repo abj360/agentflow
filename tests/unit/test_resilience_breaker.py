@@ -38,3 +38,17 @@ def test_breaker_recovers_after_cooldown() -> None:
     breaker = ServerCircuitBreaker("srv", failure_threshold=1, reset_seconds=0)
     breaker.record_failure()
     assert breaker.allows_call() is True
+
+
+def test_check_raises_when_open() -> None:
+    """Verifies check raises CircuitOpenError while open."""
+    from apps.api.resilience.breaker import CircuitOpenError
+
+    breaker = ServerCircuitBreaker("srv", failure_threshold=1)
+    breaker.record_failure()
+    try:
+        breaker.check()
+    except CircuitOpenError as exc:
+        assert exc.server_name == "srv"
+        return
+    raise AssertionError("expected CircuitOpenError")
