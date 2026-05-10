@@ -75,3 +75,15 @@ class BudgetTracker:
             "tokens": self.limits.max_tokens - self.tokens_used,
             "tool_calls": self.limits.max_tool_calls - self.tool_calls_made,
         }
+
+
+    def usage_ratio(self) -> dict:
+        """Computes consumption as a fraction of each limit.
+
+        Returns:
+            ratio: tokens and tool_calls consumed as 0.0-1.0 fractions.
+        """
+        return {
+            "tokens": self.tokens_used / self.limits.max_tokens,
+            "tool_calls": self.tool_calls_made / self.limits.max_tool_calls,
+        }
