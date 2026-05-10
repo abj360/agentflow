@@ -37,7 +37,9 @@ async def get_trace_events(
         trace: Ordered events plus a chain-integrity flag for the trace.
     """
     result = await session.execute(
-        select(AuditEvent).where(AuditEvent.trace_id == trace_id)
+        select(AuditEvent)
+        .where(AuditEvent.trace_id == trace_id)
+        .order_by(AuditEvent.created_at)
     )
     events = list(result.scalars().all())
     if not events:
