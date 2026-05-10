@@ -57,6 +57,15 @@ class ServerCircuitBreaker:
             return True
         return time.time() - self._opened_at >= self.reset_seconds
 
+    def check(self) -> None:
+        """Raises when the breaker is open.
+
+        Raises:
+            CircuitOpenError: When the breaker is open.
+        """
+        if not self.allows_call():
+            raise CircuitOpenError(self.server_name)
+
 
 class Bulkhead:
     """Caps concurrent calls to one downstream server.
@@ -90,3 +99,16 @@ class Bulkhead:
             exc_info: Exception details from the with block, if any.
         """
         self._semaphore.release()
+
+
+class CircuitOpenError(Exception):
+    """Raised when a call is attempted through an open server breaker."""
+
+    def __init__(self, server_name: str) -> None:
+        """Initializes the error with the guarded server's name.
+
+        Args:
+            server_name: Downstream server whose breaker is open.
+        """
+        super().__init__(f"circuit open for server: {server_name}")
+        self.server_name = server_name
