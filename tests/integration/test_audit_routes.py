@@ -153,3 +153,11 @@ def test_trace_events_reports_event_count() -> None:
     """Verifies the response reports how many events the trace holds."""
     client = make_client(make_events("trace-3", 3))
     assert client.get("/audit/trace-3").json()["event_count"] == 3
+
+
+def test_trace_events_marks_tampered_chain_invalid() -> None:
+    """Verifies a chain with a corrupted link reports chain_valid false."""
+    events = make_events("trace-4", 2)
+    events[0].payload = {"idx": 99}
+    client = make_client(events)
+    assert client.get("/audit/trace-4").json()["chain_valid"] is False
