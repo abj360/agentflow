@@ -34,7 +34,7 @@ async def get_trace_events(
         offset: Number of events to skip before the page starts.
 
     Returns:
-        trace: Ordered events plus a chain-integrity flag for the trace.
+        trace: Chronologically ordered events plus a chain-integrity flag.
     """
     result = await session.execute(
         select(AuditEvent)
