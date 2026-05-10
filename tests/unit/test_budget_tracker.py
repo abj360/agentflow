@@ -36,3 +36,9 @@ def test_remaining_decreases_with_use() -> None:
     tracker = BudgetTracker(BudgetLimits(max_tokens=1000, max_tool_calls=10))
     tracker.record_tokens(400)
     assert tracker.remaining()["tokens"] == 600
+
+
+def test_usage_ratio_zero_initially() -> None:
+    """Verifies a fresh tracker reports zero usage."""
+    ratios = BudgetTracker().usage_ratio()
+    assert ratios["tokens"] == 0.0
