@@ -42,3 +42,10 @@ def test_usage_ratio_zero_initially() -> None:
     """Verifies a fresh tracker reports zero usage."""
     ratios = BudgetTracker().usage_ratio()
     assert ratios["tokens"] == 0.0
+
+
+def test_usage_ratio_tracks_consumption() -> None:
+    """Verifies the ratio reflects actual consumption."""
+    tracker = BudgetTracker(BudgetLimits(max_tokens=1000, max_tool_calls=10))
+    tracker.record_tokens(500)
+    assert tracker.usage_ratio()["tokens"] == 0.5
