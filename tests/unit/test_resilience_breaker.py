@@ -52,3 +52,10 @@ def test_check_raises_when_open() -> None:
         assert exc.server_name == "srv"
         return
     raise AssertionError("expected CircuitOpenError")
+
+
+def test_open_error_names_server() -> None:
+    """Verifies the open error message names the guarded server."""
+    from apps.api.resilience.breaker import CircuitOpenError
+
+    assert "search-mcp" in str(CircuitOpenError("search-mcp"))
