@@ -67,3 +67,12 @@ class StdioServer:
             response = self.handle_request(request)
             sys.stdout.write(json.dumps(response) + "\n")
             sys.stdout.flush()
+
+
+    def list_tools(self) -> list[str]:
+        """Lists registered tool names.
+
+        Returns:
+            names: Registered tool names in registration order.
+        """
+        return list(self.tools)
