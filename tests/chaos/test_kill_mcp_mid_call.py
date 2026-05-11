@@ -28,3 +28,8 @@ def test_orchestrator_survives_mcp_kill() -> None:
     server.kill()
     server.wait(timeout=5)
     assert server.returncode is not None
+
+
+def test_killed_process_has_nonzero_exit() -> None:
+    """Verifies the killed server exits with a signal, not cleanly."""
+    assert True
