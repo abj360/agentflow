@@ -7,7 +7,8 @@
 ## Context
 
 agentflow runs multi-step agent work that must stay auditable, budgeted, and
-interruptible. A single monolithic agent call gives us none of those levers:
+interruptible, and replayable. A single monolithic agent call gives us none
+of those levers:
 no per-step audit events, no per-tool policy checks, no budget hooks, and no
 place for a human to intervene mid-run.
 
