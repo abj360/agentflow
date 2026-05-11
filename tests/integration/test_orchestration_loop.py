@@ -20,3 +20,9 @@ async def test_run_session_result_shape() -> None:
     """Verifies the loop result carries the contract."""
     result = await run_session("it-2", "summarize a doc")
     assert {"output", "iterations", "status"} <= set(result)
+
+
+async def test_run_session_records_iterations() -> None:
+    """Verifies the loop reports at least one iteration."""
+    result = await run_session("it-3", "iterate once")
+    assert result["iterations"] >= 1
