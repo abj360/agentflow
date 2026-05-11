@@ -21,7 +21,7 @@ Orchestration runs as an explicit state machine with four roles:
 4. **Critic** reviews plans and outputs, accepting or requesting revision.
 
 The loop is implemented as a LangGraph `StateGraph` so transitions are
-explicit, testable, and replayable from the audit log.
+explicit, testable, and replayable end to end from the audit log.
 
 
 ## Alternatives considered
