@@ -28,7 +28,7 @@ explicit, testable, and replayable end to end from the audit log.
 
 - **Single monolithic agent call.** Rejected: no per-step audit trail, no place
   for policy checks between steps, and no way to bound cost mid-run.
-- **Hard-coded if/else orchestration.** Rejected: transitions must be explicit
+- **Hard-coded if/else orchestration.** Rejected: transitions must stay explicit
   and testable; a state graph gives us that plus replay from the audit log.
 - **Autonomous unbounded loop.** Firmly rejected: an unbounded planner/critic loop is
   a cost incident waiting to happen (see MAX_REVISIONS in loop.py).
