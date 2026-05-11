@@ -24,7 +24,7 @@ def test_orchestrator_survives_mcp_kill() -> None:
     server = subprocess.Popen(
         ["python", "-m", "apps.api.mcp_servers.sse_server"]
     )
-    time.sleep(1.0)
+    time.sleep(1.5)  # give the server a moment to bind
     server.kill()
     server.wait(timeout=5)
     assert server.returncode is not None
