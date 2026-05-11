@@ -63,3 +63,9 @@ class BudgetCircuitBreaker:
         """
         if self.is_open():
             raise CircuitOpenError("budget circuit open")
+
+
+    def reset(self) -> None:
+        """Closes the circuit and clears the breach count."""
+        self._failures = 0
+        self._opened_at = None
