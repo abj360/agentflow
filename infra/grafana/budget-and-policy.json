@@ -6,7 +6,7 @@
   "panels": [
     {
       "id": 1,
-      "title": "Tokens consumed per session",
+      "title": "Tokens consumed per session (5m rate)",
       "type": "timeseries",
       "targets": [
         { "expr": "rate(agentflow_tokens_total[5m])" }
