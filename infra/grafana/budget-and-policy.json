@@ -1,0 +1,16 @@
+{
+  "title": "agentflow — Budget & Policy",
+  "uid": "agentflow-budget",
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Tokens consumed per session",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "rate(agentflow_tokens_total[5m])" }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 }
+    }
+  ]
+}
