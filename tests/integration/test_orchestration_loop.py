@@ -26,3 +26,9 @@ async def test_run_session_records_iterations() -> None:
     """Verifies the loop reports at least one iteration."""
     result = await run_session("it-3", "iterate once")
     assert result["iterations"] >= 1
+
+
+async def test_output_is_list_of_results() -> None:
+    """Verifies the output field carries the executor's results."""
+    result = await run_session("it-f1", "collect outputs")
+    assert isinstance(result["output"], list)
