@@ -72,3 +72,11 @@ async def test_429_body_says_rate_limited() -> None:
     await middleware.dispatch(FakeRequest(), passthrough)
     response = await middleware.dispatch(FakeRequest(), passthrough)
     assert b"rate limit exceeded" in response.body
+
+
+async def test_429_body_includes_retry_after() -> None:
+    """Verifies the rejection body tells clients when to retry."""
+    middleware = build_middleware(max_requests=1)
+    await middleware.dispatch(FakeRequest(), passthrough)
+    response = await middleware.dispatch(FakeRequest(), passthrough)
+    assert b"retry_after" in response.body
