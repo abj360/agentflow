@@ -18,4 +18,13 @@ pytestmark = pytest.mark.skipif(
 
 def test_orchestrator_survives_mcp_kill() -> None:
     """Verifies the run degrades, not hangs, when a server dies mid-call."""
-    assert True
+    import subprocess
+    import time
+
+    server = subprocess.Popen(
+        ["python", "-m", "apps.api.mcp_servers.sse_server"]
+    )
+    time.sleep(1.0)
+    server.kill()
+    server.wait(timeout=5)
+    assert server.returncode is not None
