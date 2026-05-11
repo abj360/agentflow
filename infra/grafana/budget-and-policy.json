@@ -1,6 +1,7 @@
 {
   "title": "agentflow — Budget & Policy",
   "uid": "agentflow-budget",
+  "tags": ["agentflow", "budget", "policy"],
   "schemaVersion": 39,
   "panels": [
     {
