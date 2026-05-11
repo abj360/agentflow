@@ -16,7 +16,7 @@ place for a human to intervene mid-run.
 
 Orchestration runs as an explicit state machine with four roles:
 
-1. **Planner** turns the task into an ordered plan.
+1. **Planner** turns the task into an ordered plan (no execution here).
 2. **Executor** runs each plan step through the governed MCP tool layer.
 3. **Synthesizer** merges step outputs into the final answer.
 4. **Critic** reviews plans and outputs, accepting or requesting revision.
