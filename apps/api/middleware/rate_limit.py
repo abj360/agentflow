@@ -59,5 +59,8 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         count += 1
         self._counters[client] = (window_start, count)
         if count > self.max_requests:
-            return JSONResponse({"detail": "rate limit exceeded"}, status_code=429)
+            return JSONResponse(
+                {"detail": "rate limit exceeded", "retry_after": self.window_seconds},
+                status_code=429,
+            )
         return await call_next(request)
