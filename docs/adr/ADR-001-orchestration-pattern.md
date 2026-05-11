@@ -22,3 +22,13 @@ Orchestration runs as an explicit state machine with four roles:
 
 The loop is implemented as a LangGraph `StateGraph` so transitions are
 explicit, testable, and replayable from the audit log.
+
+
+## Alternatives considered
+
+- **Single monolithic agent call.** Rejected: no per-step audit trail, no place
+  for policy checks between steps, and no way to bound cost mid-run.
+- **Hard-coded if/else orchestration.** Rejected: transitions must be explicit
+  and testable; a state graph gives us that plus replay from the audit log.
+- **Autonomous unbounded loop.** Rejected: an unbounded planner/critic loop is
+  a cost incident waiting to happen (see MAX_REVISIONS in loop.py).
