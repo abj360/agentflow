@@ -96,3 +96,9 @@ def test_engine_reusable_across_evaluations() -> None:
     """Verifies one engine serves repeated evaluations."""
     engine = build_engine()
     assert engine.evaluate("shell.exec", {}).action == "human_approval"
+
+
+def test_decision_reason_empty_on_allow() -> None:
+    """Verifies allow decisions carry no denial reason."""
+    decision = build_engine().evaluate("search.query", {})
+    assert decision.reason == ""
