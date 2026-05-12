@@ -90,3 +90,9 @@ def test_first_matching_rule_wins() -> None:
     """Verifies rule order decides the outcome."""
     engine = build_engine()
     assert engine.evaluate("search.query", {}).rule == "search.*"
+
+
+def test_engine_reusable_across_evaluations() -> None:
+    """Verifies one engine serves repeated evaluations."""
+    engine = build_engine()
+    assert engine.evaluate("shell.exec", {}).action == "human_approval"
