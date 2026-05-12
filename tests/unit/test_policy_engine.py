@@ -84,3 +84,9 @@ def test_review_deny_is_default_posture() -> None:
     """Verifies the reviewed rule set fails closed by default."""
     engine = make_engine()
     assert engine.evaluate("unknown.tool", {}).action == "deny"
+
+
+def test_first_matching_rule_wins() -> None:
+    """Verifies rule order decides the outcome."""
+    engine = build_engine()
+    assert engine.evaluate("search.query", {}).rule == "search.*"
