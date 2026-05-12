@@ -21,3 +21,9 @@ def test_session_summary_mentions_iterations() -> None:
     from apps.api.orchestration.loop import session_summary
 
     assert "3" in session_summary({"iterations": 3})
+
+
+async def test_run_session_returns_dict() -> None:
+    """Verifies the loop result is a plain dict for serialization."""
+    result = await run_session("session-2", "ping")
+    assert isinstance(result, dict)
