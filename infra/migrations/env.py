@@ -42,7 +42,11 @@ def do_run_migrations(connection) -> None:
     Args:
         connection: Open SQLAlchemy connection provided by the runner.
     """
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        compare_type=True,
+    )
     with context.begin_transaction():
         context.run_migrations()
 
