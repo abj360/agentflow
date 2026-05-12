@@ -34,7 +34,7 @@ export function RunDetail({ runId }: { runId: string }) {
       <p>
         {trace.event_count} events — chain {trace.chain_valid ? "valid" : "invalid"}
       </p>
-      <ol className="trace-list">
+      <ol className="trace-list" aria-label="Run events">
         {trace.events.map((event, index) => (
           <li key={index} className="trace-event">
             <span className="trace-kind">{event.kind}</span>
