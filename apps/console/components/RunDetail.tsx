@@ -38,6 +38,7 @@ export function RunDetail({ runId }: { runId: string }) {
         {trace.events.map((event, index) => (
           <li key={index} className="trace-event">
             <span className="trace-kind">{event.kind}</span>
+            <code>{event.event_hash.slice(0, 12)}</code>
           </li>
         ))}
       </ol>
