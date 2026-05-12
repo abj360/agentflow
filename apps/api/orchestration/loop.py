@@ -41,3 +41,15 @@ async def run_session(session_id: str, task: str) -> dict:
             break
         revisions += 1
     return {"output": graph_state["results"], "iterations": graph_state["iterations"]}
+
+
+def session_summary(result: dict) -> str:
+    """Builds a one-line summary of a finished orchestration session.
+
+    Args:
+        result: The dict returned by run_session.
+
+    Returns:
+        summary: One-line description of the run for logs.
+    """
+    return f"finished after {result['iterations']} iterations"
