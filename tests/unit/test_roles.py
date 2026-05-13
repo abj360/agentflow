@@ -20,3 +20,9 @@ async def test_executor_runs_each_step() -> None:
     """Verifies the executor covers every step."""
     update = await Executor().run({"plan": ["a", "b"]})
     assert len(update["results"]) == 2
+
+
+async def test_critic_accepts_by_default() -> None:
+    """Verifies the default critic verdict is accept."""
+    update = await Critic().run({"results": ["r"]})
+    assert update["critique"] == "accept"
