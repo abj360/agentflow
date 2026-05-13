@@ -86,3 +86,19 @@ class Critic:
             update: State update carrying the critique verdict.
         """
         return {"critique": "accept"}
+
+
+class LLMClient(Protocol):
+    """Defines the completion interface roles use to call a model."""
+
+    async def complete(self, prompt: str, **kwargs: object) -> str:
+        """Returns the model completion for a prompt.
+
+        Args:
+            prompt: The rendered prompt text.
+            kwargs: Provider-specific completion options.
+
+        Returns:
+            completion: The model's response text.
+        """
+        ...
