@@ -40,3 +40,19 @@ async def test_empty_flush_persists_nothing(session_factory) -> None:
     async with session_factory() as session:
         result = await session.execute(select(AuditEvent))
         assert list(result.scalars()) == []
+
+
+async def test_chain_hashes_persist(session_factory) -> None:
+    """Verifies chained hashes survive the round trip through Postgres."""
+    writer = AuditWriter(session_factory, batch_size=4)
+    await writer.enqueue("it-trace-2", EventKind.TOOL_CALL, {"idx": 0})
+    await writer.enqueue("it-trace-2", EventKind.TOOL_RESULT, {"idx": 0})
+    await writer.flush()
+    async with session_factory() as session:
+        result = await session.execute(
+            select(AuditEvent)
+            .where(AuditEvent.trace_id == "it-trace-2")
+            .order_by(AuditEvent.created_at)
+        )
+        events = list(result.scalars())
+    assert events[1].prev_hash == events[0].event_hash
