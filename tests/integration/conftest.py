@@ -25,5 +25,5 @@ def session_factory() -> async_sessionmaker:
     Returns:
         session_factory: Factory bound to the test database engine.
     """
-    engine = create_async_engine(TEST_DATABASE_URL)
+    engine = create_async_engine(TEST_DATABASE_URL, pool_pre_ping=True)
     return async_sessionmaker(engine, expire_on_commit=False)
