@@ -35,3 +35,12 @@ def test_optional_params_not_required() -> None:
     """Verifies optional params stay out of required."""
     schema = to_mcp_schema(SPEC)
     assert "limit" not in schema["inputSchema"]["required"]
+
+
+def test_round_trip_preserves_name_and_params() -> None:
+    """Verifies a spec survives a schema round trip."""
+    from agentflow_core.tool_schema import from_mcp_schema
+
+    restored = from_mcp_schema(to_mcp_schema(SPEC))
+    assert restored.name == SPEC.name
+    assert {p.name for p in restored.parameters} == {"q", "limit"}
