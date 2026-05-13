@@ -16,9 +16,12 @@ from apps.api.audit.writer import AuditWriter
 
 TEST_DATABASE_URL = os.environ.get("AGENTFLOW_TEST_DATABASE_URL")
 
-pytestmark = pytest.mark.skipif(
-    TEST_DATABASE_URL is None, reason="AGENTFLOW_TEST_DATABASE_URL not set"
-)
+pytestmark = [
+    pytest.mark.skipif(
+        TEST_DATABASE_URL is None, reason="AGENTFLOW_TEST_DATABASE_URL not set"
+    ),
+    pytest.mark.integration,
+]
 
 
 async def test_flush_persists_events(session_factory) -> None:
