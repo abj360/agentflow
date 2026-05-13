@@ -56,3 +56,16 @@ async def test_chain_hashes_persist(session_factory) -> None:
         )
         events = list(result.scalars())
     assert events[1].prev_hash == events[0].event_hash
+
+
+async def test_events_of_separate_traces_stay_separate(session_factory) -> None:
+    """Verifies two traces written together query back independently."""
+    writer = AuditWriter(session_factory, batch_size=8)
+    await writer.enqueue("it-trace-a", EventKind.TOOL_CALL, {})
+    await writer.enqueue("it-trace-b", EventKind.TOOL_CALL, {})
+    await writer.flush()
+    async with session_factory() as session:
+        result = await session.execute(
+            select(AuditEvent).where(AuditEvent.trace_id == "it-trace-a")
+        )
+        assert len(list(result.scalars())) == 1
