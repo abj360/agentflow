@@ -101,3 +101,12 @@ class ServerEvictor:
         del self.evicted[server_name]
         self.checker.failures[server_name] = 0
         return True
+
+
+    def list_evicted(self) -> list[str]:
+        """Lists currently evicted servers.
+
+        Returns:
+            servers: Names of all evicted servers.
+        """
+        return list(self.evicted)
