@@ -52,3 +52,11 @@ def test_reinstate_brings_server_back() -> None:
     evictor.probe("srv", ok=False)
     assert evictor.reinstate("srv") is True
     assert evictor.is_active("srv") is True
+
+
+def test_list_evicted_names_servers() -> None:
+    """Verifies the evicted list names all evicted servers."""
+    evictor = build_evictor()
+    evictor.probe("srv-a", ok=False)
+    evictor.probe("srv-a", ok=False)
+    assert "srv-a" in evictor.list_evicted()
