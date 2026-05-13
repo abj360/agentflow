@@ -60,3 +60,8 @@ def test_list_evicted_names_servers() -> None:
     evictor.probe("srv-a", ok=False)
     evictor.probe("srv-a", ok=False)
     assert "srv-a" in evictor.list_evicted()
+
+
+def test_reinstate_unknown_returns_false() -> None:
+    """Verifies reinstating a non-evicted server reports False."""
+    assert build_evictor().reinstate("ghost") is False
