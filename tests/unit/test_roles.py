@@ -26,3 +26,9 @@ async def test_critic_accepts_by_default() -> None:
     """Verifies the default critic verdict is accept."""
     update = await Critic().run({"results": ["r"]})
     assert update["critique"] == "accept"
+
+
+async def test_synthesizer_joins_results() -> None:
+    """Verifies the synthesizer merges results into one output."""
+    update = await Synthesizer().run({"results": ["x", "y"]})
+    assert "x" in update["output"] and "y" in update["output"]
