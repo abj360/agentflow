@@ -27,7 +27,7 @@ export function useTraceSocket(runId: string): TraceEvent[] {
   useEffect(() => {
     let attempts = 0;
     const connect = () => {
-      attempts += 1;
+      attempts += 1;  // count every connection try
       const socket = new WebSocket(
         `${process.env.NEXT_PUBLIC_WS_URL}/ws/traces?run_id=${runId}`
       );
