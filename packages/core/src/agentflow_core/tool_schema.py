@@ -64,3 +64,30 @@ def to_mcp_schema(spec: UnifiedToolSpec) -> dict:
             "required": [param.name for param in spec.parameters if param.required],
         },
     }
+
+
+def from_mcp_schema(schema: dict) -> UnifiedToolSpec:
+    """Parses an MCP tool schema back into a UnifiedToolSpec.
+
+    Args:
+        schema: MCP-compliant tool schema dict.
+
+    Returns:
+        spec: The equivalent unified tool description.
+    """
+    input_schema = schema.get("inputSchema", {})
+    required = set(input_schema.get("required", []))
+    parameters = tuple(
+        ToolParameter(
+            name=name,
+            type=fields.get("type", "string"),
+            description=fields.get("description", ""),
+            required=name in required,
+        )
+        for name, fields in input_schema.get("properties", {}).items()
+    )
+    return UnifiedToolSpec(
+        name=schema["name"],
+        description=schema.get("description", ""),
+        parameters=parameters,
+    )
