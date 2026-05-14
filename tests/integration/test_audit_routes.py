@@ -161,3 +161,10 @@ def test_trace_events_marks_tampered_chain_invalid() -> None:
     events[0].payload = {"idx": 99}
     client = make_client(events)
     assert client.get("/audit/trace-4").json()["chain_valid"] is False
+
+
+def test_event_count_reflects_page_not_total() -> None:
+    """Verifies event_count reports the page size after cursor paging."""
+    client = make_client(make_events("trace-p4", 5))
+    body = client.get("/audit/trace-p4?limit=3").json()
+    assert body["event_count"] == 3
