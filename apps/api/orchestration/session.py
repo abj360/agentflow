@@ -5,6 +5,7 @@ session.py --- versioned session records for the orchestration loop
 Contains:
     SessionRecord: immutable record of a session's state at one version
     SessionRegistry: tracks sessions and their current version
+    VersionConflictError: raised when a version bump loses a race
 """
 
 import time
@@ -66,3 +67,7 @@ class SessionRegistry:
         updated = replace(current, version=current.version + 1)
         self.records[session_id] = updated
         return updated
+
+
+class VersionConflictError(Exception):
+    """Raised when a session version bump loses a concurrent race."""
