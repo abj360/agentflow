@@ -35,3 +35,10 @@ def test_session_record_is_frozen() -> None:
     record = SessionRecord(session_id="s1", version=0, trace_id="t")
     with pytest.raises(FrozenInstanceError):
         record.version = 9
+
+
+def test_open_session_records_trace_id() -> None:
+    """Verifies the audit trace id lands on the session record."""
+    registry = SessionRegistry()
+    record = registry.open_session("s2", "trace-9")
+    assert record.trace_id == "trace-9"
