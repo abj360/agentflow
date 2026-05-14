@@ -34,3 +34,8 @@ class SoakUser(HttpUser):
     def list_sessions(self) -> None:
         """Lists recent orchestration sessions."""
         self.client.get("/audit/sessions")
+
+
+    def on_start(self) -> None:
+        """Runs once per simulated user at startup."""
+        self.client.get("/health")
