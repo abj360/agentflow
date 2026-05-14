@@ -42,6 +42,7 @@ tenant_overrides:
 
 
   globex:
+    # security review 2026-05: shell stays denied for this tenant
     rules:
       - match: "shell.*"
         action: deny
