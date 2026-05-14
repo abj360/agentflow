@@ -22,3 +22,16 @@ def test_bump_version_increments() -> None:
     registry = SessionRegistry()
     registry.open_session("s1", "trace-1")
     assert registry.bump_version("s1").version == 1
+
+
+def test_session_record_is_frozen() -> None:
+    """Verifies session records cannot be mutated in place."""
+    from dataclasses import FrozenInstanceError
+
+    import pytest
+
+    from apps.api.orchestration.session import SessionRecord
+
+    record = SessionRecord(session_id="s1", version=0, trace_id="t")
+    with pytest.raises(FrozenInstanceError):
+        record.version = 9
