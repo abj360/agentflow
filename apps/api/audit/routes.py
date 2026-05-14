@@ -7,6 +7,8 @@ Contains:
     get_trace_events(): returns the ordered event chain for one trace
 """
 
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,7 +24,7 @@ router = APIRouter(prefix="/audit", tags=["audit"])
 async def get_trace_events(
     trace_id: str,
     limit: int = 100,
-    offset: int = 0,
+    cursor: str | None = None,
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     """Returns the ordered event chain for one trace.
@@ -36,24 +38,35 @@ async def get_trace_events(
     Returns:
         trace: Chronologically ordered events plus a chain-integrity flag.
     """
-    result = await session.execute(
+    statement = (
         select(AuditEvent)
         .where(AuditEvent.trace_id == trace_id)
         .order_by(AuditEvent.created_at)
+        .limit(limit + 1)
     )
+    if cursor is not None:
+        statement = statement.where(
+            AuditEvent.created_at > datetime.fromisoformat(cursor)
+        )
+    result = await session.execute(statement)
     events = list(result.scalars().all())
     if not events:
         raise HTTPException(status_code=404, detail="trace not found")
+    page = events[:limit]
+    next_cursor = (
+        page[-1].created_at.isoformat() if len(events) > limit else None
+    )
     return {
         "trace_id": trace_id,
-        "event_count": len(events),
-        "chain_valid": verify_chain(events),
+        "event_count": len(page),
+        "chain_valid": verify_chain(page),
+        "next_cursor": next_cursor,
         "events": [
             {
                 "event_hash": event.event_hash,
                 "kind": str(event.kind),
                 "payload": event.payload,
             }
-            for event in events[offset : offset + limit]
+            for event in page
         ],
     }
