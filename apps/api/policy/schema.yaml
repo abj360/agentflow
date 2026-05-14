@@ -39,3 +39,13 @@ tenant_overrides:
       - match: "*"
         action: deny
         risk: unknown
+
+
+  globex:
+    rules:
+      - match: "shell.*"
+        action: deny
+        risk: high
+      - match: "*"
+        action: deny
+        risk: unknown
