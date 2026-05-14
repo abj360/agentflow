@@ -39,3 +39,11 @@ class SoakUser(HttpUser):
     def on_start(self) -> None:
         """Runs once per simulated user at startup (warms the connection)."""
         self.client.get("/health")
+
+
+    @task(1)
+    def fetch_chain_head(self) -> None:
+        """Fetches the head hash of a trace chain."""
+        self.client.get(
+            "/audit/trace-soak-7/head", name="/audit/{trace_id}/head"
+        )
