@@ -38,3 +38,20 @@ def test_default_retryable_errors() -> None:
     """Verifies the default retryable error categories."""
     policy = RetryPolicy(tool_name="t")
     assert "timeout" in policy.retryable_errors
+
+
+async def test_execute_with_retry_eventually_succeeds() -> None:
+    """Verifies a flaky call succeeds within the attempt budget."""
+    from apps.api.orchestration.retry import execute_with_retry
+
+    calls = {"n": 0}
+
+    async def flaky() -> str:
+        """Fails twice then succeeds."""
+        calls["n"] += 1
+        if calls["n"] < 3:
+            raise TimeoutError("slow")
+        return "ok"
+
+    policy = RetryPolicy(tool_name="t", max_attempts=4, backoff_seconds=0)
+    assert await execute_with_retry(flaky, policy) == "ok"
