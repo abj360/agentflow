@@ -7,6 +7,7 @@ Contains:
     RetryPolicyRegistry: resolves the retry policy for a tool call
 """
 
+import asyncio
 from dataclasses import dataclass
 
 
@@ -62,3 +63,24 @@ class RetryPolicyRegistry:
             policy: The tool's policy, or the default when unlisted.
         """
         return self.policies.get(tool_name, self.default_policy)
+
+
+async def execute_with_retry(func, policy: RetryPolicy):
+    """Runs a tool call under its retry policy.
+
+    Args:
+        func: Awaitable callable performing the tool call.
+        policy: Retry policy governing attempts and backoff.
+
+    Returns:
+        result: The tool call's return value on success.
+    """
+    attempt = 0
+    while True:
+        try:
+            return await func()
+        except Exception:
+            attempt += 1
+            if attempt >= policy.max_attempts:
+                raise
+            await asyncio.sleep(policy.backoff_seconds * attempt)
