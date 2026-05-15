@@ -41,3 +41,10 @@ def test_down_revision_chain_is_contiguous() -> None:
     for rev, down in revisions.items():
         if down is not None:
             assert down in revisions, f"{rev} points at missing {down}"
+
+
+def test_migration_revision_ids_are_zero_padded_four_digits() -> None:
+    """Verifies revision ids sort lexically in chronological order."""
+    for path in migration_files():
+        rev = re.search(r'revision = "(\d+)"', path.read_text())
+        assert len(rev.group(1)) == 4, path.name
