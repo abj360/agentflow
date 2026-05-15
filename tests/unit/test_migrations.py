@@ -48,3 +48,11 @@ def test_migration_revision_ids_are_zero_padded_four_digits() -> None:
     for path in migration_files():
         rev = re.search(r'revision = "(\d+)"', path.read_text())
         assert len(rev.group(1)) == 4, path.name
+
+
+def test_every_migration_has_upgrade_and_downgrade() -> None:
+    """Verifies both directions exist in every migration file."""
+    for path in migration_files():
+        content = path.read_text()
+        assert "def upgrade" in content, path.name
+        assert "def downgrade" in content, path.name
