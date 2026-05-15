@@ -66,3 +66,12 @@ async def test_extend_fails_when_not_held() -> None:
     """Verifies extending a lock we don't hold reports False."""
     lock = DistributedLock(FakeRedis(), "k1")
     assert await lock.extend() is False
+
+
+async def test_release_clears_key() -> None:
+    """Verifies releasing removes the lock key."""
+    redis = FakeRedis()
+    lock = DistributedLock(redis, "k1")
+    await lock.acquire()
+    await lock.release()
+    assert redis.store == {}
