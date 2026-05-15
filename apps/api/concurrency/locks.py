@@ -4,6 +4,7 @@ locks.py --- Redis-backed distributed lock for critical sections
 
 Contains:
     DistributedLock: async context manager guarding a critical section via Redis
+    LockNotHeldError: raised when operating on a lock that is not held
 """
 
 import asyncio
@@ -100,3 +101,7 @@ class DistributedLock:
             return False
         await self.redis.pexpire(self.key, ttl)
         return True
+
+
+class LockNotHeldError(Exception):
+    """Raised when operating on a lock that is not held."""
