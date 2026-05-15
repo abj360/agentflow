@@ -18,3 +18,11 @@ Rules evaluate top to bottom; the first match wins.
 
 Matching uses `fnmatch`: `*` crosses dots, so `search.*` covers
 `search.query.vector` as well as `search.query`.
+
+
+## Actions
+
+- `allow` — the call proceeds immediately.
+- `deny` — the call is rejected and the rejection is audit-logged.
+- `human_approval` — the call pauses in the console approval queue until a
+  reviewer approves or rejects it.
