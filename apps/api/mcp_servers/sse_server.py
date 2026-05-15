@@ -50,7 +50,7 @@ class ToolRegistry:
         Returns:
             specs: All registered tool specs in registration order.
         """
-        return list(self.tools.values())
+        return sorted(self.tools.values(), key=lambda spec: spec.name)
 
     def get_tool(self, name: str) -> ToolSpec | None:
         """Looks up one registered tool spec.
