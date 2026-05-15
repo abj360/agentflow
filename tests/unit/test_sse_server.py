@@ -44,3 +44,10 @@ def test_default_search_tool_schema_requires_query() -> None:
 
     spec = default_registry().tools["search.query"]
     assert "q" in spec.input_schema["properties"]
+
+
+def test_get_tool_returns_spec() -> None:
+    """Verifies get_tool returns the registered spec."""
+    registry = ToolRegistry()
+    registry.register(ToolSpec(name="fs.read", description="Read a file"))
+    assert registry.get_tool("fs.read") is not None
