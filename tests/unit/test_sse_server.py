@@ -51,3 +51,8 @@ def test_get_tool_returns_spec() -> None:
     registry = ToolRegistry()
     registry.register(ToolSpec(name="fs.read", description="Read a file"))
     assert registry.get_tool("fs.read") is not None
+
+
+def test_get_tool_missing_returns_none() -> None:
+    """Verifies get_tool misses cleanly for unknown tools."""
+    assert ToolRegistry().get_tool("nope") is None
