@@ -52,6 +52,17 @@ class ToolRegistry:
         """
         return list(self.tools.values())
 
+    def get_tool(self, name: str) -> ToolSpec | None:
+        """Looks up one registered tool spec.
+
+        Args:
+            name: Tool name to look up.
+
+        Returns:
+            spec: The tool spec, or None when not registered.
+        """
+        return self.tools.get(name)
+
 
 def default_registry() -> ToolRegistry:
     """Builds the registry with the built-in demo tools.
