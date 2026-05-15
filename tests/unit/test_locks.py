@@ -46,3 +46,17 @@ async def test_acquire_fails_when_held() -> None:
     await first.acquire()
     second = DistributedLock(redis, "k1")
     assert await second.acquire(timeout=0.2) is False
+
+
+async def test_extend_succeeds_when_held() -> None:
+    """Verifies a held lock can be extended."""
+    redis = FakeRedis()
+
+    async def pexpire(self, key: str, ttl: int) -> None:
+        """Records a TTL extension."""
+        self.extended = (key, ttl)
+
+    redis.pexpire = pexpire.__get__(redis)
+    lock = DistributedLock(redis, "k1")
+    await lock.acquire()
+    assert await lock.extend() is True
