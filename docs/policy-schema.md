@@ -22,7 +22,7 @@ Matching uses `fnmatch`: `*` crosses dots, so `search.*` covers
 
 ## Actions
 
-- `allow` — the call proceeds immediately.
+- `allow` — the call proceeds immediately (still audit-logged).
 - `deny` — the call is rejected and the rejection is audit-logged.
 - `human_approval` — the call pauses in the console approval queue until a
   reviewer approves or rejects it.
