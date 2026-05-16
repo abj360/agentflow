@@ -157,3 +157,11 @@ section > h1 {
   outline-offset: 2px;
   border-radius: 0.375rem;
 }
+
+
+input {
+  font: inherit;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+}
