@@ -37,3 +37,8 @@ class OrchestratorUser(HttpUser):
             "/audit/trace-load-1/head",
             name="/audit/{trace_id}/head",
         )
+
+
+    def on_start(self) -> None:
+        """Runs once per simulated user at startup."""
+        self.client.get("/health")
