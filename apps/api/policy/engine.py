@@ -105,3 +105,15 @@ class PolicyEngine:
             data = yaml.safe_load(handle)
         overrides = data.get("tenant_overrides", {})
         return overrides.get(tenant_id, {}).get("rules", data["rules"])
+
+
+def is_allowed(decision: Decision) -> bool:
+    """Reports whether a decision permits the call.
+
+    Args:
+        decision: The policy decision to inspect.
+
+    Returns:
+        allowed: True only for an explicit allow decision.
+    """
+    return decision.action == "allow"
