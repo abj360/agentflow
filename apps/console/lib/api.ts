@@ -31,7 +31,9 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
  * @returns trace - Parsed trace response from the API.
  */
 export async function fetchTrace(traceId: string): Promise<TraceResponse> {
-  const response = await fetch(`${API_BASE}/audit/${traceId}`);
+  const response = await fetch(`${API_BASE}/audit/${traceId}`, {
+    cache: "no-store",
+  });
   if (!response.ok) {
     throw new Error(`trace fetch failed: ${response.status}`);
   }
