@@ -50,3 +50,8 @@ tenant_overrides:
       - match: "*"
         action: deny
         risk: unknown
+
+
+  - match: "audit.read"
+    action: allow
+    risk: low
