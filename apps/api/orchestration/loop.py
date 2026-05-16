@@ -9,7 +9,7 @@ Contains:
 from apps.api.orchestration.state import get_session_state
 from apps.api.orchestration.state_machine import build_graph
 
-MAX_REVISIONS = 3
+MAX_REVISIONS = 3  # hard cap per ADR-001; never let a run spin unbounded
 
 
 async def run_session(session_id: str, task: str) -> dict:
