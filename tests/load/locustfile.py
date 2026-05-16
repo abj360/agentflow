@@ -40,5 +40,5 @@ class OrchestratorUser(HttpUser):
 
 
     def on_start(self) -> None:
-        """Runs once per simulated user at startup."""
+        """Runs once per simulated user at startup (warms the connection)."""
         self.client.get("/health")
