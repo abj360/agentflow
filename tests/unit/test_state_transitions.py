@@ -52,3 +52,9 @@ def test_revise_edge_loops_to_planner() -> None:
     from apps.api.orchestration.state_machine import route_after_critic
 
     assert route_after_critic(make_state(critique="revise")) == "revise"
+
+
+def test_executor_update_preserves_plan() -> None:
+    """Verifies the executor leaves the plan in place."""
+    after = executor_node(make_state(plan=["stay"]))
+    assert after["plan"] == ["stay"]
