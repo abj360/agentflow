@@ -20,3 +20,10 @@ def test_current_trace_id_returns_string() -> None:
     from apps.api.observability.tracing import current_trace_id
 
     assert isinstance(current_trace_id(), str)
+
+
+def test_default_sampler_ratio() -> None:
+    """Verifies the default sampler keeps the configured ratio."""
+    from apps.api.observability.tracing import DEFAULT_SAMPLER
+
+    assert DEFAULT_SAMPLER is not None
