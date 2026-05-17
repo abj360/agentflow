@@ -12,7 +12,10 @@ from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExport
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.sampling import ParentBasedTraceIdRatio
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+DEFAULT_SAMPLER = ParentBasedTraceIdRatio(0.25)
 
 
 def setup_tracing(app, service_name: str = "agentflow-api") -> None:
@@ -22,7 +25,10 @@ def setup_tracing(app, service_name: str = "agentflow-api") -> None:
         app: The FastAPI application to instrument.
         service_name: Resource service.name reported to the collector.
     """
-    provider = TracerProvider(resource=Resource.create({"service.name": service_name}))
+    provider = TracerProvider(
+        resource=Resource.create({"service.name": service_name}),
+        sampler=DEFAULT_SAMPLER,
+    )
     provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
     trace.set_tracer_provider(provider)
     FastAPIInstrumentor.instrument_app(app)
