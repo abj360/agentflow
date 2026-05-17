@@ -18,3 +18,8 @@ def setup_function() -> None:
 def test_get_engine_caches_instance() -> None:
     """Verifies the engine is built only once."""
     assert db.get_engine() is db.get_engine()
+
+
+def test_get_session_factory_caches_instance() -> None:
+    """Verifies the session factory is built only once."""
+    assert db.get_session_factory() is db.get_session_factory()
