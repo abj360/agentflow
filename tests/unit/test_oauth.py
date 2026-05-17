@@ -60,3 +60,10 @@ def test_authorize_url_starts_with_endpoint() -> None:
     """Verifies the consent URL targets the configured endpoint."""
     url = build_client().build_authorize_url(state="s")
     assert url.startswith("https://idp.example/authorize?")
+
+
+def test_code_challenge_deterministic() -> None:
+    """Verifies the PKCE challenge is stable per verifier."""
+    from apps.api.mcp_servers.oauth import code_challenge
+
+    assert code_challenge("v") == code_challenge("v")
