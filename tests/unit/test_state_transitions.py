@@ -19,7 +19,13 @@ def make_state(**overrides: object) -> dict:
     Returns:
         state: Graph state dict with sensible defaults.
     """
-    state = {"task": "t", "plan": [], "results": [], "critique": "", "iterations": 0}
+    state = {
+        "task": "t",
+        "plan": [],
+        "results": [],
+        "critique": "",
+        "iterations": 0,
+    }
     state.update(overrides)
     return state
 
