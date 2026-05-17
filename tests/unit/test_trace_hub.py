@@ -70,3 +70,9 @@ async def test_register_accepts_socket() -> None:
     socket = FakeSocket()
     await hub.register("run-1", socket)
     assert socket.accepted is True
+
+
+async def test_discard_unknown_socket_is_noop() -> None:
+    """Verifies discarding an unknown socket does not raise."""
+    hub = TraceHub()
+    hub.discard("run-1", FakeSocket())
