@@ -22,7 +22,7 @@ export function TraceViewer({ runId }: { runId: string }) {
   return (
     <ol className="trace-list">
       {events.map((event, index) => (
-        <li key={index} className={`trace-event trace-${event.kind}`}>
+        <li key={`${event.kind}-${index}`} className={`trace-event trace-${event.kind}`}>
           <span className="trace-role">{event.role}</span>
           <span className="trace-kind">{event.kind}</span>
         </li>
