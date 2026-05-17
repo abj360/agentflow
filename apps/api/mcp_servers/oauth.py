@@ -48,13 +48,16 @@ class TokenSet:
     refresh_token: str | None
     expires_at: float
 
-    def is_expired(self) -> bool:
+    def is_expired(self, skew_seconds: float = 30.0) -> bool:
         """Reports whether the access token has expired.
+
+        Args:
+            skew_seconds: Clock-skew tolerance before true expiry.
 
         Returns:
             expired: True when the token is past its expiry.
         """
-        return time.time() >= self.expires_at
+        return time.time() >= self.expires_at - skew_seconds
 
 
 class OAuthClient:
