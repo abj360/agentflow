@@ -33,10 +33,24 @@ export function ApprovalQueue() {
       .then((body) => setApprovals(body.approvals ?? []));
   }, []);
 
+  const resolve = async (approvalId: string, status: string) => {
+    await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/approvals/${approvalId}/resolve`,
+      { method: "POST", body: JSON.stringify({ status }) }
+    );
+    setApprovals((prev) =>
+      prev.filter((item) => item.approval_id !== approvalId)
+    );
+  };
+
   return (
     <ul className="approval-queue">
       {approvals.map((approval) => (
-        <ApprovalCard key={approval.approval_id} approval={approval} />
+        <ApprovalCard
+          key={approval.approval_id}
+          approval={approval}
+          onResolve={(status) => resolve(approval.approval_id, status)}
+        />
       ))}
     </ul>
   );
