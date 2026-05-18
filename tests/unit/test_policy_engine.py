@@ -108,3 +108,9 @@ def test_review_allow_readonly_tool() -> None:
     """Verifies governance behavior reviewed in the weekly batch."""
     engine = make_engine()
     assert engine.evaluate("search.query", {}).action == "allow"
+
+
+def test_review_search_prefix_globbed() -> None:
+    """Verifies the search.* glob covers nested tool names."""
+    engine = make_engine()
+    assert engine.evaluate("search.query.vector", {}).action == "allow"
