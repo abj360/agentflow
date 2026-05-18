@@ -102,3 +102,9 @@ def test_decision_reason_empty_on_allow() -> None:
     """Verifies allow decisions carry no denial reason."""
     decision = build_engine().evaluate("search.query", {})
     assert decision.reason == ""
+
+
+def test_review_allow_readonly_tool() -> None:
+    """Verifies governance behavior reviewed in the weekly batch."""
+    engine = make_engine()
+    assert engine.evaluate("search.query", {}).action == "allow"
