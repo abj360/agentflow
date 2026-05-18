@@ -49,3 +49,10 @@ def test_usage_ratio_tracks_consumption() -> None:
     tracker = BudgetTracker(BudgetLimits(max_tokens=1000, max_tool_calls=10))
     tracker.record_tokens(500)
     assert tracker.usage_ratio()["tokens"] == 0.5
+
+
+def test_exhausted_when_tokens_at_cap() -> None:
+    """Verifies hitting the token cap exhausts the budget."""
+    tracker = BudgetTracker(BudgetLimits(max_tokens=100, max_tool_calls=100))
+    tracker.record_tokens(100)
+    assert tracker.is_exhausted() is True
