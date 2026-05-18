@@ -114,3 +114,9 @@ def test_review_search_prefix_globbed() -> None:
     """Verifies the search.* glob covers nested tool names."""
     engine = make_engine()
     assert engine.evaluate("search.query.vector", {}).action == "allow"
+
+
+def test_review_shell_glob_covers_subtools() -> None:
+    """Verifies the shell.* glob covers nested shell tools."""
+    engine = make_engine()
+    assert engine.evaluate("shell.exec.pipe", {}).action == "human_approval"
