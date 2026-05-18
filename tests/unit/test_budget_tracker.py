@@ -78,3 +78,17 @@ def test_check_raises_on_token_cap() -> None:
         assert exc.resource == "tokens"
         return
     raise AssertionError("expected BudgetExhaustedError")
+
+
+def test_check_raises_on_tool_call_cap() -> None:
+    """Verifies check raises BudgetExhaustedError at the tool-call cap."""
+    from apps.api.budget.tracker import BudgetExhaustedError
+
+    tracker = BudgetTracker(BudgetLimits(max_tokens=100, max_tool_calls=1))
+    tracker.record_tool_call()
+    try:
+        tracker.check()
+    except BudgetExhaustedError as exc:
+        assert exc.resource == "tool_calls"
+        return
+    raise AssertionError("expected BudgetExhaustedError")
