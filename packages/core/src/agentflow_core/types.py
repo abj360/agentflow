@@ -35,3 +35,12 @@ class TraceEvent:
     role: AgentRole
     kind: str
     payload: dict[str, object] = field(default_factory=dict)
+
+
+class ToolCallStatus(StrEnum):
+    """Enumerates the lifecycle states of a governed tool call."""
+
+    PENDING = "pending"
+    ALLOWED = "allowed"
+    DENIED = "denied"
+    AWAITING_APPROVAL = "awaiting_approval"
