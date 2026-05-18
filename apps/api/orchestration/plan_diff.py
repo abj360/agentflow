@@ -41,3 +41,18 @@ def diff_plans(old: list[str], new: list[str]) -> PlanDiff:
         removed=tuple(step for step in old if step not in new_set),
         kept=tuple(step for step in new if step in old_set),
     )
+
+
+def render_text(diff: PlanDiff) -> str:
+    """Renders a plan diff as console-friendly text.
+
+    Args:
+        diff: The plan diff to render.
+
+    Returns:
+        text: Line-oriented rendering with +/- markers per step.
+    """
+    lines: list[str] = [f"+ {step}" for step in diff.added]
+    lines += [f"- {step}" for step in diff.removed]
+    lines += [f"  {step}" for step in diff.kept]
+    return "\n".join(lines)
