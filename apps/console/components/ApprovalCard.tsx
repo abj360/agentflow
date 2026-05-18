@@ -30,7 +30,11 @@ export function ApprovalCard({
         <span className="approval-trace">{approval.trace_id}</span>
       </header>
       <footer>
-        <button className="approve" onClick={() => onResolve("approved")}>
+        <button
+          className="approve"
+          aria-label={`Approve ${approval.tool_name}`}
+          onClick={() => onResolve("approved")}
+        >
           Approve
         </button>
         <button className="reject" onClick={() => onResolve("rejected")}>
