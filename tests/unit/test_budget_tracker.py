@@ -56,3 +56,11 @@ def test_exhausted_when_tokens_at_cap() -> None:
     tracker = BudgetTracker(BudgetLimits(max_tokens=100, max_tool_calls=100))
     tracker.record_tokens(100)
     assert tracker.is_exhausted() is True
+
+
+def test_exhausted_when_tool_calls_at_cap() -> None:
+    """Verifies hitting the tool-call cap exhausts the budget."""
+    tracker = BudgetTracker(BudgetLimits(max_tokens=1000, max_tool_calls=2))
+    tracker.record_tool_call()
+    tracker.record_tool_call()
+    assert tracker.is_exhausted() is True
