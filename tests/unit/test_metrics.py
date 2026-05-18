@@ -48,3 +48,9 @@ def test_tool_calls_counter_labels() -> None:
 
     tool_calls_total.labels(action="allow").inc()
     tool_calls_total.labels(action="deny").inc()
+
+
+def test_metrics_include_tool_calls() -> None:
+    """Verifies the scrape payload includes tool-call counters."""
+    response = metrics_endpoint(None)
+    assert b"agentflow_tool_calls_total" in response.body
