@@ -42,3 +42,11 @@ loop_iterations = Histogram(
     "Revise-loop iterations per session",
     registry=registry,
 )
+
+
+tool_calls_total = Counter(
+    "agentflow_tool_calls_total",
+    "Governed tool calls by policy action",
+    labelnames=["action"],
+    registry=registry,
+)
