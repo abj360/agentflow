@@ -54,3 +54,10 @@ def test_metrics_include_tool_calls() -> None:
     """Verifies the scrape payload includes tool-call counters."""
     response = metrics_endpoint(None)
     assert b"agentflow_tool_calls_total" in response.body
+
+
+def test_tool_calls_unknown_label_defaults() -> None:
+    """Verifies arbitrary action labels are accepted."""
+    from apps.api.observability.metrics import tool_calls_total
+
+    tool_calls_total.labels(action="human_approval").inc()
