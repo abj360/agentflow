@@ -37,7 +37,11 @@ export function ApprovalCard({
         >
           Approve
         </button>
-        <button className="reject" onClick={() => onResolve("rejected")}>
+        <button
+          className="reject"
+          aria-label={`Reject ${approval.tool_name}`}
+          onClick={() => onResolve("rejected")}
+        >
           Reject
         </button>
       </footer>
