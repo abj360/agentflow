@@ -40,3 +40,11 @@ def test_metrics_include_loop_histogram() -> None:
     """Verifies the scrape payload includes the loop histogram."""
     response = metrics_endpoint(None)
     assert b"agentflow_loop_iterations" in response.body
+
+
+def test_tool_calls_counter_labels() -> None:
+    """Verifies tool calls count per policy action."""
+    from apps.api.observability.metrics import tool_calls_total
+
+    tool_calls_total.labels(action="allow").inc()
+    tool_calls_total.labels(action="deny").inc()
