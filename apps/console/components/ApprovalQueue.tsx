@@ -36,7 +36,11 @@ export function ApprovalQueue() {
   const resolve = async (approvalId: string, status: string) => {
     await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/approvals/${approvalId}/resolve`,
-      { method: "POST", body: JSON.stringify({ status }) }
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      }
     );
     setApprovals((prev) =>
       prev.filter((item) => item.approval_id !== approvalId)
