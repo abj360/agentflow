@@ -92,3 +92,8 @@ def test_check_raises_on_tool_call_cap() -> None:
         assert exc.resource == "tool_calls"
         return
     raise AssertionError("expected BudgetExhaustedError")
+
+
+def test_check_passes_with_headroom() -> None:
+    """Verifies check does not raise with budget left."""
+    BudgetTracker().check()
