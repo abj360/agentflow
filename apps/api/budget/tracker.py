@@ -5,6 +5,7 @@ tracker.py --- token and tool-call budget tracking per session
 Contains:
     BudgetLimits: caps on tokens and tool calls per session
     BudgetTracker: records consumption and flags exhausted budgets
+    BudgetExhaustedError: raised when a call would exceed the budget
 """
 
 from dataclasses import dataclass
@@ -87,3 +88,16 @@ class BudgetTracker:
             "tokens": self.tokens_used / self.limits.max_tokens,
             "tool_calls": self.tool_calls_made / self.limits.max_tool_calls,
         }
+
+
+class BudgetExhaustedError(Exception):
+    """Raised when a call would exceed the session budget."""
+
+    def __init__(self, resource: str) -> None:
+        """Initializes the error with the exhausted resource name.
+
+        Args:
+            resource: Which budget ran out: tokens or tool_calls.
+        """
+        super().__init__(f"budget exhausted: {resource}")
+        self.resource = resource
