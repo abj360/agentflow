@@ -7,6 +7,7 @@ Contains:
     EventKind: enumeration of audit event categories
     AuditEvent: append-only event row, one per state transition or tool call
     AuditSession: one row per orchestration run, grouping its events
+    ApprovalRequest: human-in-the-loop approval linked to a tool call
 """
 
 import uuid
@@ -89,3 +90,27 @@ class AuditSession(Base):
         DateTime(timezone=True), server_default=func.now()
     )
     ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class ApprovalRequest(Base):
+    """Stores a human-in-the-loop approval linked to a tool call.
+
+    Attributes:
+        approval_id: Unique identifier of the approval request.
+        trace_id: Identifier of the run that triggered the request.
+        tool_name: Name of the gated tool call awaiting approval.
+        status: Lifecycle state of the request: pending, approved, rejected.
+        created_at: Timestamp the request was created at.
+    """
+
+    __tablename__ = "approval_requests"
+
+    approval_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    trace_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    tool_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default="pending")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
