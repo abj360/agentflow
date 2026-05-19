@@ -46,3 +46,10 @@ def test_put_overwrites_existing_entry() -> None:
     cache.put("k", "first")
     cache.put("k", "second")
     assert cache.get("k") == "second"
+
+
+def test_get_returns_latest_completion() -> None:
+    """Verifies get returns the most recently stored completion."""
+    cache = PromptCache()
+    cache.put("k", "newer")
+    assert cache.get("k") == "newer"
