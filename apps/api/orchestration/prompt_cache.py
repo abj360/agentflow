@@ -9,6 +9,7 @@ Contains:
 
 import hashlib
 import json
+import time
 
 
 def cache_key(task: str, context: dict) -> str:
@@ -36,7 +37,7 @@ class PromptCache:
 
     def __init__(self) -> None:
         """Initializes an empty cache."""
-        self.entries: dict[str, str] = {}
+        self.entries: dict[str, tuple[str, float]] = {}
 
     def get(self, key: str) -> str | None:
         """Looks up a cached completion.
@@ -47,7 +48,8 @@ class PromptCache:
         Returns:
             completion: The cached completion, or None on a miss.
         """
-        return self.entries.get(key)
+        entry = self.entries.get(key)
+        return entry[0] if entry else None
 
     def put(self, key: str, completion: str) -> None:
         """Stores a completion under its content hash.
@@ -56,4 +58,4 @@ class PromptCache:
             key: Content hash produced by cache_key.
             completion: The planner completion to cache.
         """
-        self.entries[key] = completion
+        self.entries[key] = (completion, time.time())
