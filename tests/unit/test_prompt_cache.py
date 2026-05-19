@@ -53,3 +53,8 @@ def test_get_returns_latest_completion() -> None:
     cache = PromptCache()
     cache.put("k", "newer")
     assert cache.get("k") == "newer"
+
+
+def test_cache_key_differs_on_task() -> None:
+    """Verifies different tasks hash to different keys."""
+    assert cache_key("task-a", {}) != cache_key("task-b", {})
