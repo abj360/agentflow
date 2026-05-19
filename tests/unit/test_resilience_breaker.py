@@ -69,3 +69,14 @@ async def test_bulkhead_counts_in_flight() -> None:
     async with bulkhead:
         assert bulkhead.in_flight() == 1
     assert bulkhead.in_flight() == 0
+
+
+async def test_bulkhead_releases_slots() -> None:
+    """Verifies slots free up after the with block."""
+    from apps.api.resilience.breaker import Bulkhead
+
+    bulkhead = Bulkhead(limit=1)
+    async with bulkhead:
+        pass
+    async with bulkhead:
+        assert bulkhead.in_flight() == 1
