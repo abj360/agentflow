@@ -69,3 +69,14 @@ class BudgetCircuitBreaker:
         """Closes the circuit and clears the breach count."""
         self._failures = 0
         self._opened_at = None
+
+
+    def is_half_open(self) -> bool:
+        """Reports whether the breaker is past its cooldown but not yet closed.
+
+        Returns:
+            half_open: True when a probe call is allowed through.
+        """
+        if self._opened_at is None:
+            return False
+        return time.time() - self._opened_at >= self.reset_seconds
