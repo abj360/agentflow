@@ -122,6 +122,7 @@ section > h1 {
 
 .approval-card header {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
   margin-bottom: 0.625rem;
 }
