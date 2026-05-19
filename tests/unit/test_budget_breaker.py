@@ -54,3 +54,10 @@ def test_reset_closes_breaker() -> None:
     breaker.record_breach()
     breaker.reset()
     assert breaker.is_open() is False
+
+
+def test_half_open_after_cooldown() -> None:
+    """Verifies the breaker reports half-open after the cooldown."""
+    breaker = BudgetCircuitBreaker(failure_threshold=1, reset_seconds=0)
+    breaker.record_breach()
+    assert breaker.is_half_open() is True
