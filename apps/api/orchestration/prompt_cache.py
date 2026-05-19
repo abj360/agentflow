@@ -32,7 +32,7 @@ class PromptCache:
     """Stores planner completions keyed by content hash.
 
     Attributes:
-        entries: Cached completions keyed by content hash.
+        entries: Cached completions plus store timestamps keyed by content hash.
     """
 
     def __init__(self) -> None:
