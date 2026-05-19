@@ -55,3 +55,9 @@ def test_audit_session_trace_id_unique_intent() -> None:
 def test_audit_session_table_name() -> None:
     """Verifies the sessions table name matches the migration."""
     assert AuditSession.__tablename__ == "audit_sessions"
+
+
+def test_approval_request_pending_default() -> None:
+    """Verifies approval requests start in the pending state."""
+    request = ApprovalRequest(trace_id="trace-5", tool_name="shell.exec")
+    assert request.status == "pending"
