@@ -59,3 +59,13 @@ def test_open_error_names_server() -> None:
     from apps.api.resilience.breaker import CircuitOpenError
 
     assert "search-mcp" in str(CircuitOpenError("search-mcp"))
+
+
+async def test_bulkhead_counts_in_flight() -> None:
+    """Verifies in_flight reflects held bulkhead slots."""
+    from apps.api.resilience.breaker import Bulkhead
+
+    bulkhead = Bulkhead(limit=4)
+    async with bulkhead:
+        assert bulkhead.in_flight() == 1
+    assert bulkhead.in_flight() == 0
