@@ -61,3 +61,8 @@ def test_half_open_after_cooldown() -> None:
     breaker = BudgetCircuitBreaker(failure_threshold=1, reset_seconds=0)
     breaker.record_breach()
     assert breaker.is_half_open() is True
+
+
+def test_not_half_open_when_closed() -> None:
+    """Verifies a closed breaker is not half-open."""
+    assert BudgetCircuitBreaker().is_half_open() is False
