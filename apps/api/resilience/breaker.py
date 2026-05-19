@@ -112,3 +112,12 @@ class CircuitOpenError(Exception):
         """
         super().__init__(f"circuit open for server: {server_name}")
         self.server_name = server_name
+
+
+    def in_flight(self) -> int:
+        """Reports the number of currently held bulkhead slots.
+
+        Returns:
+            count: Slots currently acquired.
+        """
+        return self.limit - self._semaphore._value
