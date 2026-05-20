@@ -36,3 +36,11 @@ def test_compare_and_swap_success_stores_snapshot() -> None:
     nxt = StateSnapshot(session_id="s1", version=2, plan=("b",))
     assert store.compare_and_swap(1, nxt) is True
     assert store.get("s1").plan == ("b",)
+
+
+def test_advance_increments_version() -> None:
+    """Verifies each advance bumps the snapshot version."""
+    store = StateStore()
+    first = store.advance("s1")
+    second = store.advance("s1")
+    assert second.version == first.version + 1
