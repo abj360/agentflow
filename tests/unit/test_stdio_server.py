@@ -36,3 +36,10 @@ def test_unknown_method_returns_error() -> None:
 def test_list_tools_method() -> None:
     """Verifies list_tools returns the registered names."""
     assert build_server().list_tools() == ["fs.read"]
+
+
+def test_register_second_tool() -> None:
+    """Verifies a second tool registers cleanly."""
+    server = build_server()
+    server.register(ToolSpec(name="search.query", description="Search"))
+    assert server.list_tools() == ["fs.read", "search.query"]
