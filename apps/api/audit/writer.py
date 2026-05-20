@@ -9,6 +9,7 @@ Contains:
     AuditWriter.drain(): flushes and disables further enqueue calls
 """
 
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from apps.api.audit.chain import ChainLinker
@@ -76,7 +77,12 @@ class AuditWriter:
         events, self._pending = self._pending, []
         async with self.session_factory() as session:
             session.add_all(events)
-            await session.commit()
+            try:
+                await session.commit()
+            except OperationalError:
+                await session.rollback()
+                self._pending = events + self._pending
+                raise
         return len(events)
 
     async def drain(self) -> int:
