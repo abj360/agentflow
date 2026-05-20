@@ -27,3 +27,12 @@ def test_compare_and_swap_conflict_returns_false() -> None:
     store.advance("s1", plan=("a",))
     stale = StateSnapshot(session_id="s1", version=99)
     assert store.compare_and_swap(0, stale) is False
+
+
+def test_compare_and_swap_success_stores_snapshot() -> None:
+    """Verifies a current writer's snapshot lands in the store."""
+    store = StateStore()
+    store.advance("s1", plan=("a",))
+    nxt = StateSnapshot(session_id="s1", version=2, plan=("b",))
+    assert store.compare_and_swap(1, nxt) is True
+    assert store.get("s1").plan == ("b",)
