@@ -44,3 +44,12 @@ def test_advance_increments_version() -> None:
     first = store.advance("s1")
     second = store.advance("s1")
     assert second.version == first.version + 1
+
+
+def test_sessions_are_isolated() -> None:
+    """Verifies two sessions never share snapshot state."""
+    store = StateStore()
+    store.advance("s1", plan=("a",))
+    store.advance("s2", plan=("b",))
+    assert store.get("s1").plan == ("a",)
+    assert store.get("s2").plan == ("b",)
