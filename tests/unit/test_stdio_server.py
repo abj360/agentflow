@@ -31,3 +31,8 @@ def test_unknown_method_returns_error() -> None:
     """Verifies unknown methods get an error."""
     server = build_server()
     assert "error" in server.handle_request({"method": "bogus/method"})
+
+
+def test_list_tools_method() -> None:
+    """Verifies list_tools returns the registered names."""
+    assert build_server().list_tools() == ["fs.read"]
