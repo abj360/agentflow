@@ -24,7 +24,7 @@
     },
     {
       "id": 3,
-      "title": "Tool calls by policy action",
+      "title": "Tool calls by policy action (allow/deny/approval)",
       "type": "piechart",
       "targets": [
         { "expr": "sum by (action) (agentflow_policy_decisions_total)" }
