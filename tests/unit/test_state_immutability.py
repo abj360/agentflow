@@ -59,3 +59,10 @@ def test_snapshot_fields_are_tuples() -> None:
     """Verifies plan and results are immutable sequences."""
     snapshot = StateSnapshot(session_id="s1", version=0, plan=("x",))
     assert isinstance(snapshot.plan, tuple)
+
+
+def test_unknown_session_gets_empty_snapshot() -> None:
+    """Verifies reading an unknown session yields a version-zero snapshot."""
+    store = StateStore()
+    snapshot = store.get("ghost")
+    assert snapshot.version == 0 and snapshot.plan == ()
