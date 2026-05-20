@@ -125,3 +125,16 @@ async def test_flush_preserves_event_order() -> None:
         await writer.enqueue("trace-1", EventKind.TOOL_CALL, {"idx": idx})
     await writer.flush()
     assert [e.payload["idx"] for e in factory.session.added] == [0, 1, 2, 3]
+
+
+async def test_failed_commit_requeues_events() -> None:
+    """Verifies a failed commit returns events to the buffer for retry."""
+    factory = FakeSessionFactory()
+    factory.session.fail_commit = True
+    writer = AuditWriter(factory)
+    await writer.enqueue("trace-1", EventKind.TOOL_CALL, {})
+    try:
+        await writer.flush()
+    except OperationalError:
+        pass
+    assert writer.pending_count == 1
