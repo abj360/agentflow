@@ -43,3 +43,9 @@ def test_register_second_tool() -> None:
     server = build_server()
     server.register(ToolSpec(name="search.query", description="Search"))
     assert server.list_tools() == ["fs.read", "search.query"]
+
+
+def test_tools_list_includes_schema_after_unify() -> None:
+    """Verifies tools/list emits unified MCP schemas."""
+    response = build_server().handle_request({"method": "tools/list"})
+    assert response["tools"][0]["name"] == "fs.read"
