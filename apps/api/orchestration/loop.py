@@ -22,7 +22,7 @@ async def run_session(session_id: str, task: str) -> dict:
     Returns:
         result: Final synthesized output and the session's iteration count.
     """
-    store = StateStore()
+    store = StateStore()  # immutable snapshots; no shared mutable state
     graph = build_graph()
     graph_state = {
         "task": task,
