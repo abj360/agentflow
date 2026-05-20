@@ -7,6 +7,8 @@ Contains:
     test_flush_writes_pending_events(): verifies flush empties the buffer via the session
 """
 
+from sqlalchemy.exc import OperationalError
+
 from apps.api.audit.models import EventKind
 from apps.api.audit.writer import AuditWriter
 
@@ -24,7 +26,10 @@ class FakeSession:
         self.added.extend(events)
 
     async def commit(self) -> None:
-        """Counts commit calls."""
+        """Counts commit calls, raising a transient error when armed."""
+        if getattr(self, "fail_commit", False):
+            self.fail_commit = False
+            raise OperationalError("INSERT", {}, Exception("deadlock"))
         self.commits += 1
 
     async def __aenter__(self) -> "FakeSession":
