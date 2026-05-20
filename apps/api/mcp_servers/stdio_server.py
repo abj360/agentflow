@@ -11,6 +11,8 @@ import json
 import sys
 from dataclasses import dataclass, field
 
+from agentflow_core.tool_schema import UnifiedToolSpec, to_mcp_schema
+
 
 @dataclass(frozen=True)
 class ToolSpec:
@@ -57,7 +59,16 @@ class StdioServer:
         """
         method = request.get("method")
         if method == "tools/list":
-            return {"tools": [spec.name for spec in self.tools.values()]}
+            return {
+                "tools": [
+                    to_mcp_schema(
+                        UnifiedToolSpec(
+                            name=spec.name, description=spec.description
+                        )
+                    )
+                    for spec in self.tools.values()
+                ]
+            }
         return {"error": f"unknown method: {method}"}
 
     def serve_forever(self) -> None:
