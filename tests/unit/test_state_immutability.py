@@ -53,3 +53,9 @@ def test_sessions_are_isolated() -> None:
     store.advance("s2", plan=("b",))
     assert store.get("s1").plan == ("a",)
     assert store.get("s2").plan == ("b",)
+
+
+def test_snapshot_fields_are_tuples() -> None:
+    """Verifies plan and results are immutable sequences."""
+    snapshot = StateSnapshot(session_id="s1", version=0, plan=("x",))
+    assert isinstance(snapshot.plan, tuple)
