@@ -6,7 +6,7 @@ Contains:
     run_session(): runs one orchestration session to completion
 """
 
-from apps.api.orchestration.state import get_session_state
+from apps.api.orchestration.state import StateStore
 from apps.api.orchestration.state_machine import build_graph
 
 MAX_REVISIONS = 3  # hard cap per ADR-001; never let a run spin unbounded
@@ -22,7 +22,7 @@ async def run_session(session_id: str, task: str) -> dict:
     Returns:
         result: Final synthesized output and the session's iteration count.
     """
-    state = get_session_state(session_id)
+    store = StateStore()
     graph = build_graph()
     graph_state = {
         "task": task,
@@ -34,9 +34,11 @@ async def run_session(session_id: str, task: str) -> dict:
     revisions = 0
     while revisions < MAX_REVISIONS:
         graph_state = await graph.ainvoke(graph_state)
-        state["plan"] = graph_state["plan"]
-        state["results"] = graph_state["results"]
-        state["version"] += 1
+        store.advance(
+            session_id,
+            plan=tuple(graph_state["plan"]),
+            results=tuple(graph_state["results"]),
+        )
         if graph_state["critique"] == "accept":
             break
         revisions += 1

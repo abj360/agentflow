@@ -1,24 +1,81 @@
 #!/usr/bin/env python3
 """
-state.py --- shared runtime state for the orchestration loop
+state.py --- immutable session state snapshots with optimistic concurrency
 
 Contains:
-    SESSION_STATE: module-level mutable store shared across running sessions
-    get_session_state(): returns the mutable state dict for a session
+    StateSnapshot: immutable point-in-time view of a session's agent state
+    StateStore: atomically versions and stores session snapshots
 """
 
-SESSION_STATE: dict[str, dict] = {}
+from dataclasses import dataclass, replace
 
 
-def get_session_state(session_id: str) -> dict:
-    """Returns the mutable state dict for a session.
+@dataclass(frozen=True)
+class StateSnapshot:
+    """Represents an immutable point-in-time view of a session's agent state.
 
-    Args:
-        session_id: Identifier of the running orchestration session.
-
-    Returns:
-        state: Mutable dict holding the session's intermediate agent state.
+    Attributes:
+        session_id: Identifier of the session this snapshot belongs to.
+        version: Monotonic version used for compare-and-swap updates.
+        plan: Current plan steps as of this snapshot.
+        results: Step outputs collected as of this snapshot.
     """
-    return SESSION_STATE.setdefault(
-        session_id, {"plan": [], "results": [], "version": 0}
-    )
+
+    session_id: str
+    version: int
+    plan: tuple[str, ...] = ()
+    results: tuple[str, ...] = ()
+
+
+class StateStore:
+    """Atomically versions and stores session snapshots.
+
+    Attributes:
+        snapshots: Latest snapshot per session id.
+    """
+
+    def __init__(self) -> None:
+        """Initializes the store with no sessions."""
+        self._snapshots: dict[str, StateSnapshot] = {}
+
+    def get(self, session_id: str) -> StateSnapshot:
+        """Returns the latest snapshot for a session, creating an empty one.
+
+        Args:
+            session_id: Identifier of the session to look up.
+
+        Returns:
+            snapshot: Latest stored snapshot, or a version-zero empty one.
+        """
+        return self._snapshots.get(session_id, StateSnapshot(session_id, version=0))
+
+    def compare_and_swap(self, expected_version: int, next_snapshot: StateSnapshot) -> bool:
+        """Stores a new snapshot only if the expected version is current.
+
+        Args:
+            expected_version: Version the caller based its update on.
+            next_snapshot: Snapshot to store when the version matches.
+
+        Returns:
+            swapped: True when stored, False on a version conflict.
+        """
+        current = self.get(next_snapshot.session_id)
+        if current.version != expected_version:
+            return False
+        self._snapshots[next_snapshot.session_id] = next_snapshot
+        return True
+
+    def advance(self, session_id: str, **changes: object) -> StateSnapshot:
+        """Builds and stores the next snapshot for a session.
+
+        Args:
+            session_id: Session to advance.
+            changes: Field updates applied on top of the latest snapshot.
+
+        Returns:
+            snapshot: The newly stored snapshot with an incremented version.
+        """
+        current = self.get(session_id)
+        next_snapshot = replace(current, version=current.version + 1, **changes)
+        self._snapshots[session_id] = next_snapshot
+        return next_snapshot
