@@ -18,3 +18,17 @@ Each run emits an ordered chain of `audit_events` rows. Every event carries
 `prev_hash` and `event_hash`, where `event_hash = sha256(canonical(event,
 prev_hash))`. The first event of a trace chains from a well-known genesis
 sentinel (`0` * 64). Verification recomputes the chain end to end.
+
+
+## Event taxonomy
+
+| Kind | Emitted when |
+|---|---|
+| `plan_created` | The planner produces a new plan |
+| `plan_revised` | The planner revises after critic feedback |
+| `tool_call` | The executor invokes a governed tool |
+| `tool_result` | A governed tool returns |
+| `critique` | The critic scores the current plan/results |
+| `synthesis` | The synthesizer emits the final answer |
+| `approval_requested` | A policy-gated tool call pauses for a human |
+| `approval_resolved` | The approval queue resolves the request |
