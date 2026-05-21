@@ -60,3 +60,25 @@ class ChainLinker:
         event_hash = compute_event_hash(trace_id, kind, payload, prev_hash)
         self.last_hashes[trace_id] = event_hash
         return prev_hash, event_hash
+
+
+def verify_chain(events: list) -> bool:
+    """Verifies the integrity of an ordered audit event chain.
+
+    Args:
+        events: Audit events ordered by created_at for one trace.
+
+    Returns:
+        is_valid: True when every event hash matches its recomputed value.
+    """
+    prev_hash = GENESIS_HASH
+    for event in events:
+        if event.prev_hash != prev_hash:
+            return False
+        recomputed = compute_event_hash(
+            event.trace_id, str(event.kind), event.payload, prev_hash
+        )
+        if recomputed != event.event_hash:
+            return False
+        prev_hash = event.event_hash
+    return True
