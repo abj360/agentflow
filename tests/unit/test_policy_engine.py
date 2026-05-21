@@ -132,3 +132,9 @@ def test_decision_has_action_and_rule() -> None:
     """Verifies decisions always expose action and rule fields."""
     decision = build_engine().evaluate("search.query", {})
     assert decision.action == "allow" and decision.rule == "search.*"
+
+
+def test_shell_subtools_gated() -> None:
+    """Verifies nested shell tools also require approval."""
+    engine = build_engine()
+    assert engine.evaluate("shell.exec.pipe", {}).action == "human_approval"
