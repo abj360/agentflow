@@ -120,3 +120,9 @@ def test_review_shell_glob_covers_subtools() -> None:
     """Verifies the shell.* glob covers nested shell tools."""
     engine = make_engine()
     assert engine.evaluate("shell.exec.pipe", {}).action == "human_approval"
+
+
+def test_human_approval_action() -> None:
+    """Verifies shell tools route to human approval."""
+    engine = build_engine()
+    assert engine.evaluate("shell.exec", {}).action == "human_approval"
