@@ -57,3 +57,9 @@ def test_linker_isolates_traces() -> None:
 def test_verify_chain_empty_is_valid() -> None:
     """Verifies an empty chain is trivially valid."""
     assert verify_chain([])
+
+
+def test_compute_event_hash_deterministic() -> None:
+    """Verifies identical inputs produce identical hashes."""
+    args = ("trace-1", "tool_call", {"a": 1}, GENESIS_HASH)
+    assert compute_event_hash(*args) == compute_event_hash(*args)
