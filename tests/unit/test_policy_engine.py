@@ -126,3 +126,9 @@ def test_human_approval_action() -> None:
     """Verifies shell tools route to human approval."""
     engine = build_engine()
     assert engine.evaluate("shell.exec", {}).action == "human_approval"
+
+
+def test_decision_has_action_and_rule() -> None:
+    """Verifies decisions always expose action and rule fields."""
+    decision = build_engine().evaluate("search.query", {})
+    assert decision.action == "allow" and decision.rule == "search.*"
