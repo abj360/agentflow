@@ -26,7 +26,7 @@ sentinel (`0` * 64). Verification recomputes the chain end to end.
 |---|---|
 | `plan_created` | The planner produces a new plan |
 | `plan_revised` | The planner revises after critic feedback |
-| `tool_call` | The executor invokes a governed tool |
+| `tool_call` | The executor invokes a governed tool (pre-policy decision) |
 | `tool_result` | A governed tool returns |
 | `critique` | The critic scores the current plan/results |
 | `synthesis` | The synthesizer emits the final answer |
