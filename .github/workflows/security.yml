@@ -6,6 +6,13 @@ on:
   pull_request:
 
 jobs:
+  deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: pip-audit
+        run: pip install pip-audit && pip-audit
+
   secrets:
     runs-on: ubuntu-latest
     steps:
