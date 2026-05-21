@@ -39,3 +39,9 @@ async def test_sessions_do_not_share_state() -> None:
     first = await run_session("it-4a", "task a")
     second = await run_session("it-4b", "task b")
     assert first is not second
+
+
+async def test_result_contains_status_key() -> None:
+    """Verifies the loop result carries a status key."""
+    result = await run_session("it-f2", "status check")
+    assert "status" in result
