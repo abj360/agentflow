@@ -30,6 +30,8 @@ sentinel (`0` * 64). Verification recomputes the chain end to end.
 | `tool_result` | A governed tool returns |
 | `critique` | The critic scores the current plan/results |
 | `synthesis` | The synthesizer emits the final answer |
+| `error` | A role or tool raised an unrecoverable error |
+
 | `approval_requested` | A policy-gated tool call pauses for a human |
 | `approval_resolved` | The approval queue resolves the request |
 | `session_opened` | A new orchestration session registers its trace |
