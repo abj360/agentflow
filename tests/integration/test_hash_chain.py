@@ -52,3 +52,8 @@ def test_linker_isolates_traces() -> None:
     prev_a, _ = linker.link("trace-a", "plan_created", {})
     prev_b, _ = linker.link("trace-b", "plan_created", {})
     assert prev_a == prev_b == GENESIS_HASH
+
+
+def test_verify_chain_empty_is_valid() -> None:
+    """Verifies an empty chain is trivially valid."""
+    assert verify_chain([])
