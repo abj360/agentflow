@@ -60,3 +60,13 @@ def test_empty_spec_schema_has_no_properties() -> None:
     """Verifies a parameterless tool gets an empty properties map."""
     schema = to_mcp_schema(UnifiedToolSpec(name="ping", description="Ping"))
     assert schema["inputSchema"]["properties"] == {}
+
+
+def test_spec_is_frozen() -> None:
+    """Verifies unified specs are immutable."""
+    from dataclasses import FrozenInstanceError
+
+    import pytest
+
+    with pytest.raises(FrozenInstanceError):
+        SPEC.name = "other"
