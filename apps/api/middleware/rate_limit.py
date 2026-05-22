@@ -64,3 +64,38 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 status_code=429,
             )
         return await call_next(request)
+
+
+class RedisRateCounter:
+    """Counts requests in Redis for multi-instance rate limiting.
+
+    Attributes:
+        redis: Async Redis client used for INCR/EXPIRE bookkeeping.
+        prefix: Key prefix separating rate-limit keys from other data.
+    """
+
+    def __init__(self, redis, prefix: str = "ratelimit") -> None:
+        """Initializes the counter with a Redis client and key prefix.
+
+        Args:
+            redis: Async Redis client used for INCR/EXPIRE bookkeeping.
+            prefix: Key prefix separating rate-limit keys from other data.
+        """
+        self.redis = redis
+        self.prefix = prefix
+
+    async def hit(self, client: str, window_seconds: int) -> int:
+        """Increments and returns the client's count for the current window.
+
+        Args:
+            client: Client identifier the counter is keyed on.
+            window_seconds: Length of the fixed rate-limit window.
+
+        Returns:
+            count: The client's request count within the current window.
+        """
+        key = f"{self.prefix}:{client}:{int(window_seconds)}"
+        count = await self.redis.incr(key)
+        if count == 1:
+            await self.redis.expire(key, window_seconds)
+        return count
