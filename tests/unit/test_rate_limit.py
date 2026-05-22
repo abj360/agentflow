@@ -98,3 +98,11 @@ class FakeRedis:
     async def expire(self, key: str, seconds: int) -> None:
         """Records the expiry set for a key."""
         self.expiries[key] = seconds
+
+
+async def test_redis_counter_first_hit_sets_expiry() -> None:
+    """Verifies the first hit of a window sets the key expiry."""
+    redis = FakeRedis()
+    counter = RedisRateCounter(redis)
+    assert await counter.hit("client-1", 60) == 1
+    assert list(redis.expiries.values()) == [60]
