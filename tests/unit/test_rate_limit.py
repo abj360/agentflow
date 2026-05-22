@@ -11,7 +11,7 @@ from types import SimpleNamespace
 
 from starlette.responses import Response
 
-from apps.api.middleware.rate_limit import RateLimitMiddleware
+from apps.api.middleware.rate_limit import RateLimitMiddleware, RedisRateCounter
 
 
 class FakeRequest:
@@ -80,3 +80,21 @@ async def test_429_body_includes_retry_after() -> None:
     await middleware.dispatch(FakeRequest(), passthrough)
     response = await middleware.dispatch(FakeRequest(), passthrough)
     assert b"retry_after" in response.body
+
+
+class FakeRedis:
+    """Mimics the async Redis calls the counter uses."""
+
+    def __init__(self) -> None:
+        """Initializes empty counters and expiry records."""
+        self.counts: dict = {}
+        self.expiries: dict = {}
+
+    async def incr(self, key: str) -> int:
+        """Increments the stored count for a key."""
+        self.counts[key] = self.counts.get(key, 0) + 1
+        return self.counts[key]
+
+    async def expire(self, key: str, seconds: int) -> None:
+        """Records the expiry set for a key."""
+        self.expiries[key] = seconds
