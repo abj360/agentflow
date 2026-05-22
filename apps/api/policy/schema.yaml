@@ -55,3 +55,12 @@ tenant_overrides:
   - match: "audit.read"
     action: allow
     risk: low
+
+
+  initech:
+    rules:
+      - match: "search.*"
+        action: allow
+      - match: "*"
+        action: human_approval
+        risk: medium
