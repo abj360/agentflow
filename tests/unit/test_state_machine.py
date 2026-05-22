@@ -40,3 +40,10 @@ def test_route_after_critic_accepts_on_verdict() -> None:
     from apps.api.orchestration.state_machine import route_after_critic
 
     assert route_after_critic(make_state(critique="accept")) == "accept"
+
+
+def test_route_after_critic_revises_on_reject() -> None:
+    """Verifies a non-accept verdict loops back to the planner."""
+    from apps.api.orchestration.state_machine import route_after_critic
+
+    assert route_after_critic(make_state(critique="revise")) == "revise"
