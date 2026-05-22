@@ -61,7 +61,9 @@ def to_mcp_schema(spec: UnifiedToolSpec) -> dict:
                 param.name: {"type": param.type, "description": param.description}
                 for param in spec.parameters
             },
-            "required": [param.name for param in spec.parameters if param.required],
+            "required": sorted(
+                param.name for param in spec.parameters if param.required
+            ),
         },
     }
 
