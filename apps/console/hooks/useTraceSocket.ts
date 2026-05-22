@@ -26,12 +26,17 @@ export function useTraceSocket(runId: string): TraceEvent[] {
 
   useEffect(() => {
     let attempts = 0;
+    let current: WebSocket | null = null;
     const connect = () => {
       attempts += 1;
       const socket = new WebSocket(
         `${process.env.NEXT_PUBLIC_WS_URL}/ws/traces?run_id=${runId}`
       );
+      current = socket;
       socket.onmessage = (message) => {
+        if (socket !== current) {
+          return;
+        }
         const event = JSON.parse(message.data);
         setEvents((prev) => [...prev, event]);
       };
