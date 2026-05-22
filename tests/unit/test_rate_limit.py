@@ -106,3 +106,10 @@ async def test_redis_counter_first_hit_sets_expiry() -> None:
     counter = RedisRateCounter(redis)
     assert await counter.hit("client-1", 60) == 1
     assert list(redis.expiries.values()) == [60]
+
+
+async def test_redis_counter_increment_within_window() -> None:
+    """Verifies subsequent hits increment without resetting expiry."""
+    counter = RedisRateCounter(FakeRedis())
+    assert await counter.hit("client-1", 60) == 1
+    assert await counter.hit("client-1", 60) == 2
