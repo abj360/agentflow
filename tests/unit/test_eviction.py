@@ -72,3 +72,10 @@ def test_one_failure_keeps_server_active() -> None:
     evictor = build_evictor()
     assert evictor.probe("srv", ok=False) is True
     assert evictor.is_active("srv") is True
+
+
+def test_manual_evict_works() -> None:
+    """Verifies evict removes a server without probe history."""
+    evictor = build_evictor()
+    evictor.evict("srv-manual")
+    assert evictor.is_active("srv-manual") is False
