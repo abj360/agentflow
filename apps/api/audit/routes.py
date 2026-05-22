@@ -70,3 +70,31 @@ async def get_trace_events(
             for event in page
         ],
     }
+
+
+@router.get("/{trace_id}/verify")
+async def verify_trace_chain(
+    trace_id: str, session: AsyncSession = Depends(get_session)
+) -> dict:
+    """Recomputes the hash chain for a trace and reports integrity.
+
+    Args:
+        trace_id: Identifier of the orchestration run to verify.
+        session: Async database session injected by FastAPI.
+
+    Returns:
+        verification: Chain validity plus the checked event count.
+    """
+    result = await session.execute(
+        select(AuditEvent)
+        .where(AuditEvent.trace_id == trace_id)
+        .order_by(AuditEvent.created_at)
+    )
+    events = list(result.scalars().all())
+    if not events:
+        raise HTTPException(status_code=404, detail="trace not found")
+    return {
+        "trace_id": trace_id,
+        "chain_valid": verify_chain(events),
+        "checked": len(events),
+    }
