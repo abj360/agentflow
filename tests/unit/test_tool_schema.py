@@ -54,3 +54,9 @@ def test_round_trip_preserves_required_flags() -> None:
     by_name = {p.name: p for p in restored.parameters}
     assert by_name["q"].required is True
     assert by_name["limit"].required is False
+
+
+def test_empty_spec_schema_has_no_properties() -> None:
+    """Verifies a parameterless tool gets an empty properties map."""
+    schema = to_mcp_schema(UnifiedToolSpec(name="ping", description="Ping"))
+    assert schema["inputSchema"]["properties"] == {}
