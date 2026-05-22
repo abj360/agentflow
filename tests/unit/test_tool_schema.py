@@ -44,3 +44,13 @@ def test_round_trip_preserves_name_and_params() -> None:
     restored = from_mcp_schema(to_mcp_schema(SPEC))
     assert restored.name == SPEC.name
     assert {p.name for p in restored.parameters} == {"q", "limit"}
+
+
+def test_round_trip_preserves_required_flags() -> None:
+    """Verifies required flags survive a schema round trip."""
+    from agentflow_core.tool_schema import from_mcp_schema
+
+    restored = from_mcp_schema(to_mcp_schema(SPEC))
+    by_name = {p.name: p for p in restored.parameters}
+    assert by_name["q"].required is True
+    assert by_name["limit"].required is False
