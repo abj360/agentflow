@@ -9,6 +9,8 @@ Contains:
 
 from dataclasses import dataclass, field
 
+from agentflow_core.tool_schema import UnifiedToolSpec, to_mcp_schema
+
 
 @dataclass(frozen=True)
 class ToolSpec:
@@ -23,6 +25,14 @@ class ToolSpec:
     name: str
     description: str
     input_schema: dict = field(default_factory=dict)
+
+    def mcp_schema(self) -> dict:
+        """Renders this spec as an MCP tool schema.
+
+        Returns:
+            schema: MCP-compliant tool schema dict.
+        """
+        return self.input_schema
 
 
 class ToolRegistry:
