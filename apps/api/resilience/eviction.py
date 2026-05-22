@@ -87,6 +87,14 @@ class ServerEvictor:
         """
         return server_name not in self.evicted
 
+    def evict(self, server_name: str) -> None:
+        """Evicts a server immediately, bypassing the probe path.
+
+        Args:
+            server_name: The server to evict.
+        """
+        self.evicted[server_name] = time.time()
+
     def reinstate(self, server_name: str) -> bool:
         """Reinstates an evicted server after a successful manual probe.
 
