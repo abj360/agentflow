@@ -49,7 +49,7 @@ class SoakUser(HttpUser):
         )
 
 
-    @task(2)
+    @task(1)
     def page_events(self) -> None:
         """Pages through trace events."""
         self.client.get(
