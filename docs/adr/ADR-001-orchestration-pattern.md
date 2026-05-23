@@ -33,3 +33,10 @@ explicit, testable, and replayable end to end from the audit log.
   and testable; a state graph gives us that plus replay from the audit log.
 - **Autonomous unbounded loop.** Firmly rejected: an unbounded planner/critic loop is
   a cost incident waiting to happen (see MAX_REVISIONS in loop.py).
+
+
+## Bounding the loop
+
+The planner/critic cycle is capped at `MAX_REVISIONS = 3` per session. Past
+the cap the run ends with a `revision-bounded` status and the full trace is
+preserved for review. Unbounded agent loops are a cost incident, not a feature.
