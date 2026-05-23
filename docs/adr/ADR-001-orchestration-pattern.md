@@ -32,7 +32,7 @@ explicit, testable, and replayable end to end from the audit log.
 - **Hard-coded if/else orchestration.** Rejected: transitions must stay explicit
   and testable; a state graph gives us that plus replay from the audit log.
 - **Autonomous unbounded loop.** Firmly rejected: an unbounded planner/critic loop is
-  a cost incident waiting to happen (see MAX_REVISIONS in loop.py).
+  a cost incident waiting to happen — see the bound in `loop.py`.
 
 
 ## Bounding the loop
