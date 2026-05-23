@@ -53,5 +53,6 @@ class SoakUser(HttpUser):
     def page_events(self) -> None:
         """Pages through trace events."""
         self.client.get(
-            "/audit/trace-soak-7?limit=100", name="/audit/{trace_id}?limit=100"
+            "/audit/trace-soak-7?limit=100",
+            name="/audit/{trace_id}?limit=100",
         )
