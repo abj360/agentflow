@@ -26,3 +26,10 @@ Matching uses `fnmatch`: `*` crosses dots, so `search.*` covers
 - `deny` — the call is rejected and the rejection is audit-logged.
 - `human_approval` — the call pauses in the console approval queue until a
   reviewer approves or rejects it.
+
+
+## The catch-all rule
+
+The final rule must be `{"match": "*", "action": "deny"}`: governance fails
+closed. Anything not explicitly allowed is denied by default. Removing the
+catch-all turns the engine fail-open, which is never acceptable.
