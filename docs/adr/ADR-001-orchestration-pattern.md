@@ -39,4 +39,6 @@ explicit, testable, and replayable end to end from the audit log.
 
 The planner/critic cycle is capped at `MAX_REVISIONS = 3` per session. Past
 the cap the run ends with a `revision-bounded` status and the full trace is
-preserved for review. Unbounded agent loops are a cost incident, not a feature.
+preserved for review.
+
+Unbounded agent loops are a cost incident, not a feature.
