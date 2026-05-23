@@ -167,3 +167,10 @@ input {
   border: 1px solid var(--border);
   border-radius: 0.375rem;
 }
+
+
+@media (prefers-color-scheme: dark) {
+  .approve {
+    background: #166534;
+  }
+}
