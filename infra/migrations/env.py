@@ -18,6 +18,8 @@ from apps.api.audit.models import Base
 from apps.api.config import get_settings
 
 config = context.config
+
+# model metadata drives --autogenerate diffs; keep imports current
 target_metadata = Base.metadata
 
 if config.config_file_name is not None:
