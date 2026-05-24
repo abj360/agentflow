@@ -27,3 +27,9 @@ async def test_run_session_returns_dict() -> None:
     """Verifies the loop result is a plain dict for serialization."""
     result = await run_session("session-2", "ping")
     assert isinstance(result, dict)
+
+
+async def test_run_session_marks_completed_status() -> None:
+    """Verifies a session that the critic accepts ends completed."""
+    result = await run_session("session-3", "summarize this")
+    assert result["status"] == "completed"
