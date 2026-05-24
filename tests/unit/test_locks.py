@@ -75,3 +75,15 @@ async def test_release_clears_key() -> None:
     await lock.acquire()
     await lock.release()
     assert redis.store == {}
+
+
+async def test_release_without_holding_raises() -> None:
+    """Verifies releasing an unheld lock raises LockNotHeldError."""
+    from apps.api.concurrency.locks import LockNotHeldError
+
+    lock = DistributedLock(FakeRedis(), "k1")
+    try:
+        await lock.release()
+    except LockNotHeldError:
+        return
+    raise AssertionError("expected LockNotHeldError")
