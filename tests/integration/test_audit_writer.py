@@ -72,3 +72,15 @@ async def test_events_of_separate_traces_stay_separate(session_factory) -> None:
             select(AuditEvent).where(AuditEvent.trace_id == "it-trace-a")
         )
         assert len(list(result.scalars())) == 1
+
+
+async def test_drain_persists_remaining_events(session_factory) -> None:
+    """Verifies drain flushes events still sitting in the buffer."""
+    writer = AuditWriter(session_factory, batch_size=100)
+    await writer.enqueue("it-trace-3", EventKind.CRITIQUE, {"score": 0.5})
+    await writer.drain()
+    async with session_factory() as session:
+        result = await session.execute(
+            select(AuditEvent).where(AuditEvent.trace_id == "it-trace-3")
+        )
+        assert len(list(result.scalars())) == 1
