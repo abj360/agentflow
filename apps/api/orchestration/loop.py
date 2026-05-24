@@ -42,7 +42,11 @@ async def run_session(session_id: str, task: str) -> dict:
         if graph_state["critique"] == "accept":
             break
         revisions += 1
-    return {"output": graph_state["results"], "iterations": graph_state["iterations"]}
+    return {
+        "output": graph_state["results"],
+        "iterations": graph_state["iterations"],
+        "status": "completed",
+    }
 
 
 def session_summary(result: dict) -> str:
