@@ -5,6 +5,7 @@ sse_server.py --- MCP server exposed over Server-Sent Events transport
 Contains:
     ToolSpec: describes one tool exposed by the MCP server
     ToolRegistry: tools this server exposes to MCP clients
+    default_registry(): builds the registry with the built-in demo tools
 """
 
 from dataclasses import dataclass, field
