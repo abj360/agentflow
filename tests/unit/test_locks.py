@@ -87,3 +87,13 @@ async def test_release_without_holding_raises() -> None:
     except LockNotHeldError:
         return
     raise AssertionError("expected LockNotHeldError")
+
+
+async def test_release_keeps_others_key() -> None:
+    """Verifies releasing does not delete someone else's lock key."""
+    redis = FakeRedis()
+    redis.store["k1"] = "other-token"
+    lock = DistributedLock(redis, "k1")
+    lock._token = "our-token"
+    await lock.release()
+    assert redis.store.get("k1") == "other-token"
