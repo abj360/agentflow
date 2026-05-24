@@ -24,7 +24,7 @@ test("approve removes the card from the queue", async ({ page }) => {
 });
 
 
-test("reject removes the card from the queue", async ({ page }) => {
+test("reject removes the card from the queue @smoke", async ({ page }) => {
   await page.goto("/approvals");
   const card = page.locator(".approval-card").first();
   await card.getByRole("button", { name: /reject/i }).click();
