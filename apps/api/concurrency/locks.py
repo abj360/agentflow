@@ -53,9 +53,13 @@ class DistributedLock:
         return False
 
     async def release(self) -> None:
-        """Releases the lock when held by this instance."""
+        """Releases the lock when held by this instance.
+
+        Raises:
+            LockNotHeldError: When release is called without holding.
+        """
         if self._token is None:
-            return
+            raise LockNotHeldError(self.key)
         current = await self.redis.get(self.key)
         if current == self._token:
             await self.redis.delete(self.key)
