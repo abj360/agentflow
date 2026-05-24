@@ -84,3 +84,11 @@ async def test_drain_persists_remaining_events(session_factory) -> None:
             select(AuditEvent).where(AuditEvent.trace_id == "it-trace-3")
         )
         assert len(list(result.scalars())) == 1
+
+
+async def test_drain_is_safe_to_call_twice(session_factory) -> None:
+    """Verifies a second drain writes nothing and does not error."""
+    writer = AuditWriter(session_factory)
+    await writer.enqueue("it-trace-c", EventKind.CRITIQUE, {})
+    await writer.drain()
+    assert await writer.drain() == 0
