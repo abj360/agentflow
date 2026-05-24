@@ -92,3 +92,17 @@ async def test_drain_is_safe_to_call_twice(session_factory) -> None:
     await writer.enqueue("it-trace-c", EventKind.CRITIQUE, {})
     await writer.drain()
     assert await writer.drain() == 0
+
+
+async def test_payload_round_trips_as_json(session_factory) -> None:
+    """Verifies nested payloads come back as the same JSON structure."""
+    payload = {"tool": "search", "args": {"q": "agentflow", "limit": 3}}
+    writer = AuditWriter(session_factory)
+    await writer.enqueue("it-trace-d", EventKind.TOOL_CALL, payload)
+    await writer.flush()
+    async with session_factory() as session:
+        result = await session.execute(
+            select(AuditEvent).where(AuditEvent.trace_id == "it-trace-d")
+        )
+        event = result.scalars().one()
+    assert event.payload == payload
