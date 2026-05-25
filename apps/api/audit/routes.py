@@ -33,10 +33,10 @@ async def get_trace_events(
         trace_id: Identifier of the orchestration run to look up.
         session: Async database session injected by FastAPI.
         limit: Maximum number of events to return per page.
-        offset: Number of events to skip before the page starts.
+        cursor: Opaque token from a previous response's next_cursor.
 
     Returns:
-        trace: Chronologically ordered events plus a chain-integrity flag.
+        trace: One page of ordered events plus a chain-integrity flag.
     """
     statement = (
         select(AuditEvent)
