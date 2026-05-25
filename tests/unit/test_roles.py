@@ -39,3 +39,9 @@ def test_llm_client_is_protocol() -> None:
     from apps.api.orchestration.roles import LLMClient
 
     assert hasattr(LLMClient, "complete")
+
+
+async def test_planner_without_llm_falls_back() -> None:
+    """Verifies the planner works without an LLM client attached."""
+    update = await Planner(llm=None).run({"task": "fallback"})
+    assert update["plan"] == ["fallback"]
