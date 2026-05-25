@@ -29,7 +29,19 @@ class AgentRole(Protocol):
 
 
 class Planner:
-    """Breaks the task into an ordered plan."""
+    """Breaks the task into an ordered plan.
+
+    Attributes:
+        llm: Completion client used to draft plans.
+    """
+
+    def __init__(self, llm: LLMClient | None = None) -> None:
+        """Initializes the planner with an optional LLM client.
+
+        Args:
+            llm: Completion client used to draft plans.
+        """
+        self.llm = llm
 
     async def run(self, state: dict) -> dict:
         """Produces a plan from the task in the current state.
