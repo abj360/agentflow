@@ -69,3 +69,8 @@ tenant_overrides:
   - match: "config.read"
     action: allow
     risk: low
+
+
+  - match: "admin.*"
+    action: deny
+    risk: critical
