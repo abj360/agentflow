@@ -71,3 +71,15 @@ class SessionRegistry:
 
 class VersionConflictError(Exception):
     """Raised when a session version bump loses a concurrent race."""
+
+
+    def close_session(self, session_id: str) -> SessionRecord:
+        """Marks a session closed and returns its final record.
+
+        Args:
+            session_id: Identifier of the session being closed.
+
+        Returns:
+            record: The session's final record.
+        """
+        return self.records.pop(session_id)
