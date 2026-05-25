@@ -182,3 +182,10 @@ def test_chain_valid_computed_on_page() -> None:
     client = make_client(make_events("trace-p6", 4))
     body = client.get("/audit/trace-p6?limit=4").json()
     assert body["chain_valid"] is True
+
+
+def test_next_cursor_present_when_more_pages() -> None:
+    """Verifies next_cursor is set when events remain beyond the page."""
+    client = make_client(make_events("trace-p7", 5))
+    body = client.get("/audit/trace-p7?limit=2").json()
+    assert body["next_cursor"] is not None
