@@ -168,3 +168,10 @@ def test_event_count_reflects_page_not_total() -> None:
     client = make_client(make_events("trace-p4", 5))
     body = client.get("/audit/trace-p4?limit=3").json()
     assert body["event_count"] == 3
+
+
+def test_next_cursor_null_on_last_page() -> None:
+    """Verifies next_cursor is null when no further page exists."""
+    client = make_client(make_events("trace-p5", 2))
+    body = client.get("/audit/trace-p5?limit=5").json()
+    assert body["next_cursor"] is None
