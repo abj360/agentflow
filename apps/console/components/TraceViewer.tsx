@@ -30,3 +30,13 @@ export function TraceViewer({ runId }: { runId: string }) {
     </ol>
   );
 }
+
+
+/**
+ * Renders the empty state shown before the first event arrives.
+ *
+ * @returns The empty-state element.
+ */
+export function TraceEmptyState() {
+  return <p className="trace-empty">Waiting for trace events…</p>;
+}
