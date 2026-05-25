@@ -117,3 +117,19 @@ def is_allowed(decision: Decision) -> bool:
         allowed: True only for an explicit allow decision.
     """
     return decision.action == "allow"
+
+
+def describe_action(action: str) -> str:
+    """Renders an action as human-readable text.
+
+    Args:
+        action: The policy action to describe.
+
+    Returns:
+        description: Plain-language label for the action.
+    """
+    return {
+        "allow": "allowed by policy",
+        "deny": "denied by policy",
+        "human_approval": "requires human approval",
+    }.get(action, f"unknown action: {action}")
