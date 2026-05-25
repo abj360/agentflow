@@ -42,3 +42,11 @@ def test_open_session_records_trace_id() -> None:
     registry = SessionRegistry()
     record = registry.open_session("s2", "trace-9")
     assert record.trace_id == "trace-9"
+
+
+def test_close_session_removes_record() -> None:
+    """Verifies closing drops the session from the registry."""
+    registry = SessionRegistry()
+    registry.open_session("s3", "trace-1")
+    registry.close_session("s3")
+    assert "s3" not in registry.records
