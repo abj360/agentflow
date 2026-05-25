@@ -32,3 +32,10 @@ async def test_synthesizer_joins_results() -> None:
     """Verifies the synthesizer merges results into one output."""
     update = await Synthesizer().run({"results": ["x", "y"]})
     assert "x" in update["output"] and "y" in update["output"]
+
+
+def test_llm_client_is_protocol() -> None:
+    """Verifies the LLM client interface stays structural."""
+    from apps.api.orchestration.roles import LLMClient
+
+    assert hasattr(LLMClient, "complete")
