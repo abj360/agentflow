@@ -175,3 +175,10 @@ def test_next_cursor_null_on_last_page() -> None:
     client = make_client(make_events("trace-p5", 2))
     body = client.get("/audit/trace-p5?limit=5").json()
     assert body["next_cursor"] is None
+
+
+def test_chain_valid_computed_on_page() -> None:
+    """Verifies chain integrity is evaluated over the returned page."""
+    client = make_client(make_events("trace-p6", 4))
+    body = client.get("/audit/trace-p6?limit=4").json()
+    assert body["chain_valid"] is True
