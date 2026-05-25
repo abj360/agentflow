@@ -12,7 +12,7 @@ from locust import HttpUser, between, task
 class OrchestratorUser(HttpUser):
     """Simulates a user driving session lifecycle traffic."""
 
-    wait_time = between(0.3, 1.5)
+    wait_time = between(0.4, 1.6)
 
     @task(4)
     def fetch_trace(self) -> None:
