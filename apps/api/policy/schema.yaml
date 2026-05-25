@@ -64,3 +64,8 @@ tenant_overrides:
       - match: "*"
         action: human_approval
         risk: medium
+
+
+  - match: "config.read"
+    action: allow
+    risk: low
