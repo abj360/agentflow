@@ -79,3 +79,12 @@ def test_policies_from_dict_builds_registry() -> None:
 
     registry = policies_from_dict({"search.query": {"max_attempts": 5}})
     assert registry.resolve("search.query").max_attempts == 5
+
+
+def test_policies_from_dict_defaults() -> None:
+    """Verifies missing fields fall back to policy defaults."""
+    from apps.api.orchestration.retry import policies_from_dict
+
+    registry = policies_from_dict({"fs.read": {}})
+    policy = registry.resolve("fs.read")
+    assert policy.max_attempts == 3 and policy.backoff_seconds == 0.5
