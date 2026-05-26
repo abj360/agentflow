@@ -1,6 +1,11 @@
 services:
   postgres:
     image: postgres:16
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agentflow"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     environment:
       POSTGRES_DB: agentflow
       POSTGRES_USER: agentflow
