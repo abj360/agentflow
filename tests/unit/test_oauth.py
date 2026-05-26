@@ -75,3 +75,10 @@ def test_code_verifier_urlsafe() -> None:
 
     verifier = generate_code_verifier()
     assert " " not in verifier and "+" not in verifier
+
+
+def test_code_challenge_differs_per_verifier() -> None:
+    """Verifies different verifiers yield different challenges."""
+    from apps.api.mcp_servers.oauth import code_challenge
+
+    assert code_challenge("a") != code_challenge("b")
