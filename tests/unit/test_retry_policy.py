@@ -105,3 +105,21 @@ async def test_execute_with_retry_first_try_success() -> None:
 def test_registry_starts_empty() -> None:
     """Verifies a fresh registry has no registered policies."""
     assert RetryPolicyRegistry().policies == {}
+
+
+async def test_execute_with_retry_counts_attempts() -> None:
+    """Verifies the attempt count matches the failure count plus one."""
+    from apps.api.orchestration.retry import execute_with_retry
+
+    calls = {"n": 0}
+
+    async def twice_flaky() -> str:
+        """Fails once then succeeds."""
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise TimeoutError("t")
+        return "ok"
+
+    policy = RetryPolicy(tool_name="t", max_attempts=3, backoff_seconds=0)
+    await execute_with_retry(twice_flaky, policy)
+    assert calls["n"] == 2
