@@ -57,3 +57,15 @@ def current_trace_id() -> str:
     if context.trace_id == 0:
         return ""
     return format(context.trace_id, "032x")
+
+
+def set_span_attribute(key: str, value: object) -> None:
+    """Sets an attribute on the current span when one is active.
+
+    Args:
+        key: Span attribute name.
+        value: Span attribute value.
+    """
+    span = trace.get_current_span()
+    if span.is_recording():
+        span.set_attribute(key, value)
