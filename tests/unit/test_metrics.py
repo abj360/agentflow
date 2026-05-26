@@ -61,3 +61,10 @@ def test_tool_calls_unknown_label_defaults() -> None:
     from apps.api.observability.metrics import tool_calls_total
 
     tool_calls_total.labels(action="human_approval").inc()
+
+
+def test_tokens_counter_accepts_counts() -> None:
+    """Verifies the token counter accepts bulk increments."""
+    from apps.api.observability.metrics import tokens_total
+
+    tokens_total.inc(250)
