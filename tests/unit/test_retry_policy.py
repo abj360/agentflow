@@ -88,3 +88,15 @@ def test_policies_from_dict_defaults() -> None:
     registry = policies_from_dict({"fs.read": {}})
     policy = registry.resolve("fs.read")
     assert policy.max_attempts == 3 and policy.backoff_seconds == 0.5
+
+
+async def test_execute_with_retry_first_try_success() -> None:
+    """Verifies a healthy call returns on the first attempt."""
+    from apps.api.orchestration.retry import execute_with_retry
+
+    async def healthy() -> str:
+        """Succeeds immediately."""
+        return "fine"
+
+    policy = RetryPolicy(tool_name="t", backoff_seconds=0)
+    assert await execute_with_retry(healthy, policy) == "fine"
