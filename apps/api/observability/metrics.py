@@ -50,3 +50,10 @@ tool_calls_total = Counter(
     labelnames=["action"],
     registry=registry,
 )
+
+
+tokens_total = Counter(
+    "agentflow_tokens_total",
+    "Model tokens consumed",
+    registry=registry,
+)
