@@ -91,3 +91,13 @@ def test_is_expired_within_skew_window() -> None:
     tokens = TokenSet(access_token="t", refresh_token=None,
                       expires_at=time.time() + 10)
     assert tokens.is_expired(skew_seconds=30) is True
+
+
+def test_token_cache_round_trip() -> None:
+    """Verifies tokens cache and read back per server."""
+    from apps.api.mcp_servers.oauth import TokenCache
+
+    cache = TokenCache()
+    tokens = TokenSet(access_token="a", refresh_token="r", expires_at=1.0)
+    cache.put("srv", tokens)
+    assert cache.get("srv") == tokens
