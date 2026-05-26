@@ -71,3 +71,11 @@ async def test_execute_with_retry_gives_up() -> None:
     except RuntimeError:
         return
     raise AssertionError("expected RuntimeError")
+
+
+def test_policies_from_dict_builds_registry() -> None:
+    """Verifies dict-driven registration populates policies."""
+    from apps.api.orchestration.retry import policies_from_dict
+
+    registry = policies_from_dict({"search.query": {"max_attempts": 5}})
+    assert registry.resolve("search.query").max_attempts == 5
