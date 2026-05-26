@@ -82,3 +82,12 @@ def test_code_challenge_differs_per_verifier() -> None:
     from apps.api.mcp_servers.oauth import code_challenge
 
     assert code_challenge("a") != code_challenge("b")
+
+
+def test_is_expired_within_skew_window() -> None:
+    """Verifies the skew window treats near-expiry tokens as expired."""
+    import time
+
+    tokens = TokenSet(access_token="t", refresh_token=None,
+                      expires_at=time.time() + 10)
+    assert tokens.is_expired(skew_seconds=30) is True
