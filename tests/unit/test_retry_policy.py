@@ -100,3 +100,8 @@ async def test_execute_with_retry_first_try_success() -> None:
 
     policy = RetryPolicy(tool_name="t", backoff_seconds=0)
     assert await execute_with_retry(healthy, policy) == "fine"
+
+
+def test_registry_starts_empty() -> None:
+    """Verifies a fresh registry has no registered policies."""
+    assert RetryPolicyRegistry().policies == {}
