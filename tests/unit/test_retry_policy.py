@@ -55,3 +55,19 @@ async def test_execute_with_retry_eventually_succeeds() -> None:
 
     policy = RetryPolicy(tool_name="t", max_attempts=4, backoff_seconds=0)
     assert await execute_with_retry(flaky, policy) == "ok"
+
+
+async def test_execute_with_retry_gives_up() -> None:
+    """Verifies a persistently failing call raises after the last attempt."""
+    from apps.api.orchestration.retry import execute_with_retry
+
+    async def always_fails() -> str:
+        """Always raises."""
+        raise RuntimeError("down")
+
+    policy = RetryPolicy(tool_name="t", max_attempts=2, backoff_seconds=0)
+    try:
+        await execute_with_retry(always_fails, policy)
+    except RuntimeError:
+        return
+    raise AssertionError("expected RuntimeError")
