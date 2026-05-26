@@ -54,6 +54,6 @@ tool_calls_total = Counter(
 
 tokens_total = Counter(
     "agentflow_tokens_total",
-    "Model tokens consumed",
+    "Model tokens consumed across all sessions",
     registry=registry,
 )
