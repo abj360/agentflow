@@ -68,3 +68,9 @@ def test_tokens_counter_accepts_counts() -> None:
     from apps.api.observability.metrics import tokens_total
 
     tokens_total.inc(250)
+
+
+def test_metrics_include_tokens() -> None:
+    """Verifies the scrape payload includes the token counter."""
+    response = metrics_endpoint(None)
+    assert b"agentflow_tokens_total" in response.body
