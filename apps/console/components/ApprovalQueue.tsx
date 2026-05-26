@@ -29,7 +29,12 @@ export function ApprovalQueue() {
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/approvals/pending`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`approvals fetch failed: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((body) => setApprovals(body.approvals ?? []))
       .catch(() => setApprovals([]));
   }, []);
