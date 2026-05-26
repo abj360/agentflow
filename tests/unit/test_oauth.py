@@ -101,3 +101,13 @@ def test_token_cache_round_trip() -> None:
     tokens = TokenSet(access_token="a", refresh_token="r", expires_at=1.0)
     cache.put("srv", tokens)
     assert cache.get("srv") == tokens
+
+
+def test_token_cache_discard() -> None:
+    """Verifies discarding drops the cached tokens."""
+    from apps.api.mcp_servers.oauth import TokenCache
+
+    cache = TokenCache()
+    cache.put("srv", TokenSet(access_token="a", refresh_token=None, expires_at=1.0))
+    cache.discard("srv")
+    assert cache.get("srv") is None
