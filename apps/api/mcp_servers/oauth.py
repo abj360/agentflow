@@ -165,3 +165,43 @@ def code_challenge(verifier: str) -> str:
     """
     digest = hashlib.sha256(verifier.encode("ascii")).digest()
     return base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
+
+
+class TokenCache:
+    """Caches token sets per MCP server.
+
+    Attributes:
+        tokens: Cached token sets keyed by server name.
+    """
+
+    def __init__(self) -> None:
+        """Initializes an empty token cache."""
+        self.tokens: dict[str, TokenSet] = {}
+
+    def get(self, server_name: str) -> TokenSet | None:
+        """Looks up cached tokens for a server.
+
+        Args:
+            server_name: Server whose tokens are requested.
+
+        Returns:
+            tokens: Cached token set, or None when absent.
+        """
+        return self.tokens.get(server_name)
+
+    def put(self, server_name: str, tokens: TokenSet) -> None:
+        """Caches a token set for a server.
+
+        Args:
+            server_name: Server the tokens belong to.
+            tokens: The token set to cache.
+        """
+        self.tokens[server_name] = tokens
+
+    def discard(self, server_name: str) -> None:
+        """Drops cached tokens for a server.
+
+        Args:
+            server_name: Server whose tokens should be dropped.
+        """
+        self.tokens.pop(server_name, None)
