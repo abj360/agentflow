@@ -84,3 +84,24 @@ async def execute_with_retry(func, policy: RetryPolicy):
             if attempt >= policy.max_attempts:
                 raise
             await asyncio.sleep(policy.backoff_seconds * attempt)
+
+
+def policies_from_dict(raw: dict) -> RetryPolicyRegistry:
+    """Builds a registry from a plain dict, e.g. parsed YAML.
+
+    Args:
+        raw: Mapping of tool names to policy fields.
+
+    Returns:
+        registry: Populated retry policy registry.
+    """
+    registry = RetryPolicyRegistry()
+    for tool_name, fields in raw.items():
+        registry.register(
+            RetryPolicy(
+                tool_name=tool_name,
+                max_attempts=fields.get("max_attempts", 3),
+                backoff_seconds=fields.get("backoff_seconds", 0.5),
+            )
+        )
+    return registry
