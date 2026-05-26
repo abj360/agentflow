@@ -30,7 +30,8 @@ export function ApprovalQueue() {
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/approvals/pending`)
       .then((res) => res.json())
-      .then((body) => setApprovals(body.approvals ?? []));
+      .then((body) => setApprovals(body.approvals ?? []))
+      .catch(() => setApprovals([]));
   }, []);
 
   const resolve = async (approvalId: string, status: string) => {
