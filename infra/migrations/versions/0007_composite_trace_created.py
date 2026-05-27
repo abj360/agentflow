@@ -28,6 +28,8 @@ def upgrade() -> None:
     )
 
 
+# separate single-column indexes from 0002 could not serve
+# WHERE trace_id = ? ORDER BY created_at without a full scan past ~200k rows
 def downgrade() -> None:
     """Reverts the migration."""
     op.execute(
