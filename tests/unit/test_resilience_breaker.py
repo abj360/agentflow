@@ -96,3 +96,11 @@ def test_registry_reuses_breaker() -> None:
 
     registry = BreakerRegistry()
     assert registry.for_server("a") is registry.for_server("a")
+
+
+def test_registry_applies_shared_threshold() -> None:
+    """Verifies created breakers inherit the registry threshold."""
+    from apps.api.resilience.breaker import BreakerRegistry
+
+    breaker = BreakerRegistry(failure_threshold=2).for_server("x")
+    assert breaker.failure_threshold == 2
