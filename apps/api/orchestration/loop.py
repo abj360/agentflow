@@ -42,6 +42,8 @@ async def run_session(session_id: str, task: str) -> dict:
         if graph_state["critique"] == "accept":
             break
         revisions += 1
+    else:
+        graph_state["critique"] = "revision-bounded"
     return {
         "output": graph_state["results"],
         "iterations": graph_state["iterations"],
