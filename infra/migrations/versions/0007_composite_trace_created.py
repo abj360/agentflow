@@ -35,3 +35,8 @@ def downgrade() -> None:
         DROP INDEX ix_audit_trace_created
         """
     )
+
+
+def backfill() -> None:
+    """Refreshes planner statistics so the new index is picked up immediately."""
+    op.execute("ANALYZE audit_events")
