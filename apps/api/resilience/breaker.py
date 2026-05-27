@@ -121,3 +121,36 @@ class CircuitOpenError(Exception):
             count: Slots currently acquired.
         """
         return self.limit - self._semaphore._value
+
+
+class BreakerRegistry:
+    """Keeps one circuit breaker per downstream server.
+
+    Attributes:
+        breakers: Server breakers keyed by server name.
+        failure_threshold: Threshold applied to newly created breakers.
+    """
+
+    def __init__(self, failure_threshold: int = 5) -> None:
+        """Initializes the registry with a shared threshold.
+
+        Args:
+            failure_threshold: Threshold applied to newly created breakers.
+        """
+        self.breakers: dict[str, ServerCircuitBreaker] = {}
+        self.failure_threshold = failure_threshold
+
+    def for_server(self, server_name: str) -> ServerCircuitBreaker:
+        """Returns the breaker for a server, creating it on first use.
+
+        Args:
+            server_name: Downstream server name.
+
+        Returns:
+            breaker: The server's circuit breaker.
+        """
+        if server_name not in self.breakers:
+            self.breakers[server_name] = ServerCircuitBreaker(
+                server_name, failure_threshold=self.failure_threshold
+            )
+        return self.breakers[server_name]
