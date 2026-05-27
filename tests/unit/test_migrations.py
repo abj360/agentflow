@@ -56,3 +56,10 @@ def test_every_migration_has_upgrade_and_downgrade() -> None:
         content = path.read_text()
         assert "def upgrade" in content, path.name
         assert "def downgrade" in content, path.name
+
+
+def test_composite_trace_created_index_exists() -> None:
+    """Verifies the composite index backing /audit/{trace_id} lookups exists."""
+    contents = "\n".join(path.read_text() for path in migration_files())
+    assert "ix_audit_trace_created" in contents
+    assert "(trace_id, created_at)" in contents
