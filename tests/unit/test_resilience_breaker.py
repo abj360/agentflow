@@ -80,3 +80,11 @@ async def test_bulkhead_releases_slots() -> None:
         pass
     async with bulkhead:
         assert bulkhead.in_flight() == 1
+
+
+def test_registry_creates_breaker_per_server() -> None:
+    """Verifies the registry creates breakers on demand."""
+    from apps.api.resilience.breaker import BreakerRegistry
+
+    registry = BreakerRegistry()
+    assert registry.for_server("a") is not registry.for_server("b")
