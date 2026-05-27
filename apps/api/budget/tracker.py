@@ -101,3 +101,15 @@ class BudgetExhaustedError(Exception):
         """
         super().__init__(f"budget exhausted: {resource}")
         self.resource = resource
+
+
+    def check(self) -> None:
+        """Raises when any budget is exhausted.
+
+        Raises:
+            BudgetExhaustedError: When tokens or tool calls are at the cap.
+        """
+        if self.tokens_used >= self.limits.max_tokens:
+            raise BudgetExhaustedError("tokens")
+        if self.tool_calls_made >= self.limits.max_tool_calls:
+            raise BudgetExhaustedError("tool_calls")
