@@ -88,3 +88,11 @@ def test_registry_creates_breaker_per_server() -> None:
 
     registry = BreakerRegistry()
     assert registry.for_server("a") is not registry.for_server("b")
+
+
+def test_registry_reuses_breaker() -> None:
+    """Verifies the same server gets the same breaker."""
+    from apps.api.resilience.breaker import BreakerRegistry
+
+    registry = BreakerRegistry()
+    assert registry.for_server("a") is registry.for_server("a")
