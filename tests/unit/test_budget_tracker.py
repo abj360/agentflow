@@ -106,3 +106,10 @@ def test_reset_clears_consumption() -> None:
     tracker.reset()
     assert tracker.tokens_used == 0
     assert tracker.is_exhausted() is False
+
+
+def test_budget_exhausted_error_message() -> None:
+    """Verifies the error message names the exhausted resource."""
+    from apps.api.budget.tracker import BudgetExhaustedError
+
+    assert "tokens" in str(BudgetExhaustedError("tokens"))
