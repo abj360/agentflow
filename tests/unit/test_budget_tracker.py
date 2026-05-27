@@ -97,3 +97,12 @@ def test_check_raises_on_tool_call_cap() -> None:
 def test_check_passes_with_headroom() -> None:
     """Verifies check does not raise with budget left."""
     BudgetTracker().check()
+
+
+def test_reset_clears_consumption() -> None:
+    """Verifies reset returns the tracker to a fresh state."""
+    tracker = BudgetTracker(BudgetLimits(max_tokens=10, max_tool_calls=1))
+    tracker.record_tokens(10)
+    tracker.reset()
+    assert tracker.tokens_used == 0
+    assert tracker.is_exhausted() is False
