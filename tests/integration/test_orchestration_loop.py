@@ -45,3 +45,13 @@ async def test_result_contains_status_key() -> None:
     """Verifies the loop result carries a status key."""
     result = await run_session("it-f2", "status check")
     assert "status" in result
+
+
+async def test_state_snapshot_versions_advance() -> None:
+    """Verifies the state store advances versions per iteration."""
+    from apps.api.orchestration.state import StateStore
+
+    store = StateStore()
+    store.advance("it-5")
+    store.advance("it-5")
+    assert store.get("it-5").version == 2
