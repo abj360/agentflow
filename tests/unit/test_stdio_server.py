@@ -55,3 +55,9 @@ def test_tools_call_returns_not_implemented() -> None:
     """Verifies tools/call reports not_implemented for now."""
     response = build_server().handle_request({"method": "tools/call"})
     assert response["result"]["status"] == "not_implemented"
+
+
+def test_missing_method_returns_error() -> None:
+    """Verifies a request without a method gets a clean error."""
+    server = build_server()
+    assert "error" in server.handle_request({})
