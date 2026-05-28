@@ -56,7 +56,7 @@ class BudgetCircuitBreaker:
         return time.time() - self._opened_at < self.reset_seconds
 
     def check(self) -> None:
-        """Raises when the circuit is open.
+        """Raises when the circuit is open, allows one probe when half-open.
 
         Raises:
             CircuitOpenError: When the circuit is open.
