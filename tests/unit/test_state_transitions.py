@@ -79,3 +79,16 @@ def test_critic_update_only_touches_verdict_fields() -> None:
 
     after = critic_node(make_state(plan=["p"], results=["r"]))
     assert after["plan"] == ["p"] and after["results"] == ["r"]
+
+
+def test_validate_graph_flags_missing_critic() -> None:
+    """Verifies validation reports a missing critic node."""
+
+    class PlannerOnlyGraph:
+        """Graph stand-in with only a planner node."""
+
+        nodes = {"planner": object()}
+
+    from apps.api.orchestration.state_machine import validate_graph
+
+    assert validate_graph(PlannerOnlyGraph()) != []
