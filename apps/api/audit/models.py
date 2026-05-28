@@ -8,6 +8,7 @@ Contains:
     AuditEvent: append-only event row, one per state transition or tool call
     AuditSession: one row per orchestration run, grouping its events
     ApprovalRequest: human-in-the-loop approval linked to a tool call
+    event_summary(): builds a one-line summary of an audit event
 """
 
 import uuid
@@ -118,3 +119,15 @@ class ApprovalRequest(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+
+
+def event_summary(event: AuditEvent) -> str:
+    """Builds a one-line human-readable summary of an audit event.
+
+    Args:
+        event: The audit event to summarize.
+
+    Returns:
+        summary: One-line description of the event for logs and console output.
+    """
+    return f"{event.trace_id} {event.kind} at {event.created_at}"
