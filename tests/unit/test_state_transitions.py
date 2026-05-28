@@ -64,3 +64,10 @@ def test_executor_update_preserves_plan() -> None:
     """Verifies the executor leaves the plan in place."""
     after = executor_node(make_state(plan=["stay"]))
     assert after["plan"] == ["stay"]
+
+
+def test_accept_edge_ends_run() -> None:
+    """Verifies an accept verdict routes to the end."""
+    from apps.api.orchestration.state_machine import route_after_critic
+
+    assert route_after_critic(make_state(critique="accept")) == "accept"
