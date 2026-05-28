@@ -66,3 +66,14 @@ def test_half_open_after_cooldown() -> None:
 def test_not_half_open_when_closed() -> None:
     """Verifies a closed breaker is not half-open."""
     assert BudgetCircuitBreaker().is_half_open() is False
+
+
+def test_check_still_raises_when_open() -> None:
+    """Verifies the open check keeps raising after the docstring update."""
+    breaker = BudgetCircuitBreaker(failure_threshold=1)
+    breaker.record_breach()
+    try:
+        breaker.check()
+    except CircuitOpenError:
+        return
+    raise AssertionError("expected CircuitOpenError")
