@@ -71,3 +71,11 @@ def test_accept_edge_ends_run() -> None:
     from apps.api.orchestration.state_machine import route_after_critic
 
     assert route_after_critic(make_state(critique="accept")) == "accept"
+
+
+def test_critic_update_only_touches_verdict_fields() -> None:
+    """Verifies the critic leaves plan and results intact."""
+    from apps.api.orchestration.state_machine import critic_node
+
+    after = critic_node(make_state(plan=["p"], results=["r"]))
+    assert after["plan"] == ["p"] and after["results"] == ["r"]
