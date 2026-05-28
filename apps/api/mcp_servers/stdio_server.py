@@ -69,6 +69,8 @@ class StdioServer:
                     for spec in self.tools.values()
                 ]
             }
+        if method == "tools/call":
+            return {"result": {"status": "not_implemented"}}
         return {"error": f"unknown method: {method}"}
 
     def serve_forever(self) -> None:
