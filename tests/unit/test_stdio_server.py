@@ -49,3 +49,9 @@ def test_tools_list_includes_schema_after_unify() -> None:
     """Verifies tools/list emits unified MCP schemas."""
     response = build_server().handle_request({"method": "tools/list"})
     assert response["tools"][0]["name"] == "fs.read"
+
+
+def test_tools_call_returns_not_implemented() -> None:
+    """Verifies tools/call reports not_implemented for now."""
+    response = build_server().handle_request({"method": "tools/call"})
+    assert response["result"]["status"] == "not_implemented"
