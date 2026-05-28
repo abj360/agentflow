@@ -55,3 +55,10 @@ async def test_state_snapshot_versions_advance() -> None:
     store.advance("it-5")
     store.advance("it-5")
     assert store.get("it-5").version == 2
+
+
+async def test_state_store_unknown_session_empty() -> None:
+    """Verifies an unknown session reads as an empty snapshot."""
+    from apps.api.orchestration.state import StateStore
+
+    assert StateStore().get("ghost").version == 0
