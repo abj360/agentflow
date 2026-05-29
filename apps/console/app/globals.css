@@ -195,3 +195,15 @@ button:hover {
   display: flex;
   justify-content: flex-end;
 }
+
+
+.run-loading {
+  color: var(--muted);
+  font-style: italic;
+}
+
+code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
