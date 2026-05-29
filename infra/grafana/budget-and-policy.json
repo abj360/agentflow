@@ -12,6 +12,15 @@
         { "expr": "rate(agentflow_tokens_total[5m])" }
       ],
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0, "min": 0 }
+    },
+    {
+      "id": 2,
+      "title": "Circuit breaker state",
+      "type": "stat",
+      "targets": [
+        { "expr": "agentflow_budget_breaker_open" }
+      ],
+      "gridPos": { "h": 6, "w": 8, "x": 12, "y": 0 }
     }
   ]
 }
