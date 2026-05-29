@@ -144,3 +144,10 @@ def test_review_deny_unmatched_tool() -> None:
     """Verifies tools matching no rule fall through to deny."""
     engine = make_engine()
     assert engine.evaluate("crypto.mine", {}).action == "deny"
+
+
+def test_review_args_do_not_change_action() -> None:
+    """Verifies call arguments don't influence the rule match."""
+    engine = make_engine()
+    decision = engine.evaluate("search.query", {"q": "x"})
+    assert decision.action == "allow"
