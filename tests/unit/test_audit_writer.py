@@ -138,3 +138,14 @@ async def test_failed_commit_requeues_events() -> None:
     except OperationalError:
         pass
     assert writer.pending_count == 1
+
+
+async def test_enqueue_after_drain_raises() -> None:
+    """Verifies enqueue after drain fails fast instead of silently dropping."""
+    writer = AuditWriter(FakeSessionFactory())
+    await writer.drain()
+    try:
+        await writer.enqueue("trace-1", EventKind.TOOL_CALL, {})
+    except RuntimeError:
+        return
+    raise AssertionError("expected RuntimeError")
