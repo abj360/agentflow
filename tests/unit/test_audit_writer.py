@@ -149,3 +149,10 @@ async def test_enqueue_after_drain_raises() -> None:
     except RuntimeError:
         return
     raise AssertionError("expected RuntimeError")
+
+
+async def test_enqueue_accepts_empty_payload() -> None:
+    """Verifies events without payload data are buffered with an empty dict."""
+    writer = AuditWriter(FakeSessionFactory())
+    event = await writer.enqueue("trace-1", EventKind.CRITIQUE, {})
+    assert event.payload == {}
