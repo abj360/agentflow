@@ -138,3 +138,9 @@ def test_shell_subtools_gated() -> None:
     """Verifies nested shell tools also require approval."""
     engine = build_engine()
     assert engine.evaluate("shell.exec.pipe", {}).action == "human_approval"
+
+
+def test_review_deny_unmatched_tool() -> None:
+    """Verifies tools matching no rule fall through to deny."""
+    engine = make_engine()
+    assert engine.evaluate("crypto.mine", {}).action == "deny"
