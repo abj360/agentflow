@@ -156,3 +156,12 @@ async def test_enqueue_accepts_empty_payload() -> None:
     writer = AuditWriter(FakeSessionFactory())
     event = await writer.enqueue("trace-1", EventKind.CRITIQUE, {})
     assert event.payload == {}
+
+
+async def test_drain_idempotent() -> None:
+    """Verifies draining twice does not error or double-flush."""
+    factory = FakeSessionFactory()
+    writer = AuditWriter(factory)
+    await writer.enqueue("trace-1", EventKind.SYNTHESIS, {})
+    await writer.drain()
+    assert await writer.drain() == 0
