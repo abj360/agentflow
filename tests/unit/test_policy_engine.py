@@ -16,7 +16,7 @@ def make_engine() -> PolicyEngine:
         [
             {"match": "search.*", "action": "allow"},
             {"match": "shell.*", "action": "human_approval"},
-            {"match": "*", "action": "deny"},
+            {"match": "*", "action": "deny"},  # fail closed
         ]
     )
 
