@@ -151,3 +151,10 @@ def test_review_args_do_not_change_action() -> None:
     engine = make_engine()
     decision = engine.evaluate("search.query", {"q": "x"})
     assert decision.action == "allow"
+
+
+def test_review_engine_reusable_across_calls() -> None:
+    """Verifies one engine instance evaluates repeatedly."""
+    engine = make_engine()
+    engine.evaluate("search.query", {})
+    assert engine.evaluate("shell.exec", {}).action == "human_approval"
