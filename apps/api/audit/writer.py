@@ -41,6 +41,7 @@ class AuditWriter:
         self.batch_size = batch_size
         self._pending: list[AuditEvent] = []
         self._linker = ChainLinker()
+        self._draining = False
 
     async def enqueue(self, trace_id: str, kind: EventKind, payload: dict) -> AuditEvent:
         """Adds an event to the pending buffer, flushing at batch size.
@@ -53,6 +54,8 @@ class AuditWriter:
         Returns:
             event: The buffered audit event, not yet persisted.
         """
+        if self._draining:
+            raise RuntimeError("writer is draining; enqueue rejected")
         prev_hash, event_hash = self._linker.link(trace_id, kind, payload)
         event = AuditEvent(
             trace_id=trace_id,
