@@ -21,7 +21,7 @@ export function RunDetail({ runId }: { runId: string }) {
   const [trace, setTrace] = useState<TraceResponse | null>(null);
 
   useEffect(() => {
-    fetchTrace(runId).then(setTrace);
+    fetchTrace(runId).then(setTrace).catch(() => setTrace(null));
   }, [runId]);
 
   if (!trace) {
