@@ -6,6 +6,7 @@ Contains:
     GENESIS_HASH: sentinel hash used as prev_hash for the first event of a trace
     compute_event_hash(): derives a SHA-256 hash over event content and the previous hash
     ChainLinker: tracks the latest hash per trace for chaining new events
+    verify_chain(): re-computes hashes over an event chain and reports integrity
 """
 
 import hashlib
