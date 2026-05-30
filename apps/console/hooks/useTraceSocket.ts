@@ -35,7 +35,7 @@ export function useTraceSocket(runId: string): TraceEvent[] {
       current = socket;
       socket.onmessage = (message) => {
         if (socket !== current) {
-          return;  // drop events from a stale socket
+          return;
         }
         const event = JSON.parse(message.data);
         setEvents((prev) => [...prev, event]);
