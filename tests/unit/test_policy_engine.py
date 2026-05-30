@@ -165,3 +165,11 @@ def test_deny_reports_no_matching_rule() -> None:
     engine = build_engine()
     decision = engine.evaluate("random.tool", {})
     assert decision.rule == "*"
+
+
+def test_evaluate_is_deterministic() -> None:
+    """Verifies repeated evaluation of the same call is stable."""
+    engine = build_engine()
+    first = engine.evaluate("search.query", {})
+    second = engine.evaluate("search.query", {})
+    assert first == second
