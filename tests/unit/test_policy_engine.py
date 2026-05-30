@@ -173,3 +173,9 @@ def test_evaluate_is_deterministic() -> None:
     first = engine.evaluate("search.query", {})
     second = engine.evaluate("search.query", {})
     assert first == second
+
+
+def test_rules_constant_covers_three_actions() -> None:
+    """Verifies the shared rule set exercises every action."""
+    actions = {rule["action"] for rule in RULES}
+    assert actions == {"allow", "deny", "human_approval"}
