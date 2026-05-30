@@ -158,3 +158,10 @@ def test_review_engine_reusable_across_calls() -> None:
     engine = make_engine()
     engine.evaluate("search.query", {})
     assert engine.evaluate("shell.exec", {}).action == "human_approval"
+
+
+def test_deny_reports_no_matching_rule() -> None:
+    """Verifies an unmatched call reports the catch-all rule."""
+    engine = build_engine()
+    decision = engine.evaluate("random.tool", {})
+    assert decision.rule == "*"
