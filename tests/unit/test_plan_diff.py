@@ -35,3 +35,10 @@ def test_similarity_identical_plans() -> None:
     from apps.api.orchestration.plan_diff import similarity
 
     assert similarity(["a", "b"], ["a", "b"]) == 1.0
+
+
+def test_similarity_disjoint_plans() -> None:
+    """Verifies disjoint plans score 0.0."""
+    from apps.api.orchestration.plan_diff import similarity
+
+    assert similarity(["a"], ["b"]) == 0.0
