@@ -28,3 +28,10 @@ def test_render_text_marks_added_with_plus() -> None:
 
     rendered = render_text(diff_plans(["a"], ["a", "b"]))
     assert "+ b" in rendered
+
+
+def test_similarity_identical_plans() -> None:
+    """Verifies identical plans score a perfect 1.0."""
+    from apps.api.orchestration.plan_diff import similarity
+
+    assert similarity(["a", "b"], ["a", "b"]) == 1.0
