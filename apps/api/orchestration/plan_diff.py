@@ -56,3 +56,21 @@ def render_text(diff: PlanDiff) -> str:
     lines += [f"- {step}" for step in diff.removed]
     lines += [f"  {step}" for step in diff.kept]
     return "\n".join(lines)
+
+
+def similarity(old: list[str], new: list[str]) -> float:
+    """Scores how similar two plan versions are.
+
+    Args:
+        old: Previous plan step list.
+        new: Revised plan step list.
+
+    Returns:
+        score: Jaccard similarity between the two step sets, 0.0 to 1.0.
+    """
+    if not old and not new:
+        return 1.0
+    old_set, new_set = set(old), set(new)
+    overlap = len(old_set & new_set)
+    union = len(old_set | new_set)
+    return overlap / union
