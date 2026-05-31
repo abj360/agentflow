@@ -93,3 +93,23 @@ def from_mcp_schema(schema: dict) -> UnifiedToolSpec:
         description=schema.get("description", ""),
         parameters=parameters,
     )
+
+
+def validate_unified_spec(spec: UnifiedToolSpec) -> list[str]:
+    """Checks a unified spec for required fields.
+
+    Args:
+        spec: The unified tool description to validate.
+
+    Returns:
+        problems: Validation problems found, empty when valid.
+    """
+    problems = []
+    if not spec.name:
+        problems.append("tool name is required")
+    if not spec.description:
+        problems.append(f"{spec.name}: description is required")
+    for param in spec.parameters:
+        if not param.name:
+            problems.append(f"{spec.name}: unnamed parameter")
+    return problems
