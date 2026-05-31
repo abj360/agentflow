@@ -70,3 +70,10 @@ def test_spec_is_frozen() -> None:
 
     with pytest.raises(FrozenInstanceError):
         SPEC.name = "other"
+
+
+def test_validate_accepts_valid_spec() -> None:
+    """Verifies a complete spec passes validation."""
+    from agentflow_core.tool_schema import validate_unified_spec
+
+    assert validate_unified_spec(SPEC) == []
