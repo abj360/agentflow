@@ -51,7 +51,7 @@ async def get_trace_events(
     result = await session.execute(statement)
     events = list(result.scalars().all())
     if not events:
-        raise HTTPException(status_code=404, detail="trace not found")
+        raise HTTPException(status_code=404, detail=f"trace {trace_id!r} not found")
     page = events[:limit]
     next_cursor = (
         page[-1].created_at.isoformat() if len(events) > limit else None
