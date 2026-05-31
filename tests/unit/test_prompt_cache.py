@@ -65,3 +65,8 @@ def test_get_fresh_returns_value_within_ttl() -> None:
     cache = PromptCache()
     cache.put("k", "v")
     assert cache.get_fresh("k", ttl_seconds=60) == "v"
+
+
+def test_get_fresh_misses_unknown_key() -> None:
+    """Verifies get_fresh misses for unknown keys."""
+    assert PromptCache().get_fresh("nope", ttl_seconds=60) is None
