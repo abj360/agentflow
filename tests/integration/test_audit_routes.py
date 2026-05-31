@@ -189,3 +189,11 @@ def test_next_cursor_present_when_more_pages() -> None:
     client = make_client(make_events("trace-p7", 5))
     body = client.get("/audit/trace-p7?limit=2").json()
     assert body["next_cursor"] is not None
+
+
+def test_verify_endpoint_checks_chain() -> None:
+    """Verifies the verify endpoint reports validity and checked count."""
+    client = make_client(make_events("trace-5", 3))
+    body = client.get("/audit/trace-5/verify").json()
+    assert body["chain_valid"] is True
+    assert body["checked"] == 3
