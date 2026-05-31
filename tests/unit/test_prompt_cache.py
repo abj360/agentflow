@@ -58,3 +58,10 @@ def test_get_returns_latest_completion() -> None:
 def test_cache_key_differs_on_task() -> None:
     """Verifies different tasks hash to different keys."""
     assert cache_key("task-a", {}) != cache_key("task-b", {})
+
+
+def test_get_fresh_returns_value_within_ttl() -> None:
+    """Verifies a fresh entry reads back within its TTL."""
+    cache = PromptCache()
+    cache.put("k", "v")
+    assert cache.get_fresh("k", ttl_seconds=60) == "v"
