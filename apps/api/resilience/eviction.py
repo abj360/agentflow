@@ -118,3 +118,18 @@ class ServerEvictor:
             servers: Names of all evicted servers.
         """
         return list(self.evicted)
+
+
+    def eviction_age(self, server_name: str) -> float | None:
+        """Reports how long a server has been evicted.
+
+        Args:
+            server_name: The evicted server.
+
+        Returns:
+            age: Seconds since eviction, or None when not evicted.
+        """
+        evicted_at = self.evicted.get(server_name)
+        if evicted_at is None:
+            return None
+        return time.time() - evicted_at
