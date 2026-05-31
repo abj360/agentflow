@@ -197,3 +197,9 @@ def test_verify_endpoint_checks_chain() -> None:
     body = client.get("/audit/trace-5/verify").json()
     assert body["chain_valid"] is True
     assert body["checked"] == 3
+
+
+def test_verify_endpoint_404_for_unknown_trace() -> None:
+    """Verifies the verify endpoint returns 404 for unknown traces."""
+    client = make_client([])
+    assert client.get("/audit/nope/verify").status_code == 404
