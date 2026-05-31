@@ -7,6 +7,7 @@
  */
 
 import type { Metadata } from "next";
+import { ThemeToggle } from "../components/ThemeToggle";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ export default function RootLayout({
           <nav>
             <a href="/traces">Traces</a>
             <a href="/approvals">Approvals</a>
+            <ThemeToggle />
           </nav>
         </header>
         <main>{children}</main>
