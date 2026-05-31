@@ -203,3 +203,11 @@ def test_verify_endpoint_404_for_unknown_trace() -> None:
     """Verifies the verify endpoint returns 404 for unknown traces."""
     client = make_client([])
     assert client.get("/audit/nope/verify").status_code == 404
+
+
+def test_verify_endpoint_detects_tamper() -> None:
+    """Verifies the verify endpoint flags a tampered chain."""
+    events = make_events("trace-6", 2)
+    events[1].prev_hash = "f" * 64
+    client = make_client(events)
+    assert client.get("/audit/trace-6/verify").json()["chain_valid"] is False
