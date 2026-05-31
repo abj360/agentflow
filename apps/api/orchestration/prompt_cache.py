@@ -59,3 +59,24 @@ class PromptCache:
             completion: The planner completion to cache.
         """
         self.entries[key] = (completion, time.time())
+
+
+    def get_fresh(self, key: str, ttl_seconds: float) -> str | None:
+        """Looks up a cached completion, honoring a time-to-live.
+
+        Args:
+            key: Content hash produced by cache_key.
+            ttl_seconds: Maximum age of a usable cache entry.
+
+        Returns:
+            completion: The cached completion, or None when missing or stale.
+        """
+        entry = self.entries.get(key)
+        if entry is None:
+            return None
+        value, stored_at = entry
+        age = time.time() - stored_at
+        if age > ttl_seconds:
+            del self.entries[key]
+            return None
+        return value
