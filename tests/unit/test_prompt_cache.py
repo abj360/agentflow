@@ -70,3 +70,13 @@ def test_get_fresh_returns_value_within_ttl() -> None:
 def test_get_fresh_misses_unknown_key() -> None:
     """Verifies get_fresh misses for unknown keys."""
     assert PromptCache().get_fresh("nope", ttl_seconds=60) is None
+
+
+def test_get_fresh_expires_old_entry() -> None:
+    """Verifies an entry older than the TTL is dropped and missed."""
+    cache = PromptCache()
+    cache.put("k", "v")
+    value, _ = cache.entries["k"]
+    cache.entries["k"] = (value, 0.0)
+    assert cache.get_fresh("k", ttl_seconds=1) is None
+    assert "k" not in cache.entries
