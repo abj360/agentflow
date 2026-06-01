@@ -11,7 +11,9 @@ from pathlib import Path
 
 from apps.api.policy.engine import PolicyEngine
 
-SCHEMA_PATH = Path(__file__).parents[2] / "apps" / "api" / "policy" / "schema.yaml"
+SCHEMA_PATH = (
+    Path(__file__).parents[2] / "apps" / "api" / "policy" / "schema.yaml"
+)
 
 
 def make_engine() -> PolicyEngine:
