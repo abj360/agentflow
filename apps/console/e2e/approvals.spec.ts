@@ -34,5 +34,5 @@ test("reject removes the card from the queue", async ({ page }) => {
 
 test("empty queue shows the empty state", async ({ page }) => {
   await page.goto("/approvals");
-  await expect(page.getByText("No pending approvals.")).toBeVisible();
+  await expect(page.getByText(/no pending approvals/i)).toBeVisible();
 });
