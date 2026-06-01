@@ -11,7 +11,7 @@ Contains:
 from locust import HttpUser, between, task
 
 SOAK_DURATION_MINUTES = 120
-SOAK_TARGET_USERS = 200
+SOAK_TARGET_USERS = 200  # see tests/load/locustfile.py for the 500-user run
 
 
 class SoakUser(HttpUser):
