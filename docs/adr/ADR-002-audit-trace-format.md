@@ -41,5 +41,5 @@ sentinel (`0` * 64). Verification recomputes the chain end to end.
 
 Hashes are computed over `json.dumps(event, sort_keys=True, separators=(",",
 ":"))` covering exactly: `trace_id`, `kind`, `payload`, `prev_hash`. Anything
-else (timestamps, server-assigned ids) is outside the hash so replays verify
+else (timestamps, server-assigned ids) stays outside the hash so replays verify
 against the original values only.
