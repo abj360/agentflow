@@ -192,3 +192,9 @@ def test_tenant_override_applies_when_present() -> None:
     engine = PolicyEngine(str(SCHEMA_PATH))
     decision = engine.evaluate("db.read", {}, tenant_id="acme")
     assert decision.action == "allow"
+
+
+def test_schema_file_loads_rules() -> None:
+    """Verifies the shipped schema file parses into rules."""
+    engine = PolicyEngine(str(SCHEMA_PATH))
+    assert engine.evaluate("search.query", {}).action == "allow"
