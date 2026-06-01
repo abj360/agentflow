@@ -113,3 +113,11 @@ async def test_redis_counter_increment_within_window() -> None:
     counter = RedisRateCounter(FakeRedis())
     assert await counter.hit("client-1", 60) == 1
     assert await counter.hit("client-1", 60) == 2
+
+
+async def test_allowed_response_carries_limit_headers() -> None:
+    """Verifies allowed responses advertise the limit and remaining quota."""
+    middleware = build_middleware(max_requests=2)
+    response = await middleware.dispatch(FakeRequest(), passthrough)
+    assert response.headers["X-RateLimit-Limit"] == "2"
+    assert response.headers["X-RateLimit-Remaining"] == "1"
