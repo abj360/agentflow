@@ -58,12 +58,16 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             window_start, count = now, 0
         count += 1
         self._counters[client] = (window_start, count)
+        remaining = max(self.max_requests - count, 0)
         if count > self.max_requests:
             return JSONResponse(
                 {"detail": "rate limit exceeded", "retry_after": self.window_seconds},
                 status_code=429,
             )
-        return await call_next(request)
+        response = await call_next(request)
+        response.headers["X-RateLimit-Limit"] = str(self.max_requests)
+        response.headers["X-RateLimit-Remaining"] = str(remaining)
+        return response
 
 
 class RedisRateCounter:
