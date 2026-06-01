@@ -198,3 +198,9 @@ def test_schema_file_loads_rules() -> None:
     """Verifies the shipped schema file parses into rules."""
     engine = PolicyEngine(str(SCHEMA_PATH))
     assert engine.evaluate("search.query", {}).action == "allow"
+
+
+def test_schema_base_denies_unknown() -> None:
+    """Verifies the shipped schema fails closed on unknown tools."""
+    engine = PolicyEngine(str(SCHEMA_PATH))
+    assert engine.evaluate("totally.unknown", {}).action == "deny"
