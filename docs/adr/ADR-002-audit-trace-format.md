@@ -36,3 +36,10 @@ sentinel (`0` * 64). Verification recomputes the chain end to end.
 | `approval_resolved` | The approval queue resolves the request |
 | `session_opened` | A new orchestration session registers its trace |
 
+
+## Canonical form
+
+Hashes are computed over `json.dumps(event, sort_keys=True, separators=(",",
+":"))` covering exactly: `trace_id`, `kind`, `payload`, `prev_hash`. Anything
+else (timestamps, server-assigned ids) is outside the hash so replays verify
+against the original values only.
