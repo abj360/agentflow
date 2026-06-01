@@ -39,6 +39,10 @@ sentinel (`0` * 64). Verification recomputes the chain end to end.
 
 ## Canonical form
 
+The canonical form is versioned as `v1`; a future `v2` must keep `v1`
+verification working for old traces.
+
+
 Hashes are computed over `json.dumps(event, sort_keys=True, separators=(",",
 ":"))` covering exactly: `trace_id`, `kind`, `payload`, `prev_hash`. Anything
 else (timestamps, server-assigned ids) stays outside the hash so replays verify
