@@ -30,3 +30,9 @@ test("reject removes the card from the queue", async ({ page }) => {
   await card.getByRole("button", { name: /reject/i }).click();
   await expect(card).toHaveCount(0);
 });
+
+
+test("empty queue shows the empty state", async ({ page }) => {
+  await page.goto("/approvals");
+  await expect(page.getByText("No pending approvals.")).toBeVisible();
+});
