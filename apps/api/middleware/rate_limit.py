@@ -13,7 +13,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
-MAX_REQUESTS = 120
+MAX_REQUESTS = 100
 WINDOW_SECONDS = 60
 
 
