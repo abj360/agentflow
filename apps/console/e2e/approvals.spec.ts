@@ -36,3 +36,9 @@ test("empty queue shows the empty state", async ({ page }) => {
   await page.goto("/approvals");
   await expect(page.getByText(/no pending approvals/i)).toBeVisible();
 });
+
+
+test("queue list is visible", async ({ page }) => {
+  await page.goto("/approvals");
+  await expect(page.locator(".approval-queue")).toBeVisible();
+});
