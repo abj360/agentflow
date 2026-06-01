@@ -17,7 +17,7 @@ SOAK_TARGET_USERS = 200
 class SoakUser(HttpUser):
     """Simulates a user driving long-running mixed traffic."""
 
-    wait_time = between(1.5, 5.0)
+    wait_time = between(1.0, 4.0)
 
     @task(4)
     def fetch_trace(self) -> None:
