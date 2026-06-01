@@ -121,3 +121,11 @@ async def test_allowed_response_carries_limit_headers() -> None:
     response = await middleware.dispatch(FakeRequest(), passthrough)
     assert response.headers["X-RateLimit-Limit"] == "2"
     assert response.headers["X-RateLimit-Remaining"] == "1"
+
+
+async def test_remaining_never_goes_negative() -> None:
+    """Verifies the remaining header floors at zero under a burst."""
+    middleware = build_middleware(max_requests=1)
+    for _ in range(3):
+        response = await middleware.dispatch(FakeRequest(), passthrough)
+    assert response.status_code == 429
