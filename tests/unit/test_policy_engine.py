@@ -7,7 +7,11 @@ Contains:
     test_unmatched_tool_denied(): verifies tools with no matching rule are denied
 """
 
+from pathlib import Path
+
 from apps.api.policy.engine import PolicyEngine
+
+SCHEMA_PATH = Path(__file__).parents[2] / "apps" / "api" / "policy" / "schema.yaml"
 
 
 def make_engine() -> PolicyEngine:
@@ -179,3 +183,10 @@ def test_rules_constant_covers_three_actions() -> None:
     """Verifies the shared rule set exercises every action."""
     actions = {rule["action"] for rule in RULES}
     assert actions == {"allow", "deny", "human_approval"}
+
+
+def test_tenant_override_applies_when_present() -> None:
+    """Verifies a tenant override table shadows the base rules."""
+    engine = PolicyEngine(str(SCHEMA_PATH))
+    decision = engine.evaluate("db.read", {}, tenant_id="acme")
+    assert decision.action == "allow"
