@@ -11,7 +11,7 @@ evaluated before every governed tool call (see `apps/api/policy/engine.py`).
 | `action` | `allow`, `deny`, or `human_approval` |
 | `risk` | Risk label for reviewers: low, medium, high, critical |
 
-Rules evaluate top to bottom; the first match wins.
+Rules evaluate top to bottom; the first match wins. Order matters.
 
 
 ## Glob semantics
