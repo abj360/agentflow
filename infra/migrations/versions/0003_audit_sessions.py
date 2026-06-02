@@ -38,6 +38,6 @@ def downgrade() -> None:
     """Reverts the migration."""
     op.execute(
         """
-        DROP TABLE audit_sessions
+        DROP TABLE IF EXISTS audit_sessions
         """
     )
