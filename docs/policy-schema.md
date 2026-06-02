@@ -32,7 +32,7 @@ Matching uses `fnmatch`: `*` crosses dots, so `search.*` covers
 
 The final rule must be `{"match": "*", "action": "deny"}`: governance fails
 closed. Anything not explicitly allowed is denied by default. Removing the
-catch-all turns the engine fail-open, which is never acceptable.
+catch-all turns the engine fail-open, which is never acceptable (fail closed).
 
 
 ## Tenant overrides
