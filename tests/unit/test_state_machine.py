@@ -47,3 +47,10 @@ def test_route_after_critic_revises_on_reject() -> None:
     from apps.api.orchestration.state_machine import route_after_critic
 
     assert route_after_critic(make_state(critique="revise")) == "revise"
+
+
+def test_critic_increments_iterations() -> None:
+    """Verifies each critic pass bumps the iteration counter."""
+    from apps.api.orchestration.state_machine import critic_node
+
+    assert critic_node(make_state())["iterations"] == 1
