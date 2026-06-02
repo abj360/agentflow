@@ -98,3 +98,20 @@ def route_after_critic(state: GraphState) -> str:
         route: "revise" to loop back to the planner, "accept" to finish.
     """
     return "accept" if state["critique"] == "accept" else "revise"
+
+
+def validate_graph(graph: StateGraph) -> list[str]:
+    """Checks the assembled graph for wiring mistakes.
+
+    Args:
+        graph: The orchestration graph to validate.
+
+    Returns:
+        problems: Wiring problems found, empty when the graph is sound.
+    """
+    problems = []
+    if "planner" not in graph.nodes:
+        problems.append("planner node missing")
+    if "critic" not in graph.nodes:
+        problems.append("critic node missing")
+    return problems
