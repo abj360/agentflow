@@ -97,3 +97,11 @@ async def test_release_keeps_others_key() -> None:
     lock._token = "our-token"
     await lock.release()
     assert redis.store.get("k1") == "other-token"
+
+
+async def test_context_manager_acquires_and_releases() -> None:
+    """Verifies the async context manager acquires and releases."""
+    redis = FakeRedis()
+    async with DistributedLock(redis, "k1"):
+        assert redis.store.get("k1") is not None
+    assert redis.store == {}
