@@ -60,9 +60,11 @@ class DistributedLock:
         """
         if self._token is None:
             raise LockNotHeldError(self.key)
-        current = await self.redis.get(self.key)
-        if current == self._token:
-            await self.redis.delete(self.key)
+        lua = (
+            "if redis.call('get', KEYS[1]) == ARGV[1] then "
+            "return redis.call('del', KEYS[1]) else return 0 end"
+        )
+        await self.redis.eval(lua, 1, self.key, self._token)
         self._token = None
 
     async def __aenter__(self) -> "DistributedLock":
