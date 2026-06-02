@@ -33,3 +33,10 @@ Matching uses `fnmatch`: `*` crosses dots, so `search.*` covers
 The final rule must be `{"match": "*", "action": "deny"}`: governance fails
 closed. Anything not explicitly allowed is denied by default. Removing the
 catch-all turns the engine fail-open, which is never acceptable.
+
+
+## Tenant overrides
+
+`tenant_overrides` maps a tenant id to a full replacement rule set. When a
+call arrives with a known tenant id, the tenant's table is used; otherwise the
+base `rules` table applies. Unknown tenants silently fall back to base rules.
