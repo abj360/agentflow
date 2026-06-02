@@ -78,7 +78,7 @@ def build_graph() -> StateGraph:
     graph.add_node("planner", planner_node)
     graph.add_node("executor", executor_node)
     graph.add_node("critic", critic_node)
-    graph.set_entry_point("planner")
+    graph.set_entry_point("planner")  # every run starts at a plan draft
     graph.add_edge("planner", "executor")
     graph.add_edge("executor", "critic")
     graph.add_conditional_edges(
