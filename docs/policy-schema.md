@@ -7,7 +7,7 @@ evaluated before every governed tool call (see `apps/api/policy/engine.py`).
 
 | Field | Meaning |
 |---|---|
-| `match` | Glob matched against the tool name, e.g. `search.*` |
+| `match` | Glob matched against the tool name, e.g. `search.*`, `fs.read` |
 | `action` | `allow`, `deny`, or `human_approval` |
 | `risk` | Risk label for reviewers: low, medium, high, critical |
 
