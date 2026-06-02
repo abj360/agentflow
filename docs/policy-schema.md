@@ -25,7 +25,7 @@ Matching uses `fnmatch`: `*` crosses dots, so `search.*` covers
 - `allow` — the call proceeds immediately (still audit-logged).
 - `deny` — the call is rejected and the rejection is audit-logged.
 - `human_approval` — the call pauses in the console approval queue until a
-  reviewer approves or rejects it.
+  reviewer approves or rejects it. Approvals expire after 24h.
 
 
 ## The catch-all rule
