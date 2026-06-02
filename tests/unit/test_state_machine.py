@@ -68,3 +68,10 @@ def test_executor_produces_one_result_per_step() -> None:
     from apps.api.orchestration.state_machine import executor_node
 
     assert len(executor_node(make_state(plan=["a", "b"]))["results"]) == 2
+
+
+def test_executor_handles_empty_plan() -> None:
+    """Verifies an empty plan yields zero results rather than an error."""
+    from apps.api.orchestration.state_machine import executor_node
+
+    assert executor_node(make_state())["results"] == []
