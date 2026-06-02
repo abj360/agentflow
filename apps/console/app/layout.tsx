@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <header className="topbar">
-          <span className="logo">agentflow</span>
+          <span className="logo">agentflow console</span>
           <nav>
             <a href="/traces">Traces</a>
             <a href="/approvals">Approvals</a>
