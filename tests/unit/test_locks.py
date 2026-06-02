@@ -118,3 +118,22 @@ async def test_context_manager_raises_on_timeout() -> None:
     except TimeoutError:
         return
     raise AssertionError("expected TimeoutError")
+
+
+async def test_release_uses_atomic_eval() -> None:
+    """Verifies release goes through the compare-and-delete script."""
+    redis = FakeRedis()
+    calls = []
+
+    async def eval(self, script: str, keys: int, key: str, token: str) -> int:
+        """Records the eval invocation and applies it."""
+        calls.append(key)
+        if self.store.get(key) == token:
+            self.store.pop(key, None)
+        return 1
+
+    redis.eval = eval.__get__(redis)
+    lock = DistributedLock(redis, "k1")
+    await lock.acquire()
+    await lock.release()
+    assert calls == ["k1"]
