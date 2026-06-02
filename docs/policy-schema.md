@@ -37,6 +37,6 @@ catch-all turns the engine fail-open, which is never acceptable (fail closed).
 
 ## Tenant overrides
 
-`tenant_overrides` maps a tenant id to a full replacement rule set. When a
+`tenant_overrides` maps a tenant id to a full replacement rule set (not merged with base). When a
 call arrives with a known tenant id, the tenant's table is used; otherwise the
 base `rules` table applies. Unknown tenants silently fall back to base rules.
