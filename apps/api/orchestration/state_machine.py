@@ -63,7 +63,8 @@ def critic_node(state: GraphState) -> GraphState:
     Returns:
         update: State update carrying the critique verdict.
     """
-    verdict = "accept" if state["results"] else "revise"
+    has_results = bool(state["results"])
+    verdict = "accept" if has_results else "revise"
     return {**state, "critique": verdict, "iterations": state["iterations"] + 1}
 
 
