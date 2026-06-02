@@ -137,3 +137,11 @@ async def test_release_uses_atomic_eval() -> None:
     await lock.acquire()
     await lock.release()
     assert calls == ["k1"]
+
+
+async def test_is_held_tracks_state() -> None:
+    """Verifies is_held reflects acquisition and release."""
+    lock = DistributedLock(FakeRedis(), "k1")
+    assert lock.is_held is False
+    await lock.acquire()
+    assert lock.is_held is True
