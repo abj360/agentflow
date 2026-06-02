@@ -61,3 +61,10 @@ def test_critic_revises_when_no_results() -> None:
     from apps.api.orchestration.state_machine import critic_node
 
     assert critic_node(make_state())["critique"] == "revise"
+
+
+def test_executor_produces_one_result_per_step() -> None:
+    """Verifies executor output cardinality matches the plan."""
+    from apps.api.orchestration.state_machine import executor_node
+
+    assert len(executor_node(make_state(plan=["a", "b"]))["results"]) == 2
