@@ -105,3 +105,16 @@ async def test_context_manager_acquires_and_releases() -> None:
     async with DistributedLock(redis, "k1"):
         assert redis.store.get("k1") is not None
     assert redis.store == {}
+
+
+async def test_context_manager_raises_on_timeout() -> None:
+    """Verifies the context manager raises when the lock is held."""
+    redis = FakeRedis()
+    holder = DistributedLock(redis, "k1")
+    await holder.acquire()
+    try:
+        async with DistributedLock(redis, "k1", ttl_ms=1000):
+            pass
+    except TimeoutError:
+        return
+    raise AssertionError("expected TimeoutError")
