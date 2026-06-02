@@ -54,3 +54,10 @@ def test_critic_increments_iterations() -> None:
     from apps.api.orchestration.state_machine import critic_node
 
     assert critic_node(make_state())["iterations"] == 1
+
+
+def test_critic_revises_when_no_results() -> None:
+    """Verifies empty executor output triggers a revision request."""
+    from apps.api.orchestration.state_machine import critic_node
+
+    assert critic_node(make_state())["critique"] == "revise"
