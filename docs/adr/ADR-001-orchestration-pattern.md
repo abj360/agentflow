@@ -42,3 +42,14 @@ the cap the run ends with a `revision-bounded` status and the full trace is
 preserved for review.
 
 Unbounded agent loops are a cost incident, not a feature.
+
+
+## Decision drivers
+
+- **Auditability:** every role transition must land in the hash-chained audit
+  log (ADR-002) as an individual event.
+- **Budget control:** token and tool-call budgets attach to the executor's
+  tool calls, not to a monolithic completion.
+- **Human-in-the-loop:** policy-gated tools pause for approval between steps,
+  which requires explicit step boundaries.
+- **Testability:** each role is independently unit-testable behind a protocol.
