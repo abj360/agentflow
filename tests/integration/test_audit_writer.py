@@ -149,3 +149,17 @@ async def test_writer_reuse_across_flushes(session_factory) -> None:
             select(AuditEvent).where(AuditEvent.trace_id == "it-trace-f")
         )
         assert len(list(result.scalars())) == 2
+
+
+async def test_event_ids_are_unique(session_factory) -> None:
+    """Verifies persisted event ids never collide."""
+    writer = AuditWriter(session_factory, batch_size=16)
+    for idx in range(4):
+        await writer.enqueue("it-trace-g", EventKind.TOOL_CALL, {"idx": idx})
+    await writer.flush()
+    async with session_factory() as session:
+        result = await session.execute(
+            select(AuditEvent).where(AuditEvent.trace_id == "it-trace-g")
+        )
+        ids = [e.event_id for e in result.scalars()]
+    assert len(set(ids)) == 4
