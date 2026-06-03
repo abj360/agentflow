@@ -94,3 +94,20 @@ def default_registry() -> ToolRegistry:
         )
     )
     return registry
+
+
+def validate_tool_spec(spec: ToolSpec) -> list[str]:
+    """Checks a tool spec for required fields.
+
+    Args:
+        spec: The tool spec to validate.
+
+    Returns:
+        problems: Validation problems found, empty when valid.
+    """
+    problems = []
+    if not spec.name:
+        problems.append("tool name is required")
+    if not spec.description:
+        problems.append(f"{spec.name}: description is required")
+    return problems
