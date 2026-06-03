@@ -48,5 +48,5 @@ class OrchestratorUser(HttpUser):
     def page_trace_events(self) -> None:
         """Pages through trace events with a cursor."""
         self.client.get(
-            "/audit/trace-load-1?limit=50", name="/audit/{trace_id}?limit=50"
+            "/audit/trace-load-1?limit=100", name="/audit/{trace_id}?limit=100"
         )
