@@ -135,3 +135,17 @@ async def test_large_batch_round_trip(session_factory) -> None:
             select(AuditEvent).where(AuditEvent.trace_id == "it-trace-e")
         )
         assert len(list(result.scalars().all())) == 50
+
+
+async def test_writer_reuse_across_flushes(session_factory) -> None:
+    """Verifies one writer can flush repeatedly without state leaks."""
+    writer = AuditWriter(session_factory, batch_size=4)
+    await writer.enqueue("it-trace-f", EventKind.TOOL_CALL, {"n": 1})
+    await writer.flush()
+    await writer.enqueue("it-trace-f", EventKind.TOOL_CALL, {"n": 2})
+    await writer.flush()
+    async with session_factory() as session:
+        result = await session.execute(
+            select(AuditEvent).where(AuditEvent.trace_id == "it-trace-f")
+        )
+        assert len(list(result.scalars())) == 2
