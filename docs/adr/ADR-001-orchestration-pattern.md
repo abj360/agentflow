@@ -46,6 +46,8 @@ Unbounded agent loops are a cost incident, not a feature.
 
 ## Decision drivers
 
+Ranked roughly by importance:
+
 - **Auditability (primary):** every role transition must land in the hash-chained audit
   log (ADR-002) as an individual event.
 - **Budget control:** token and tool-call budgets attach to the executor's
