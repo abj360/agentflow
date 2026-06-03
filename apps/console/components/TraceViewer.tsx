@@ -19,6 +19,10 @@ import { useTraceSocket } from "../hooks/useTraceSocket";
 export function TraceViewer({ runId }: { runId: string }) {
   const events = useTraceSocket(runId);
 
+  if (events.length === 0) {
+    return <TraceEmptyState />;
+  }
+
   return (
     <ol className="trace-list">
       {events.map((event, index) => (
