@@ -52,4 +52,5 @@ Unbounded agent loops are a cost incident, not a feature.
   tool calls, not to a monolithic completion.
 - **Human-in-the-loop:** policy-gated tools pause for approval between steps,
   which requires explicit step boundaries.
-- **Testability:** each role is independently unit-testable behind a protocol.
+- **Testability:** each role is independently unit-testable behind a
+  protocol (`tests/unit/test_roles.py`).
