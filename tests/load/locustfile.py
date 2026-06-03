@@ -42,3 +42,11 @@ class OrchestratorUser(HttpUser):
     def on_start(self) -> None:
         """Runs once per simulated user at startup (warms the connection)."""
         self.client.get("/health")
+
+
+    @task(2)
+    def page_trace_events(self) -> None:
+        """Pages through trace events with a cursor."""
+        self.client.get(
+            "/audit/trace-load-1?limit=50", name="/audit/{trace_id}?limit=50"
+        )
