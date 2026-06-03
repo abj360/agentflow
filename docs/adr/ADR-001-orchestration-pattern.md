@@ -51,6 +51,6 @@ Unbounded agent loops are a cost incident, not a feature.
 - **Budget control:** token and tool-call budgets attach to the executor's
   tool calls, not to a monolithic completion (budget/tracker.py).
 - **Human-in-the-loop:** policy-gated tools pause for approval between steps,
-  which requires explicit step boundaries.
+  which requires explicit step boundaries (the graph's edges).
 - **Testability:** each role is independently unit-testable behind a
   protocol (`tests/unit/test_roles.py`).
