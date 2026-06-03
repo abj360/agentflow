@@ -76,3 +76,13 @@ async def test_discard_unknown_socket_is_noop() -> None:
     """Verifies discarding an unknown socket does not raise."""
     hub = TraceHub()
     hub.discard("run-1", FakeSocket())
+
+
+async def test_broadcast_after_discard_skips_socket() -> None:
+    """Verifies a discarded viewer stops receiving events."""
+    hub = TraceHub()
+    socket = FakeSocket()
+    await hub.register("run-1", socket)
+    hub.discard("run-1", socket)
+    await hub.broadcast("run-1", {"kind": "tool_call"})
+    assert socket.sent == []
