@@ -134,4 +134,4 @@ async def test_large_batch_round_trip(session_factory) -> None:
         result = await session.execute(
             select(AuditEvent).where(AuditEvent.trace_id == "it-trace-e")
         )
-        assert len(list(result.scalars())) == 50
+        assert len(list(result.scalars().all())) == 50
