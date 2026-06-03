@@ -122,3 +122,16 @@ async def test_batch_flushes_in_enqueue_order(session_factory) -> None:
         )
         events = list(result.scalars())
     assert [e.payload["idx"] for e in events] == [0, 1, 2, 3]
+
+
+async def test_large_batch_round_trip(session_factory) -> None:
+    """Verifies a batch of fifty events persists completely."""
+    writer = AuditWriter(session_factory, batch_size=64)
+    for idx in range(50):
+        await writer.enqueue("it-trace-e", EventKind.TOOL_CALL, {"idx": idx})
+    await writer.flush()
+    async with session_factory() as session:
+        result = await session.execute(
+            select(AuditEvent).where(AuditEvent.trace_id == "it-trace-e")
+        )
+        assert len(list(result.scalars())) == 50
