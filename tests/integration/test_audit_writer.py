@@ -106,3 +106,19 @@ async def test_payload_round_trips_as_json(session_factory) -> None:
         )
         event = result.scalars().one()
     assert event.payload == payload
+
+
+async def test_batch_flushes_in_enqueue_order(session_factory) -> None:
+    """Verifies persisted events keep their enqueue order."""
+    writer = AuditWriter(session_factory, batch_size=8)
+    for idx in range(4):
+        await writer.enqueue("it-trace-4", EventKind.TOOL_CALL, {"idx": idx})
+    await writer.flush()
+    async with session_factory() as session:
+        result = await session.execute(
+            select(AuditEvent)
+            .where(AuditEvent.trace_id == "it-trace-4")
+            .order_by(AuditEvent.created_at)
+        )
+        events = list(result.scalars())
+    assert [e.payload["idx"] for e in events] == [0, 1, 2, 3]
