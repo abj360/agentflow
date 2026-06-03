@@ -49,7 +49,7 @@ Unbounded agent loops are a cost incident, not a feature.
 - **Auditability (primary):** every role transition must land in the hash-chained audit
   log (ADR-002) as an individual event.
 - **Budget control:** token and tool-call budgets attach to the executor's
-  tool calls, not to a monolithic completion.
+  tool calls, not to a monolithic completion (budget/tracker.py).
 - **Human-in-the-loop:** policy-gated tools pause for approval between steps,
   which requires explicit step boundaries.
 - **Testability:** each role is independently unit-testable behind a
