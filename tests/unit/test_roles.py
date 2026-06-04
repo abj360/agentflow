@@ -45,3 +45,9 @@ async def test_planner_without_llm_falls_back() -> None:
     """Verifies the planner works without an LLM client attached."""
     update = await Planner(llm=None).run({"task": "fallback"})
     assert update["plan"] == ["fallback"]
+
+
+async def test_executor_without_gateway_uses_stub() -> None:
+    """Verifies the executor runs with no gateway configured."""
+    update = await Executor(tool_gateway=None).run({"plan": ["step"]})
+    assert update["results"] == ["done: step"]
