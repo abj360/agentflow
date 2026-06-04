@@ -39,3 +39,9 @@ async def test_run_session_status_known_values() -> None:
     """Verifies the status field is one of the known values."""
     result = await run_session("session-4", "draft an email")
     assert result["status"] in ("completed", "revision-bounded")
+
+
+async def test_status_value_is_string() -> None:
+    """Verifies the status field is always a string."""
+    result = await run_session("session-5", "check status")
+    assert isinstance(result["status"], str)
