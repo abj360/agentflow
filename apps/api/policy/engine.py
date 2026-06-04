@@ -5,6 +5,8 @@ engine.py --- YAML policy engine for MCP tool governance
 Contains:
     Decision: outcome of a policy evaluation
     PolicyEngine: evaluates tool calls against YAML policy rules
+    is_allowed(): reports whether a decision permits the call
+    describe_action(): renders an action as human-readable text
 """
 
 import fnmatch
