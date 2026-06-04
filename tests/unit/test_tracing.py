@@ -27,3 +27,10 @@ def test_default_sampler_ratio() -> None:
     from apps.api.observability.tracing import DEFAULT_SAMPLER
 
     assert DEFAULT_SAMPLER is not None
+
+
+def test_set_span_attribute_no_active_span() -> None:
+    """Verifies setting an attribute without a span does not raise."""
+    from apps.api.observability.tracing import set_span_attribute
+
+    set_span_attribute("key", "value")
