@@ -218,3 +218,10 @@ def test_limit_above_max_page_size_rejected() -> None:
     client = make_client(make_events("trace-p8", 1))
     response = client.get("/audit/trace-p8?limit=99999")
     assert response.status_code == 422
+
+
+def test_limit_one_returns_first_event_only() -> None:
+    """Verifies a limit of one returns exactly the first event."""
+    client = make_client(make_events("trace-p9", 3))
+    body = client.get("/audit/trace-p9?limit=1").json()
+    assert body["event_count"] == 1
