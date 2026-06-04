@@ -88,4 +88,4 @@ def traced_section(name: str, **attributes: object):
     with tracer.start_as_current_span(name) as span:
         for key, value in attributes.items():
             span.set_attribute(key, value)
-        yield span
+        yield span  # callers may set additional attributes
