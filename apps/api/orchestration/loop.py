@@ -44,10 +44,12 @@ async def run_session(session_id: str, task: str) -> dict:
         revisions += 1
     else:
         graph_state["critique"] = "revision-bounded"
+    accepted = graph_state["critique"] == "accept"
+    status = "completed" if accepted else "revision-bounded"
     return {
         "output": graph_state["results"],
         "iterations": graph_state["iterations"],
-        "status": "completed",
+        "status": status,
     }
 
 
