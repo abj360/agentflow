@@ -9,6 +9,7 @@
 "use client";
 
 import type { Approval } from "./ApprovalQueue";
+import { ApprovalStatusBadge } from "./ApprovalCard";
 
 /**
  * Shows an approval request with approve/reject buttons.
