@@ -34,7 +34,7 @@ async def get_trace_events(
     Args:
         trace_id: Identifier of the orchestration run to look up.
         session: Async database session injected by FastAPI.
-        limit: Maximum number of events to return per page.
+        limit: Maximum events per page, capped by MAX_PAGE_SIZE.
         cursor: Opaque token from a previous response's next_cursor.
 
     Returns:
