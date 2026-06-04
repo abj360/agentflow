@@ -74,3 +74,8 @@ tenant_overrides:
   - match: "admin.*"
     action: deny
     risk: critical
+
+
+  - match: "report.generate"
+    action: human_approval
+    risk: medium
