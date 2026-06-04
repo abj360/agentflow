@@ -211,3 +211,10 @@ def test_verify_endpoint_detects_tamper() -> None:
     events[1].prev_hash = "f" * 64
     client = make_client(events)
     assert client.get("/audit/trace-6/verify").json()["chain_valid"] is False
+
+
+def test_limit_above_max_page_size_rejected() -> None:
+    """Verifies limits above the maximum are rejected with a 422."""
+    client = make_client(make_events("trace-p8", 1))
+    response = client.get("/audit/trace-p8?limit=99999")
+    assert response.status_code == 422
