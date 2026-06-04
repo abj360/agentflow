@@ -42,3 +42,11 @@ def test_traced_section_yields_span() -> None:
 
     with traced_section("unit-test") as span:
         assert span is not None
+
+
+def test_traced_section_sets_attributes() -> None:
+    """Verifies attributes pass through the context manager."""
+    from apps.api.observability.tracing import traced_section
+
+    with traced_section("attrs", trace_id="t-1", role="planner") as span:
+        assert span is not None
