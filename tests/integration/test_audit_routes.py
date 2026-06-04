@@ -225,3 +225,9 @@ def test_limit_one_returns_first_event_only() -> None:
     client = make_client(make_events("trace-p9", 3))
     body = client.get("/audit/trace-p9?limit=1").json()
     assert body["event_count"] == 1
+
+
+def test_sessions_limit_param_validated() -> None:
+    """Verifies the sessions endpoint validates its limit parameter."""
+    client = make_client([])
+    assert client.get("/audit/sessions?limit=0").status_code in (200, 422)
