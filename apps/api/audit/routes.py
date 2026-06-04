@@ -25,7 +25,7 @@ router = APIRouter(prefix="/audit", tags=["audit"])
 @router.get("/{trace_id}")
 async def get_trace_events(
     trace_id: str,
-    limit: int = Query(default=100, le=MAX_PAGE_SIZE),
+    limit: int = Query(default=100, ge=1, le=MAX_PAGE_SIZE),
     cursor: str | None = None,
     session: AsyncSession = Depends(get_session),
 ) -> dict:
