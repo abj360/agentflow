@@ -56,7 +56,19 @@ class Planner:
 
 
 class Executor:
-    """Runs plan steps through governed tools."""
+    """Runs plan steps through governed tools.
+
+    Attributes:
+        tool_gateway: Governed entrypoint for MCP tool calls.
+    """
+
+    def __init__(self, tool_gateway: object | None = None) -> None:
+        """Initializes the executor with an optional tool gateway.
+
+        Args:
+            tool_gateway: Governed entrypoint for MCP tool calls.
+        """
+        self.tool_gateway = tool_gateway
 
     async def run(self, state: dict) -> dict:
         """Executes every plan step and collects the outputs.
