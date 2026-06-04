@@ -9,7 +9,7 @@ Contains:
 
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,13 +17,15 @@ from apps.api.audit.chain import verify_chain
 from apps.api.audit.models import AuditEvent
 from apps.api.db import get_session
 
+MAX_PAGE_SIZE = 500
+
 router = APIRouter(prefix="/audit", tags=["audit"])
 
 
 @router.get("/{trace_id}")
 async def get_trace_events(
     trace_id: str,
-    limit: int = 100,
+    limit: int = Query(default=100, le=MAX_PAGE_SIZE),
     cursor: str | None = None,
     session: AsyncSession = Depends(get_session),
 ) -> dict:
