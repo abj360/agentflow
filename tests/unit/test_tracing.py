@@ -34,3 +34,11 @@ def test_set_span_attribute_no_active_span() -> None:
     from apps.api.observability.tracing import set_span_attribute
 
     set_span_attribute("key", "value")
+
+
+def test_traced_section_yields_span() -> None:
+    """Verifies the context manager yields a span."""
+    from apps.api.observability.tracing import traced_section
+
+    with traced_section("unit-test") as span:
+        assert span is not None
