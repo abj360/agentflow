@@ -18,6 +18,7 @@ rules:
     risk: medium
   - match: "net.*"
     action: deny
+    # egress is allowlisted at the sandbox layer too (defense in depth)
     risk: high
   - match: "*"
     action: deny
