@@ -7,6 +7,8 @@ Contains:
     get_tracer(): returns the module-level tracer for manual spans
 """
 
+from contextlib import contextmanager
+
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
@@ -69,3 +71,21 @@ def set_span_attribute(key: str, value: object) -> None:
     span = trace.get_current_span()
     if span.is_recording():
         span.set_attribute(key, value)
+
+
+@contextmanager
+def traced_section(name: str, **attributes: object):
+    """Wraps a block in a manual span.
+
+    Args:
+        name: Span name.
+        **attributes: Span attributes set at start.
+
+    Yields:
+        span: The started span.
+    """
+    tracer = get_tracer()
+    with tracer.start_as_current_span(name) as span:
+        for key, value in attributes.items():
+            span.set_attribute(key, value)
+        yield span
