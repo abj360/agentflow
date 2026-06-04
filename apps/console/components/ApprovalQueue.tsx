@@ -53,8 +53,12 @@ export function ApprovalQueue() {
     );
   };
 
+  if (approvals.length === 0) {
+    return <p className="queue-empty">No pending approvals.</p>;
+  }
+
   return (
-    <ul className="approval-queue">
+    <ul className="approval-queue" aria-live="polite">
       {approvals.map((approval) => (
         <ApprovalCard
           key={approval.approval_id}
