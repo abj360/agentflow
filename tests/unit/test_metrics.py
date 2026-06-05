@@ -82,3 +82,9 @@ def test_approval_queue_gauge_set_and_read() -> None:
 
     approval_queue_depth.set(3)
     assert approval_queue_depth._value.get() == 3
+
+
+def test_metrics_include_approval_depth() -> None:
+    """Verifies the scrape payload includes the queue gauge."""
+    response = metrics_endpoint(None)
+    assert b"agentflow_approval_queue_depth" in response.body
