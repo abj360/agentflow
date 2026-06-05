@@ -134,3 +134,26 @@ async def test_exchange_code_returns_tokens() -> None:
     tokens = await build_client(FakeHttp()).exchange_code("code-1")
     assert tokens.access_token == "at-1"
     assert tokens.refresh_token == "rt-1"
+
+
+async def test_refresh_keeps_old_refresh_token_when_omitted() -> None:
+    """Verifies refresh preserves the refresh token when not re-issued."""
+
+    class FakeResponse:
+        """Mimics an HTTP response carrying a token payload."""
+
+        def json(self) -> dict:
+            """Returns a payload without a new refresh token."""
+            return {"access_token": "at-2", "expires_in": 3600}
+
+    class FakeHttp:
+        """Mimics the async HTTP client for token calls."""
+
+        async def post(self, url: str, data: dict) -> FakeResponse:
+            """Returns the canned token response."""
+            return FakeResponse()
+
+    old = TokenSet(access_token="at-1", refresh_token="rt-1", expires_at=0.0)
+    tokens = await build_client(FakeHttp()).refresh(old)
+    assert tokens.access_token == "at-2"
+    assert tokens.refresh_token == "rt-1"
