@@ -103,3 +103,12 @@ async def test_register_over_cap_closes_socket() -> None:
     await hub.register("run-1", overflow)
     assert overflow.closed_code == 1013
     assert overflow not in hub.connections["run-1"]
+
+
+async def test_register_under_cap_still_accepted() -> None:
+    """Verifies viewers under the cap still connect normally."""
+    hub = TraceHub()
+    socket = FakeSocket()
+    await hub.register("run-1", socket)
+    assert socket.accepted is True
+    assert socket in hub.connections["run-1"]
