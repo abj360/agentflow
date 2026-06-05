@@ -50,3 +50,13 @@ def test_close_session_removes_record() -> None:
     registry.open_session("s3", "trace-1")
     registry.close_session("s3")
     assert "s3" not in registry.records
+
+
+def test_bump_unknown_session_raises() -> None:
+    """Verifies bumping an unregistered session raises KeyError."""
+    registry = SessionRegistry()
+    try:
+        registry.bump_version("ghost")
+    except KeyError:
+        return
+    raise AssertionError("expected KeyError")
