@@ -8,6 +8,7 @@ Contains:
     OAuthClient: runs the authorization-code flow and refreshes tokens
 """
 
+import asyncio
 import base64
 import hashlib
 import secrets
@@ -77,6 +78,7 @@ class OAuthClient:
         """
         self.config = config
         self.http = http
+        self._refresh_lock = asyncio.Lock()
 
     def build_authorize_url(self, state: str) -> str:
         """Builds the authorization URL for the user consent step.
@@ -129,15 +131,16 @@ class OAuthClient:
         Returns:
             refreshed: Newly issued token set.
         """
-        response = await self.http.post(
-            self.config.token_url,
-            data={
-                "grant_type": "refresh_token",
-                "refresh_token": tokens.refresh_token,
-                "client_id": self.config.client_id,
-            },
-        )
-        body = response.json()
+        async with self._refresh_lock:
+            response = await self.http.post(
+                self.config.token_url,
+                data={
+                    "grant_type": "refresh_token",
+                    "refresh_token": tokens.refresh_token,
+                    "client_id": self.config.client_id,
+                },
+            )
+            body = response.json()
         return TokenSet(
             access_token=body["access_token"],
             refresh_token=body.get("refresh_token", tokens.refresh_token),
