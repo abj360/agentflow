@@ -74,3 +74,11 @@ def test_metrics_include_tokens() -> None:
     """Verifies the scrape payload includes the token counter."""
     response = metrics_endpoint(None)
     assert b"agentflow_tokens_total" in response.body
+
+
+def test_approval_queue_gauge_set_and_read() -> None:
+    """Verifies the queue depth gauge sets and reads."""
+    from apps.api.observability.metrics import approval_queue_depth
+
+    approval_queue_depth.set(3)
+    assert approval_queue_depth._value.get() == 3
