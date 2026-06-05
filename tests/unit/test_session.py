@@ -67,3 +67,11 @@ def test_version_conflict_error_is_exception() -> None:
     from apps.api.orchestration.session import VersionConflictError
 
     assert issubclass(VersionConflictError, Exception)
+
+
+def test_bump_returns_new_record_object() -> None:
+    """Verifies a bump produces a new record rather than mutating."""
+    registry = SessionRegistry()
+    first = registry.open_session("s4", "trace-1")
+    second = registry.bump_version("s4")
+    assert first is not second
