@@ -111,3 +111,26 @@ def test_token_cache_discard() -> None:
     cache.put("srv", TokenSet(access_token="a", refresh_token=None, expires_at=1.0))
     cache.discard("srv")
     assert cache.get("srv") is None
+
+
+async def test_exchange_code_returns_tokens() -> None:
+    """Verifies code exchange maps the provider payload to a TokenSet."""
+
+    class FakeResponse:
+        """Mimics an HTTP response carrying a token payload."""
+
+        def json(self) -> dict:
+            """Returns the canned token payload."""
+            return {"access_token": "at-1", "refresh_token": "rt-1",
+                    "expires_in": 3600}
+
+    class FakeHttp:
+        """Mimics the async HTTP client for token calls."""
+
+        async def post(self, url: str, data: dict) -> FakeResponse:
+            """Returns the canned token response."""
+            return FakeResponse()
+
+    tokens = await build_client(FakeHttp()).exchange_code("code-1")
+    assert tokens.access_token == "at-1"
+    assert tokens.refresh_token == "rt-1"
