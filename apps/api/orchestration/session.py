@@ -63,6 +63,8 @@ class SessionRegistry:
         Returns:
             record: The session record carrying the incremented version.
         """
+        if session_id not in self.records:
+            raise KeyError(f"cannot bump unregistered session: {session_id}")
         current = self.records[session_id]
         updated = replace(current, version=current.version + 1)
         self.records[session_id] = updated
