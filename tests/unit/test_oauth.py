@@ -157,3 +157,13 @@ async def test_refresh_keeps_old_refresh_token_when_omitted() -> None:
     tokens = await build_client(FakeHttp()).refresh(old)
     assert tokens.access_token == "at-2"
     assert tokens.refresh_token == "rt-1"
+
+
+def test_token_cache_isolated_per_server() -> None:
+    """Verifies servers' cached tokens don't leak across names."""
+    from apps.api.mcp_servers.oauth import TokenCache
+
+    cache = TokenCache()
+    cache.put("srv-a", TokenSet(access_token="a", refresh_token=None,
+                                expires_at=1.0))
+    assert cache.get("srv-b") is None
