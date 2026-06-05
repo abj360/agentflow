@@ -11,6 +11,7 @@ Contains:
 from prometheus_client import (
     CollectorRegistry,
     Counter,
+    Gauge,
     Histogram,
     generate_latest,
 )
@@ -55,5 +56,12 @@ tool_calls_total = Counter(
 tokens_total = Counter(
     "agentflow_tokens_total",
     "Model tokens consumed across all sessions",
+    registry=registry,
+)
+
+
+approval_queue_depth = Gauge(
+    "agentflow_approval_queue_depth",
+    "Pending human-in-the-loop approval requests",
     registry=registry,
 )
