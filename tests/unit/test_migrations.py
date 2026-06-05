@@ -63,3 +63,14 @@ def test_composite_trace_created_index_exists() -> None:
     contents = "\n".join(path.read_text() for path in migration_files())
     assert "ix_audit_trace_created" in contents
     assert "(trace_id, created_at)" in contents
+
+
+def test_index_migrations_use_if_not_exists() -> None:
+    """Verifies index creation is idempotent across fresh and existing installs."""
+    index_migrations = [
+        path
+        for path in migration_files()
+        if "index" in path.name or "brin" in path.name
+    ]
+    for path in index_migrations:
+        assert "IF NOT EXISTS" in path.read_text(), path.name
