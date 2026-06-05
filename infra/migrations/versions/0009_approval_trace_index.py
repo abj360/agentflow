@@ -23,7 +23,7 @@ def upgrade() -> None:
     """Applies the migration."""
     op.execute(
         """
-        CREATE INDEX ix_approval_trace ON approval_requests (trace_id)
+        CREATE INDEX IF NOT EXISTS ix_approval_trace ON approval_requests (trace_id)
         """
     )
 
