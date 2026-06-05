@@ -179,7 +179,7 @@ class TokenCache:
 
     def __init__(self) -> None:
         """Initializes an empty token cache."""
-        self.tokens: dict[str, TokenSet] = {}
+        self.tokens: dict[str, TokenSet] = {}  # server_name -> latest tokens
 
     def get(self, server_name: str) -> TokenSet | None:
         """Looks up cached tokens for a server.
