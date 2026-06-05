@@ -25,8 +25,10 @@ export function useTraceSocket(runId: string): TraceEvent[] {
   const [events, setEvents] = useState<TraceEvent[]>([]);
 
   useEffect(() => {
+    let stopped = false;
     let attempts = 0;
     let current: WebSocket | null = null;
+
     const connect = () => {
       attempts += 1;
       const socket = new WebSocket(
@@ -41,12 +43,17 @@ export function useTraceSocket(runId: string): TraceEvent[] {
         setEvents((prev) => [...prev, event]);
       };
       socket.onclose = () => {
-        if (attempts < 5) {
-          setTimeout(connect, 250 * attempts);  // linear backoff
+        if (!stopped && attempts < 5) {
+          setTimeout(connect, 250 * attempts);
         }
       };
     };
+
     connect();
+    return () => {
+      stopped = true;
+      current?.close();
+    };
   }, [runId]);
 
   return events;

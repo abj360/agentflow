@@ -8,6 +8,8 @@ Contains:
 
 from fastapi import WebSocket
 
+MAX_CONNECTIONS_PER_RUN = 8
+
 
 class TraceHub:
     """Tracks connected trace viewers and broadcasts events.
@@ -27,6 +29,9 @@ class TraceHub:
             run_id: Run the viewer wants to stream.
             socket: The viewer's WebSocket connection.
         """
+        if len(self.connections.get(run_id, set())) >= MAX_CONNECTIONS_PER_RUN:
+            await socket.close(code=1013)
+            return
         await socket.accept()
         self.connections.setdefault(run_id, set()).add(socket)
 
