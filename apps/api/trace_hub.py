@@ -4,6 +4,7 @@ trace_hub.py --- server-side fan-out hub for live trace WebSocket streams
 
 Contains:
     TraceHub: tracks connected trace viewers and broadcasts events
+    MAX_CONNECTIONS_PER_RUN: cap on simultaneous viewers per run
 """
 
 from fastapi import WebSocket
