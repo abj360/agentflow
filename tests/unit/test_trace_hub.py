@@ -26,6 +26,10 @@ class FakeSocket:
         """Captures broadcast events."""
         self.sent.append(event)
 
+    async def close(self, code: int = 1000) -> None:
+        """Records the close code."""
+        self.closed_code = code
+
 
 async def test_register_adds_connection() -> None:
     """Verifies registering tracks the socket."""
@@ -86,3 +90,16 @@ async def test_broadcast_after_discard_skips_socket() -> None:
     hub.discard("run-1", socket)
     await hub.broadcast("run-1", {"kind": "tool_call"})
     assert socket.sent == []
+
+
+async def test_register_over_cap_closes_socket() -> None:
+    """Verifies viewers beyond the per-run cap get closed, not accepted."""
+    from apps.api.trace_hub import MAX_CONNECTIONS_PER_RUN
+
+    hub = TraceHub()
+    for _ in range(MAX_CONNECTIONS_PER_RUN):
+        await hub.register("run-1", FakeSocket())
+    overflow = FakeSocket()
+    await hub.register("run-1", overflow)
+    assert overflow.closed_code == 1013
+    assert overflow not in hub.connections["run-1"]
