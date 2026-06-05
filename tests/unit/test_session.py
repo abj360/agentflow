@@ -60,3 +60,10 @@ def test_bump_unknown_session_raises() -> None:
     except KeyError:
         return
     raise AssertionError("expected KeyError")
+
+
+def test_version_conflict_error_is_exception() -> None:
+    """Verifies the conflict error type exists for callers to catch."""
+    from apps.api.orchestration.session import VersionConflictError
+
+    assert issubclass(VersionConflictError, Exception)
