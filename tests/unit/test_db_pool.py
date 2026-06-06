@@ -29,3 +29,11 @@ def test_engine_uses_configured_pool_size() -> None:
     """Verifies the engine pool size comes from settings."""
     engine = db.get_engine()
     assert engine.pool.size() >= 1
+
+
+async def test_dispose_engine_resets_cache() -> None:
+    """Verifies disposing drops the cached engine and factory."""
+    db.get_engine()
+    await db.dispose_engine()
+    assert db._engine is None
+    assert db._session_factory is None
