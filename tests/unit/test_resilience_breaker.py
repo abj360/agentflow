@@ -113,3 +113,20 @@ async def test_bulkhead_acquire_within_timeout() -> None:
     bulkhead = Bulkhead(limit=1, acquire_timeout=1.0)
     async with bulkhead:
         assert bulkhead.in_flight() == 1
+
+
+async def test_bulkhead_full_raises() -> None:
+    """Verifies a saturated bulkhead raises BulkheadFullError."""
+    from apps.api.resilience.breaker import Bulkhead, BulkheadFullError
+
+    bulkhead = Bulkhead(limit=1, acquire_timeout=0.05)
+    await bulkhead._semaphore.acquire()
+    try:
+        async with bulkhead:
+            pass
+    except BulkheadFullError as exc:
+        assert exc.limit == 1
+        return
+    finally:
+        bulkhead._semaphore.release()
+    raise AssertionError("expected BulkheadFullError")
