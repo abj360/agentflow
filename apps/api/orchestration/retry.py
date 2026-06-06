@@ -74,6 +74,9 @@ async def execute_with_retry(func, policy: RetryPolicy):
 
     Returns:
         result: The tool call's return value on success.
+
+    Raises:
+        Exception: Re-raises the call's error after the final attempt.
     """
     attempt = 0
     while True:
