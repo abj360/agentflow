@@ -57,3 +57,12 @@ async def get_session() -> AsyncIterator[AsyncSession]:
     """
     async with get_session_factory()() as session:
         yield session
+
+
+async def dispose_engine() -> None:
+    """Disposes the shared engine and resets cached factories."""
+    global _engine, _session_factory
+    if _engine is not None:
+        await _engine.dispose()
+    _engine = None
+    _session_factory = None
