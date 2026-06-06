@@ -104,3 +104,12 @@ def test_registry_applies_shared_threshold() -> None:
 
     breaker = BreakerRegistry(failure_threshold=2).for_server("x")
     assert breaker.failure_threshold == 2
+
+
+async def test_bulkhead_acquire_within_timeout() -> None:
+    """Verifies acquiring under the timeout succeeds."""
+    from apps.api.resilience.breaker import Bulkhead
+
+    bulkhead = Bulkhead(limit=1, acquire_timeout=1.0)
+    async with bulkhead:
+        assert bulkhead.in_flight() == 1
