@@ -123,3 +123,9 @@ async def test_execute_with_retry_counts_attempts() -> None:
     policy = RetryPolicy(tool_name="t", max_attempts=3, backoff_seconds=0)
     await execute_with_retry(twice_flaky, policy)
     assert calls["n"] == 2
+
+
+def test_backoff_seconds_configurable() -> None:
+    """Verifies the backoff base is part of the policy."""
+    policy = RetryPolicy(tool_name="t", backoff_seconds=2.0)
+    assert policy.backoff_seconds == 2.0
