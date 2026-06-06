@@ -113,3 +113,9 @@ class BudgetExhaustedError(Exception):
             raise BudgetExhaustedError("tokens")
         if self.tool_calls_made >= self.limits.max_tool_calls:
             raise BudgetExhaustedError("tool_calls")
+
+
+    def reset(self) -> None:
+        """Resets all consumption counters to zero."""
+        self.tokens_used = 0
+        self.tool_calls_made = 0
