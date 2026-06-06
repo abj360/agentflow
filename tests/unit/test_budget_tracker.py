@@ -129,3 +129,10 @@ def test_limits_default_values() -> None:
     limits = BudgetLimits()
     assert limits.max_tokens == 50_000
     assert limits.max_tool_calls == 40
+
+
+def test_remaining_tool_calls() -> None:
+    """Verifies remaining tool-call headroom is reported."""
+    tracker = BudgetTracker(BudgetLimits(max_tokens=100, max_tool_calls=4))
+    tracker.record_tool_call()
+    assert tracker.remaining()["tool_calls"] == 3
