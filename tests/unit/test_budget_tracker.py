@@ -122,3 +122,10 @@ def test_snapshot_contains_usage_and_limits() -> None:
     snapshot = tracker.snapshot()
     assert snapshot["tokens_used"] == 25
     assert snapshot["max_tokens"] == 100
+
+
+def test_limits_default_values() -> None:
+    """Verifies the default limits match the shipped configuration."""
+    limits = BudgetLimits()
+    assert limits.max_tokens == 50_000
+    assert limits.max_tool_calls == 40
