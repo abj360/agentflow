@@ -5,6 +5,8 @@ breaker.py --- per-downstream-server circuit breaker and bulkhead
 Contains:
     ServerCircuitBreaker: trips calls to one failing downstream server
     Bulkhead: caps concurrent calls to one downstream server
+    BreakerRegistry: keeps one circuit breaker per downstream server
+    CircuitOpenError: raised when calling through an open breaker
 """
 
 import asyncio
