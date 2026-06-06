@@ -113,3 +113,12 @@ def test_budget_exhausted_error_message() -> None:
     from apps.api.budget.tracker import BudgetExhaustedError
 
     assert "tokens" in str(BudgetExhaustedError("tokens"))
+
+
+def test_snapshot_contains_usage_and_limits() -> None:
+    """Verifies the snapshot carries usage and limits."""
+    tracker = BudgetTracker(BudgetLimits(max_tokens=100, max_tool_calls=5))
+    tracker.record_tokens(25)
+    snapshot = tracker.snapshot()
+    assert snapshot["tokens_used"] == 25
+    assert snapshot["max_tokens"] == 100
