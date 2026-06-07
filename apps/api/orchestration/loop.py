@@ -45,7 +45,7 @@ async def run_session(session_id: str, task: str) -> dict:
     else:
         # run hit the revision cap; flag it in the final critique
         graph_state["critique"] = "revision-bounded"
-    accepted = graph_state["critique"] == "accept"
+    accepted = graph_state["critique"] == "accept"  # anything else ends bounded
     status = "completed" if accepted else "revision-bounded"
     return {
         "output": graph_state["results"],
