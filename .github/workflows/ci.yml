@@ -20,4 +20,4 @@ jobs:
       - name: mypy
         run: mypy apps packages
       - name: pytest
-        run: pytest tests/unit tests/integration
+        run: pytest tests/unit tests/integration --maxfail=1 -q
