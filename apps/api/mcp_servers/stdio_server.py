@@ -57,7 +57,9 @@ class StdioServer:
         Returns:
             response: JSON-RPC response payload.
         """
-        method = request.get("method")
+        if "method" not in request:
+            return {"error": "missing method"}
+        method = request["method"]
         if method == "tools/list":
             return {
                 "tools": [
