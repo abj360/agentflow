@@ -30,7 +30,8 @@ def test_handle_tools_list() -> None:
 def test_unknown_method_returns_error() -> None:
     """Verifies unknown methods get an error."""
     server = build_server()
-    assert "error" in server.handle_request({"method": "bogus/method"})
+    response = server.handle_request({"method": "bogus/method"})
+    assert "unknown method" in response["error"]
 
 
 def test_list_tools_method() -> None:
