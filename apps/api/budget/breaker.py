@@ -80,3 +80,16 @@ class BudgetCircuitBreaker:
         if self._opened_at is None:
             return False
         return time.time() - self._opened_at >= self.reset_seconds
+
+
+    def state(self) -> str:
+        """Reports the breaker state as a string for metrics.
+
+        Returns:
+            state: closed, open, or half_open.
+        """
+        if self.is_open():
+            return "open"
+        if self.is_half_open():
+            return "half_open"
+        return "closed"
