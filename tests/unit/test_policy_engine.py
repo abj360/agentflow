@@ -204,3 +204,9 @@ def test_schema_base_denies_unknown() -> None:
     """Verifies the shipped schema fails closed on unknown tools."""
     engine = PolicyEngine(str(SCHEMA_PATH))
     assert engine.evaluate("totally.unknown", {}).action == "deny"
+
+
+def test_review_shell_requires_human() -> None:
+    """Verifies shell tools route to the human approval queue."""
+    engine = make_engine()
+    assert engine.evaluate("shell.exec", {}).action == "human_approval"
