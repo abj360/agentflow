@@ -7,7 +7,12 @@ Contains:
     test_planner_to_executor_edge(): verifies the planner feeds the executor
 """
 
-from apps.api.orchestration.state_machine import build_graph, executor_node, planner_node
+from apps.api.orchestration.state_machine import (
+    build_graph,
+    critic_node,
+    executor_node,
+    planner_node,
+)
 
 
 def make_state(**overrides: object) -> dict:
