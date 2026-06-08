@@ -67,7 +67,7 @@ async def test_state_store_unknown_session_empty() -> None:
 async def test_run_session_status_completed() -> None:
     """Verifies an accepted run reports completed status."""
     result = await run_session("it-6", "finish fast")
-    assert result["status"] in ("completed", "revision-bounded")
+    assert result["status"] in {"completed", "revision-bounded"}
 
 
 async def test_iterations_positive_integer() -> None:
