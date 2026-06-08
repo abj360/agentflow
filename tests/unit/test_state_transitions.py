@@ -92,3 +92,22 @@ def test_validate_graph_flags_missing_critic() -> None:
     from apps.api.orchestration.state_machine import validate_graph
 
     assert validate_graph(PlannerOnlyGraph()) != []
+
+
+def test_full_cycle_two_iterations() -> None:
+    """Verifies plan/exec/critic chains over two simulated cycles."""
+    from apps.api.orchestration.state_machine import critic_node
+
+    state = make_state(task="cycle")
+    for _ in range(2):
+        state = planner_node(state)
+        state = executor_node(state)
+        state = critic_node(state)
+    assert state["iterations"] == 2
+
+
+def test_validate_graph_detects_sound_graph() -> None:
+    """Verifies the production graph passes its own validation."""
+    from apps.api.orchestration.state_machine import validate_graph
+
+    assert validate_graph(build_graph()) == []
