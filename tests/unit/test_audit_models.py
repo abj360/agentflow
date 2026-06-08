@@ -7,7 +7,14 @@ Contains:
     test_audit_event_defaults(): verifies defaults applied on construction
 """
 
-from apps.api.audit.models import AuditEvent, AuditSession, EventKind
+from apps.api.audit.models import (
+    ApprovalRequest,
+    ArchiveEvent,
+    AuditEvent,
+    AuditSession,
+    EventKind,
+    event_summary,
+)
 
 
 def test_event_kind_values() -> None:
