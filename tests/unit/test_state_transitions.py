@@ -116,3 +116,10 @@ def test_validate_graph_detects_sound_graph() -> None:
     from apps.api.orchestration.state_machine import validate_graph
 
     assert validate_graph(build_graph()) == []
+
+
+def test_second_revision_still_loops() -> None:
+    """Verifies repeated revise verdicts keep looping to the planner."""
+    from apps.api.orchestration.state_machine import route_after_critic
+
+    assert route_after_critic(make_state(critique="revise", iterations=2)) == "revise"
