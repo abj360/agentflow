@@ -8,10 +8,18 @@ Contains:
 
 from apps.api.audit.models import (
     ApprovalRequest,
+    ArchiveEvent,
     AuditEvent,
     AuditSession,
     Base,
     EventKind,
 )
 
-__all__ = ["ApprovalRequest", "AuditEvent", "AuditSession", "Base", "EventKind"]
+__all__ = [
+    "ApprovalRequest",
+    "ArchiveEvent",
+    "AuditEvent",
+    "AuditSession",
+    "Base",
+    "EventKind",
+]

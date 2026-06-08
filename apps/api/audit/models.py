@@ -9,6 +9,7 @@ Contains:
     AuditSession: one row per orchestration run, grouping its events
     ApprovalRequest: human-in-the-loop approval linked to a tool call
     event_summary(): builds a one-line summary of an audit event
+    ArchiveEvent: cold-storage marker for events moved out of the hot table
 """
 
 import uuid
@@ -131,3 +132,25 @@ def event_summary(event: AuditEvent) -> str:
         summary: One-line description of the event for logs and console output.
     """
     return f"{event.trace_id} {event.kind} at {event.created_at}"
+
+
+class ArchiveEvent(Base):
+    """Marks audit events moved to cold storage by the retention job.
+
+    Attributes:
+        archive_id: Unique identifier of the archival batch.
+        trace_id: Identifier of the run whose events were archived.
+        archived_at: Timestamp the archival ran at.
+        storage_uri: Location of the archived event payload.
+    """
+
+    __tablename__ = "archive_events"
+
+    archive_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    trace_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    archived_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    storage_uri: Mapped[str] = mapped_column(String(256), nullable=False)
