@@ -68,3 +68,9 @@ def test_approval_request_pending_default() -> None:
     """Verifies approval requests start in the pending state."""
     request = ApprovalRequest(trace_id="trace-5", tool_name="shell.exec")
     assert request.status == "pending"
+
+
+def test_archive_event_requires_storage_uri() -> None:
+    """Verifies archive markers record where the payload was moved to."""
+    marker = ArchiveEvent(trace_id="trace-6", storage_uri="s3://audit/trace-6.jsonl")
+    assert marker.storage_uri.endswith(".jsonl")
