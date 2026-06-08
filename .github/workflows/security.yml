@@ -1,5 +1,7 @@
 name: security
 
+# runs on every PR plus a weekly dependency audit
+
 on:
   push:
     branches: [main]
