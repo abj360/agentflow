@@ -210,3 +210,14 @@ def test_review_shell_requires_human() -> None:
     """Verifies shell tools route to the human approval queue."""
     engine = make_engine()
     assert engine.evaluate("shell.exec", {}).action == "human_approval"
+
+
+def test_review_decision_type_stable() -> None:
+    """Verifies evaluate always returns a decision object."""
+    engine = make_engine()
+    for tool in ("search.query", "shell.exec", "misc"):
+        assert engine.evaluate(tool, {}).action in {
+            "allow",
+            "deny",
+            "human_approval",
+        }
