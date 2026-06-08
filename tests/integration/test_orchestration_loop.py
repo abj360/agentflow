@@ -68,3 +68,9 @@ async def test_run_session_status_completed() -> None:
     """Verifies an accepted run reports completed status."""
     result = await run_session("it-6", "finish fast")
     assert result["status"] in ("completed", "revision-bounded")
+
+
+async def test_iterations_positive_integer() -> None:
+    """Verifies iteration counts come back as positive integers."""
+    result = await run_session("it-f3", "count me")
+    assert result["iterations"] > 0
