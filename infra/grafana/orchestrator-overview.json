@@ -6,7 +6,7 @@
   "panels": [
     {
       "id": 1,
-      "title": "Sessions per minute",
+      "title": "Orchestration sessions per minute",
       "type": "timeseries",
       "targets": [
         { "expr": "rate(agentflow_sessions_total[1m])" }
