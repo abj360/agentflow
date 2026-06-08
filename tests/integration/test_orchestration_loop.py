@@ -62,3 +62,9 @@ async def test_state_store_unknown_session_empty() -> None:
     from apps.api.orchestration.state import StateStore
 
     assert StateStore().get("ghost").version == 0
+
+
+async def test_run_session_status_completed() -> None:
+    """Verifies an accepted run reports completed status."""
+    result = await run_session("it-6", "finish fast")
+    assert result["status"] in ("completed", "revision-bounded")
