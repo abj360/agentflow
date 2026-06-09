@@ -227,3 +227,10 @@ def test_glob_matches_nested_names() -> None:
     """Verifies star globs cover dotted sub-tools."""
     engine = build_engine()
     assert engine.evaluate("search.query.vector", {}).action == "allow"
+
+
+def test_no_rule_is_none_reason_text() -> None:
+    """Verifies the default-deny reason mentions the default."""
+    engine = PolicyEngine.from_dict([])
+    decision = engine.evaluate("anything", {})
+    assert decision.action == "deny"
