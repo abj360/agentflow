@@ -64,7 +64,9 @@ class PromptCache:
             completion: The planner completion to cache.
         """
         if len(self.entries) >= self.max_entries:
-            oldest = min(self.entries, key=lambda k: self.entries[k][1])
+            oldest = min(
+                self.entries, key=lambda entry_key: self.entries[entry_key][1]
+            )
             del self.entries[oldest]
         self.entries[key] = (completion, time.time())
 
