@@ -240,3 +240,11 @@ def test_empty_rule_set_denies_everything() -> None:
     """Verifies an engine with no rules fails closed."""
     engine = PolicyEngine.from_dict([])
     assert engine.evaluate("search.query", {}).action == "deny"
+
+
+def test_is_allowed_false_for_approval() -> None:
+    """Verifies approval-needed calls are not treated as allowed."""
+    from apps.api.policy.engine import is_allowed
+
+    engine = build_engine()
+    assert is_allowed(engine.evaluate("shell.exec", {})) is False
