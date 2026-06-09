@@ -248,3 +248,9 @@ def test_is_allowed_false_for_approval() -> None:
 
     engine = build_engine()
     assert is_allowed(engine.evaluate("shell.exec", {})) is False
+
+
+def test_decision_equality() -> None:
+    """Verifies identical decisions compare equal."""
+    engine = build_engine()
+    assert engine.evaluate("search.query", {}) == engine.evaluate("search.query", {})
