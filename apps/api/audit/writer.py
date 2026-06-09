@@ -7,6 +7,7 @@ Contains:
     AuditWriter.enqueue(): adds an event to the pending buffer
     AuditWriter.flush(): writes all pending events in one transaction
     AuditWriter.drain(): flushes and disables further enqueue calls
+    AuditWriter.flush_with_retry(): retries a failed flush with bounded attempts
 """
 
 from sqlalchemy.exc import OperationalError
@@ -96,6 +97,23 @@ class AuditWriter:
         """
         self._draining = True
         return await self.flush()
+
+    async def flush_with_retry(self, attempts: int = 3) -> int:
+        """Retries a failed flush with bounded attempts.
+
+        Args:
+            attempts: Maximum number of flush attempts before giving up.
+
+        Returns:
+            flushed_count: Number of events written by the successful flush.
+        """
+        for attempt in range(attempts):
+            try:
+                return await self.flush()
+            except OperationalError:
+                if attempt == attempts - 1:
+                    raise
+        return 0
 
     @property
     def pending_count(self) -> int:
