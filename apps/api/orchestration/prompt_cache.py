@@ -35,8 +35,13 @@ class PromptCache:
         entries: Cached completions plus store timestamps keyed by content hash.
     """
 
-    def __init__(self) -> None:
-        """Initializes an empty cache."""
+    def __init__(self, max_entries: int = 512) -> None:
+        """Initializes an empty cache.
+
+        Args:
+            max_entries: Maximum cached completions before LRU eviction.
+        """
+        self.max_entries = max_entries
         self.entries: dict[str, tuple[str, float]] = {}
 
     def get(self, key: str) -> str | None:
@@ -58,6 +63,9 @@ class PromptCache:
             key: Content hash produced by cache_key.
             completion: The planner completion to cache.
         """
+        if len(self.entries) >= self.max_entries:
+            oldest = min(self.entries, key=lambda k: self.entries[k][1])
+            del self.entries[oldest]
         self.entries[key] = (completion, time.time())
 
 
