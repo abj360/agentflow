@@ -74,3 +74,19 @@ def similarity(old: list[str], new: list[str]) -> float:
     overlap = len(old_set & new_set)
     union = len(old_set | new_set)
     return overlap / union
+
+
+def summarize(diff: PlanDiff) -> dict:
+    """Summarizes a plan diff as headline counts.
+
+    Args:
+        diff: The plan diff to summarize.
+
+    Returns:
+        summary: Counts of added, removed and kept steps.
+    """
+    return {
+        "added": len(diff.added),
+        "removed": len(diff.removed),
+        "kept": len(diff.kept),
+    }
