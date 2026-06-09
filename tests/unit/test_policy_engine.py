@@ -221,3 +221,9 @@ def test_review_decision_type_stable() -> None:
             "deny",
             "human_approval",
         }
+
+
+def test_glob_matches_nested_names() -> None:
+    """Verifies star globs cover dotted sub-tools."""
+    engine = build_engine()
+    assert engine.evaluate("search.query.vector", {}).action == "allow"
