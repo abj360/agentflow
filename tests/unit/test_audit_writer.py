@@ -165,3 +165,14 @@ async def test_drain_idempotent() -> None:
     await writer.enqueue("trace-1", EventKind.SYNTHESIS, {})
     await writer.drain()
     assert await writer.drain() == 0
+
+
+async def test_flush_with_retry_succeeds_after_transient_error() -> None:
+    """Verifies a transient commit failure is retried successfully."""
+    factory = FakeSessionFactory()
+    factory.session.fail_commit = True
+    writer = AuditWriter(factory)
+    await writer.enqueue("trace-1", EventKind.PLAN_CREATED, {})
+    flushed = await writer.flush_with_retry()
+    assert flushed == 1
+    assert factory.session.commits == 1
