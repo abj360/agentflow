@@ -19,6 +19,7 @@ from apps.api.audit.models import AuditEvent, EventKind
 SessionFactory = async_sessionmaker[AsyncSession]
 
 DEFAULT_BATCH_SIZE = 64
+DEFAULT_MAX_BUFFER = 4096
 
 
 class AuditWriter:
