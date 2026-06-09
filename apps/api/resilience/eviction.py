@@ -5,6 +5,9 @@ eviction.py --- health-check-based eviction of unhealthy MCP servers
 Contains:
     HealthChecker: probes servers and tracks consecutive failures
     ServerEvictor: evicts servers failing health checks
+    ServerEvictor.evict(): evicts a server immediately
+    ServerEvictor.reinstate(): reinstates an evicted server
+    ServerEvictor.eviction_age(): how long a server has been evicted
 """
 
 import time
