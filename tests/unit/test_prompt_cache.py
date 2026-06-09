@@ -80,3 +80,13 @@ def test_get_fresh_expires_old_entry() -> None:
     cache.entries["k"] = (value, 0.0)
     assert cache.get_fresh("k", ttl_seconds=1) is None
     assert "k" not in cache.entries
+
+
+def test_eviction_removes_oldest_entry() -> None:
+    """Verifies exceeding max_entries evicts the oldest entry."""
+    cache = PromptCache(max_entries=2)
+    cache.put("old", "1")
+    cache.entries["old"] = ("1", 0.0)
+    cache.put("mid", "2")
+    cache.put("new", "3")
+    assert "old" not in cache.entries
