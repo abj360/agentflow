@@ -234,3 +234,9 @@ def test_no_rule_is_none_reason_text() -> None:
     engine = PolicyEngine.from_dict([])
     decision = engine.evaluate("anything", {})
     assert decision.action == "deny"
+
+
+def test_empty_rule_set_denies_everything() -> None:
+    """Verifies an engine with no rules fails closed."""
+    engine = PolicyEngine.from_dict([])
+    assert engine.evaluate("search.query", {}).action == "deny"
