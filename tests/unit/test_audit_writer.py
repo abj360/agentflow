@@ -176,3 +176,16 @@ async def test_flush_with_retry_succeeds_after_transient_error() -> None:
     flushed = await writer.flush_with_retry()
     assert flushed == 1
     assert factory.session.commits == 1
+
+
+async def test_flush_with_retry_single_attempt_surfaces_error() -> None:
+    """Verifies one failed attempt surfaces the error when attempts is one."""
+    factory = FakeSessionFactory()
+    factory.session.fail_commit = True
+    writer = AuditWriter(factory)
+    await writer.enqueue("trace-1", EventKind.TOOL_CALL, {})
+    try:
+        await writer.flush_with_retry(attempts=1)
+    except OperationalError:
+        return
+    raise AssertionError("expected OperationalError")
