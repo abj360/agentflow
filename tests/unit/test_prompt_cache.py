@@ -90,3 +90,11 @@ def test_eviction_removes_oldest_entry() -> None:
     cache.put("mid", "2")
     cache.put("new", "3")
     assert "old" not in cache.entries
+
+
+def test_cache_respects_max_entries() -> None:
+    """Verifies the cache never grows past max_entries."""
+    cache = PromptCache(max_entries=3)
+    for idx in range(10):
+        cache.put(f"k{idx}", "v")
+    assert len(cache.entries) <= 3
