@@ -46,7 +46,7 @@ export function useTraceSocket(runId: string): TraceEvent[] {
         setEvents((prev) => [...prev, event]);
       };
       socket.onclose = () => {
-        if (!stopped && attempts < 5) {
+        if (!stopped && attempts < 4) {
           setTimeout(connect, 250 * attempts);
         }
       };
