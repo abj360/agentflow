@@ -77,3 +77,13 @@ def test_validate_accepts_valid_spec() -> None:
     from agentflow_core.tool_schema import validate_unified_spec
 
     assert validate_unified_spec(SPEC) == []
+
+
+def test_validate_flags_missing_name() -> None:
+    """Verifies a spec without a name fails validation."""
+    from agentflow_core.tool_schema import validate_unified_spec
+
+    problems = validate_unified_spec(
+        UnifiedToolSpec(name="", description="d")
+    )
+    assert "tool name is required" in problems
