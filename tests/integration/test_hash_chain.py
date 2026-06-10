@@ -7,7 +7,12 @@ Contains:
     test_tampering_breaks_verification(): verifies a modified payload is detected
 """
 
-from apps.api.audit.chain import GENESIS_HASH, ChainLinker, compute_event_hash
+from apps.api.audit.chain import (
+    GENESIS_HASH,
+    ChainLinker,
+    compute_event_hash,
+    verify_chain,
+)
 
 
 class FakeEvent:
@@ -63,3 +68,13 @@ def test_compute_event_hash_deterministic() -> None:
     """Verifies identical inputs produce identical hashes."""
     args = ("trace-1", "tool_call", {"a": 1}, GENESIS_HASH)
     assert compute_event_hash(*args) == compute_event_hash(*args)
+
+
+def test_verify_chain_accepts_untampered_chain() -> None:
+    """Verifies a chain produced by the linker passes verification."""
+    linker = ChainLinker()
+    events = []
+    for kind, payload in [("plan_created", {"step": 1}), ("tool_call", {"tool": "x"})]:
+        prev_hash, event_hash = linker.link("trace-1", kind, payload)
+        events.append(FakeEvent("trace-1", kind, payload, prev_hash, event_hash))
+    assert verify_chain(events)
