@@ -18,7 +18,7 @@ SOAK_ERROR_RATE_BUDGET = 0.001  # see tests/load/locustfile.py for the 500-user 
 class SoakUser(HttpUser):
     """Simulates a user driving long-running mixed traffic."""
 
-    wait_time = between(1.0, 4.0)
+    wait_time = between(1.2, 4.2)
 
     @task(4)
     def fetch_trace(self) -> None:
