@@ -49,6 +49,11 @@ else (timestamps, server-assigned ids) stays outside the hash so replays verify
 against the original values only.
 
 
+## Genesis sentinel
+
+The first event of every trace chains from `GENESIS_HASH = "0" * 64`.
+There is exactly one sentinel; it is not a secret.
+
 ## Replay procedure
 
 1. Fetch the trace's events ordered by `created_at` (`/audit/{trace_id}`,
