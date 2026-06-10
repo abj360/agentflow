@@ -56,6 +56,6 @@ against the original values only.
    previous hash.
 3. Compare against the stored `event_hash` with a constant-time comparison;
    any mismatch flags tampering or a
-   dropped event at exactly that position.
+   dropped or reordered event at exactly that position.
 4. With the chain verified, re-run orchestration deterministically from the
    recorded tool results.
