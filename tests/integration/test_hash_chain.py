@@ -89,3 +89,11 @@ def test_verify_chain_detects_dropped_event() -> None:
         events.append(FakeEvent("trace-1", "tool_call", {"idx": idx}, prev_hash, event_hash))
     del events[1]
     assert not verify_chain(events)
+
+
+def test_verify_chain_detects_payload_tamper() -> None:
+    """Verifies editing a payload after linking breaks verification."""
+    linker = ChainLinker()
+    prev_hash, event_hash = linker.link("trace-1", "tool_call", {"idx": 0})
+    tampered = FakeEvent("trace-1", "tool_call", {"idx": 99}, prev_hash, event_hash)
+    assert not verify_chain([tampered])
