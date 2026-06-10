@@ -97,3 +97,13 @@ def test_verify_chain_detects_payload_tamper() -> None:
     prev_hash, event_hash = linker.link("trace-1", "tool_call", {"idx": 0})
     tampered = FakeEvent("trace-1", "tool_call", {"idx": 99}, prev_hash, event_hash)
     assert not verify_chain([tampered])
+
+
+def test_linker_chains_three_events_sequentially() -> None:
+    """Verifies prev_hash threads through a three-event chain."""
+    linker = ChainLinker()
+    _, hash_1 = linker.link("trace-1", "plan_created", {})
+    prev_2, hash_2 = linker.link("trace-1", "tool_call", {})
+    prev_3, _ = linker.link("trace-1", "tool_result", {})
+    assert prev_2 == hash_1
+    assert prev_3 == hash_2
