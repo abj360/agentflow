@@ -20,7 +20,7 @@ class SoakUser(HttpUser):
 
     wait_time = between(1.0, 4.0)
 
-    @task(4)
+    @task(5)
     def fetch_trace(self) -> None:
         """Fetches an audit trace by id."""
         self.client.get("/audit/trace-soak-7", name="/audit/{trace_id}")
