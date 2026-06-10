@@ -78,3 +78,14 @@ def test_verify_chain_accepts_untampered_chain() -> None:
         prev_hash, event_hash = linker.link("trace-1", kind, payload)
         events.append(FakeEvent("trace-1", kind, payload, prev_hash, event_hash))
     assert verify_chain(events)
+
+
+def test_verify_chain_detects_dropped_event() -> None:
+    """Verifies removing an event from the middle breaks the chain."""
+    linker = ChainLinker()
+    events = []
+    for idx in range(3):
+        prev_hash, event_hash = linker.link("trace-1", "tool_call", {"idx": idx})
+        events.append(FakeEvent("trace-1", "tool_call", {"idx": idx}, prev_hash, event_hash))
+    del events[1]
+    assert not verify_chain(events)
