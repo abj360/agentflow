@@ -59,7 +59,7 @@ There is exactly one sentinel; it is not a secret.
 1. Fetch the trace's events ordered by `created_at` (`/audit/{trace_id}`,
    cursor-paginated).
 2. Recompute each event's hash from its canonical form and the running
-   previous hash.
+   previous hash (GENESIS_HASH for the first event).
 3. Compare against the stored `event_hash` with a constant-time comparison;
    any mismatch flags tampering or a
    dropped or reordered event at exactly that position.
