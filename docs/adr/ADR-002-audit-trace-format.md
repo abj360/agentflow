@@ -51,7 +51,8 @@ against the original values only.
 
 ## Replay procedure
 
-1. Fetch the trace's events ordered by `created_at` (`/audit/{trace_id}`).
+1. Fetch the trace's events ordered by `created_at` (`/audit/{trace_id}`,
+   cursor-paginated).
 2. Recompute each event's hash from its canonical form and the running
    previous hash.
 3. Compare against the stored `event_hash` with a constant-time comparison;
