@@ -58,4 +58,4 @@ against the original values only.
    any mismatch flags tampering or a
    dropped or reordered event at exactly that position.
 4. With the chain verified, re-run orchestration deterministically from the
-   recorded tool results.
+   recorded tool results, comparing outputs against the recorded synthesis.
