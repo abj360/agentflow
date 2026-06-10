@@ -47,3 +47,14 @@ Hashes are computed over `json.dumps(event, sort_keys=True, separators=(",",
 ":"))` covering exactly: `trace_id`, `kind`, `payload`, `prev_hash`. Anything
 else (timestamps, server-assigned ids) stays outside the hash so replays verify
 against the original values only.
+
+
+## Replay procedure
+
+1. Fetch the trace's events ordered by `created_at` (`/audit/{trace_id}`).
+2. Recompute each event's hash from its canonical form and the running
+   previous hash.
+3. Compare against the stored `event_hash`; any mismatch flags tampering or a
+   dropped event at exactly that position.
+4. With the chain verified, re-run orchestration deterministically from the
+   recorded tool results.
