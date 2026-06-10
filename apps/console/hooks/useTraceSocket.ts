@@ -36,7 +36,7 @@ export function useTraceSocket(runId: string): TraceEvent[] {
       );
       current = socket;
       socket.onopen = () => {
-        attempts = 0;
+        attempts = 0;  // healthy socket resets the backoff
       };
       socket.onmessage = (message) => {
         if (socket !== current) {
