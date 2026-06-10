@@ -35,6 +35,9 @@ export function useTraceSocket(runId: string): TraceEvent[] {
         `${process.env.NEXT_PUBLIC_WS_URL}/ws/traces?run_id=${runId}`
       );
       current = socket;
+      socket.onopen = () => {
+        attempts = 0;
+      };
       socket.onmessage = (message) => {
         if (socket !== current) {
           return;
