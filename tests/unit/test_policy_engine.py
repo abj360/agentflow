@@ -268,3 +268,9 @@ def test_acme_shell_still_requires_approval() -> None:
     engine = PolicyEngine(str(SCHEMA_PATH))
     decision = engine.evaluate("shell.exec", {}, tenant_id="acme")
     assert decision.action == "deny"
+
+
+def test_base_shell_requires_human_approval() -> None:
+    """Verifies the base policy gates shell tools for humans."""
+    engine = PolicyEngine(str(SCHEMA_PATH))
+    assert engine.evaluate("shell.exec", {}).action == "human_approval"
