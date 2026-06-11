@@ -233,3 +233,12 @@ code {
   background: #fee2e2;
   color: #991b1b;
 }
+
+
+[data-theme="dark"] {
+  --bg: #0b1120;
+  --fg: #e2e8f0;
+  --accent: #60a5fa;
+  --muted: #94a3b8;
+  --border: #1e293b;
+}
