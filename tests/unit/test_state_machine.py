@@ -75,3 +75,10 @@ def test_executor_handles_empty_plan() -> None:
     from apps.api.orchestration.state_machine import executor_node
 
     assert executor_node(make_state())["results"] == []
+
+
+def test_validate_graph_accepts_built_graph() -> None:
+    """Verifies the assembled graph passes validation."""
+    from apps.api.orchestration.state_machine import validate_graph
+
+    assert validate_graph(build_graph()) == []
