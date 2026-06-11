@@ -27,7 +27,7 @@ export function ThemeToggle() {
         document.documentElement.dataset.theme = next;
       }}
     >
-      {dark ? "Light" : "Dark"} mode
+      {dark ? "☀ Light" : "☾ Dark"} mode
     </button>
   );
 }
