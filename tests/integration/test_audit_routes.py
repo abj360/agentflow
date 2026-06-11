@@ -233,3 +233,11 @@ def test_sessions_limit_param_validated() -> None:
     """Verifies the sessions endpoint validates its limit parameter."""
     client = make_client([])
     assert client.get("/audit/sessions?limit=0").status_code in (200, 422)
+
+
+def test_sessions_endpoint_lists_recent_sessions() -> None:
+    """Verifies the sessions endpoint returns session summaries."""
+    session = SimpleNamespace(trace_id="trace-7", tenant_id="default")
+    client = make_client([session])
+    body = client.get("/audit/sessions").json()
+    assert body["sessions"][0]["trace_id"] == "trace-7"
