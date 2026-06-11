@@ -109,5 +109,11 @@ class DistributedLock:
         return True
 
 
+    @property
+    def is_held(self) -> bool:
+        """Reports whether this instance currently holds the lock."""
+        return self._token is not None
+
+
 class LockNotHeldError(Exception):
     """Raised when operating on a lock that is not held."""
