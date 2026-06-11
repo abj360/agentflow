@@ -82,3 +82,17 @@ def test_validate_graph_accepts_built_graph() -> None:
     from apps.api.orchestration.state_machine import validate_graph
 
     assert validate_graph(build_graph()) == []
+
+
+def test_validate_graph_flags_missing_nodes() -> None:
+    """Verifies validation reports a graph with missing roles."""
+
+    class EmptyGraph:
+        """Minimal stand-in exposing a nodes attribute."""
+
+        nodes: dict = {}
+
+    from apps.api.orchestration.state_machine import validate_graph
+
+    problems = validate_graph(EmptyGraph())
+    assert "planner node missing" in problems
