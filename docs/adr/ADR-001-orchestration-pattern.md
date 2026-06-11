@@ -2,7 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-04-28
-- Last reviewed: 2026-06-11
+- Last reviewed: 2026-06-11 (no changes)
 - Deciders: Peter
 
 ## Context
