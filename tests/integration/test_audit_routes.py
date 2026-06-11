@@ -247,3 +247,10 @@ def test_sessions_endpoint_empty_list() -> None:
     """Verifies the sessions endpoint returns an empty list, not an error."""
     client = make_client([])
     assert client.get("/audit/sessions").json() == {"sessions": []}
+
+
+def test_sessions_route_not_shadowed_by_trace_route() -> None:
+    """Verifies /audit/sessions is not captured by the {trace_id} route."""
+    client = make_client([])
+    response = client.get("/audit/sessions")
+    assert response.status_code == 200
