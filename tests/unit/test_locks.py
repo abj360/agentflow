@@ -145,3 +145,11 @@ async def test_is_held_tracks_state() -> None:
     assert lock.is_held is False
     await lock.acquire()
     assert lock.is_held is True
+
+
+async def test_is_held_false_after_release() -> None:
+    """Verifies is_held clears after release."""
+    lock = DistributedLock(FakeRedis(), "k1")
+    await lock.acquire()
+    await lock.release()
+    assert lock.is_held is False
