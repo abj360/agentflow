@@ -192,6 +192,7 @@ def test_tenant_override_applies_when_present() -> None:
     engine = PolicyEngine(str(SCHEMA_PATH))
     decision = engine.evaluate("db.read", {}, tenant_id="acme")
     assert decision.action == "allow"
+    assert decision.rule == "db.*"
 
 
 def test_schema_file_loads_rules() -> None:
