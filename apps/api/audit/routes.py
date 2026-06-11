@@ -14,12 +14,37 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.api.audit.chain import verify_chain
-from apps.api.audit.models import AuditEvent
+from apps.api.audit.models import AuditEvent, AuditSession
 from apps.api.db import get_session
 
 MAX_PAGE_SIZE = 500
 
 router = APIRouter(prefix="/audit", tags=["audit"])
+
+
+@router.get("/sessions")
+async def list_trace_sessions(
+    limit: int = 50, session: AsyncSession = Depends(get_session)
+) -> dict:
+    """Lists recent orchestration sessions, newest first.
+
+    Args:
+        limit: Maximum number of sessions to return.
+        session: Async database session injected by FastAPI.
+
+    Returns:
+        sessions: Recent session summaries ordered by start time.
+    """
+    result = await session.execute(
+        select(AuditSession).order_by(AuditSession.started_at.desc()).limit(limit)
+    )
+    sessions = list(result.scalars().all())
+    return {
+        "sessions": [
+            {"trace_id": item.trace_id, "tenant_id": item.tenant_id}
+            for item in sessions
+        ]
+    }
 
 
 @router.get("/{trace_id}")
