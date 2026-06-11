@@ -241,3 +241,9 @@ def test_sessions_endpoint_lists_recent_sessions() -> None:
     client = make_client([session])
     body = client.get("/audit/sessions").json()
     assert body["sessions"][0]["trace_id"] == "trace-7"
+
+
+def test_sessions_endpoint_empty_list() -> None:
+    """Verifies the sessions endpoint returns an empty list, not an error."""
+    client = make_client([])
+    assert client.get("/audit/sessions").json() == {"sessions": []}
