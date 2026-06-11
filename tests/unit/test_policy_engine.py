@@ -261,3 +261,10 @@ def test_unknown_tenant_falls_back_to_base_rules() -> None:
     engine = PolicyEngine(str(SCHEMA_PATH))
     decision = engine.evaluate("search.query", {}, tenant_id="no-such-tenant")
     assert decision.action == "allow"
+
+
+def test_acme_shell_still_requires_approval() -> None:
+    """Verifies acme's override keeps shell gated."""
+    engine = PolicyEngine(str(SCHEMA_PATH))
+    decision = engine.evaluate("shell.exec", {}, tenant_id="acme")
+    assert decision.action == "deny"
