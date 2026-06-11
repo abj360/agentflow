@@ -254,3 +254,10 @@ def test_decision_equality() -> None:
     """Verifies identical decisions compare equal."""
     engine = build_engine()
     assert engine.evaluate("search.query", {}) == engine.evaluate("search.query", {})
+
+
+def test_unknown_tenant_falls_back_to_base_rules() -> None:
+    """Verifies tenants without overrides use the base policy."""
+    engine = PolicyEngine(str(SCHEMA_PATH))
+    decision = engine.evaluate("search.query", {}, tenant_id="no-such-tenant")
+    assert decision.action == "allow"
