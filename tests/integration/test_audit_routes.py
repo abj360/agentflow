@@ -7,6 +7,8 @@ Contains:
     test_trace_events_returns_chain(): verifies a known trace returns its events
 """
 
+from types import SimpleNamespace
+
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
