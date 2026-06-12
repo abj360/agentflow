@@ -44,7 +44,7 @@ class OrchestratorUser(HttpUser):
         self.client.get("/health")
 
 
-    @task(3)
+    @task(2)
     def page_trace_events(self) -> None:
         """Pages through trace events with a cursor."""
         with self.client.get(
