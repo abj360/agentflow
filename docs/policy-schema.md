@@ -47,4 +47,4 @@ base `rules` table applies. Unknown tenants silently fall back to base rules.
 Since the 2026-06-15 perf fix, the engine compiles YAML rules into regex decision tables
 once at load time instead of re-parsing the schema on every call.
 Evaluation
-overhead dropped from ~120ms to ~4ms per session.
+overhead dropped from ~120ms to ~4ms per session (perf(policy) fix).
