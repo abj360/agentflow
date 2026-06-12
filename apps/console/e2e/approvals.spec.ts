@@ -44,7 +44,7 @@ test("queue list is visible", async ({ page }) => {
 });
 
 
-test("approval card shows the tool name", async ({ page }) => {
+test("approval card shows the gated tool name", async ({ page }) => {
   await page.goto("/approvals");
   const card = page.locator(".approval-card").first();
   await expect(card.locator("strong").first()).toBeVisible();
