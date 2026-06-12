@@ -57,3 +57,10 @@ def test_instrument_redis_callable() -> None:
     from apps.api.observability.tracing import instrument_redis
 
     assert callable(instrument_redis)
+
+
+def test_shutdown_tracing_idempotent() -> None:
+    """Verifies shutting down twice does not raise."""
+    from apps.api.observability.tracing import shutdown_tracing
+
+    shutdown_tracing()
