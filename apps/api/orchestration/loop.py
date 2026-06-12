@@ -64,3 +64,23 @@ def session_summary(result: dict) -> str:
         summary: One-line description of the run for logs.
     """
     return f"finished after {result['iterations']} iterations"
+
+
+class LoopHooks:
+    """Receives lifecycle callbacks from the orchestration loop."""
+
+    async def on_iteration(self, session_id: str, iteration: int) -> None:
+        """Called after each completed loop iteration.
+
+        Args:
+            session_id: Identifier of the running session.
+            iteration: Index of the iteration that just finished.
+        """
+
+    async def on_complete(self, session_id: str, result: dict) -> None:
+        """Called once when the session finishes.
+
+        Args:
+            session_id: Identifier of the finished session.
+            result: The dict returned by run_session.
+        """
