@@ -55,7 +55,10 @@ def do_run_migrations(connection) -> None:
 
 
 async def run_migrations_online() -> None:
-    """Runs migrations against a live connection."""
+    """Runs migrations against a live connection.
+
+    Called from the api container entrypoint on every deploy.
+    """
     engine = create_async_engine(get_settings().database_url, pool_pre_ping=True)
     async with engine.connect() as connection:
         await connection.run_sync(do_run_migrations)
