@@ -15,6 +15,7 @@ from starlette.responses import JSONResponse, Response
 
 MAX_REQUESTS = 120
 WINDOW_SECONDS = 60
+EXEMPT_PATHS = frozenset({"/health", "/metrics"})
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
@@ -51,6 +52,8 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         Returns:
             response: The downstream response, or a 429 when over the limit.
         """
+        if request.url.path in EXEMPT_PATHS:
+            return await call_next(request)
         client = request.client.host if request.client else "unknown"
         window_start, count = self._counters[client]
         now = time.monotonic()
