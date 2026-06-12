@@ -45,5 +45,6 @@ base `rules` table applies. Unknown tenants silently fall back to base rules.
 ## Compiled decision tables
 
 Since 2026-06-15 the engine compiles YAML rules into regex decision tables
-once at load time instead of re-parsing the schema on every call. Evaluation
+once at load time instead of re-parsing the schema on every call.
+Evaluation
 overhead dropped from ~120ms to ~4ms per session.
