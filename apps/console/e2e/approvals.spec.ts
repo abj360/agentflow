@@ -49,3 +49,10 @@ test("approval card shows the tool name", async ({ page }) => {
   const card = page.locator(".approval-card").first();
   await expect(card.locator("strong").first()).toBeVisible();
 });
+
+
+test("approval card shows truncated trace id", async ({ page }) => {
+  await page.goto("/approvals");
+  const card = page.locator(".approval-card").first();
+  await expect(card.locator(".approval-trace")).toBeVisible();
+});
