@@ -47,6 +47,10 @@ class OrchestratorUser(HttpUser):
     @task(3)
     def page_trace_events(self) -> None:
         """Pages through trace events with a cursor."""
-        self.client.get(
-            "/audit/trace-load-1?limit=50", name="/audit/{trace_id}?limit=50"
-        )
+        with self.client.get(
+            "/audit/trace-load-1?limit=50",
+            name="/audit/{trace_id}?limit=50",
+            catch_response=True,
+        ) as response:
+            if response.status_code == 200:
+                response.success()
