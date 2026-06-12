@@ -89,3 +89,14 @@ def traced_section(name: str, **attributes: object):
         for key, value in attributes.items():
             span.set_attribute(key, value)
         yield span  # callers may set additional attributes
+
+
+def instrument_redis(redis_client) -> None:
+    """Instruments an async Redis client for tracing.
+
+    Args:
+        redis_client: The Redis client to instrument.
+    """
+    from opentelemetry.instrumentation.redis import RedisInstrumentor
+
+    RedisInstrumentor().instrument(client=redis_client)
