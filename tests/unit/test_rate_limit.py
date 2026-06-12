@@ -129,3 +129,19 @@ async def test_remaining_never_goes_negative() -> None:
     for _ in range(3):
         response = await middleware.dispatch(FakeRequest(), passthrough)
     assert response.status_code == 429
+
+
+class PathRequest(FakeRequest):
+    """Fake request carrying a URL path."""
+
+    def __init__(self, path: str) -> None:
+        """Stores the path alongside the fake client."""
+        super().__init__()
+        self.url = SimpleNamespace(path=path)
+
+
+async def test_health_path_is_exempt() -> None:
+    """Verifies the health endpoint bypasses the rate limiter."""
+    middleware = build_middleware(max_requests=0)
+    response = await middleware.dispatch(PathRequest("/health"), passthrough)
+    assert response.status_code == 200
