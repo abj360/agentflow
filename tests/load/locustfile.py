@@ -54,3 +54,11 @@ class OrchestratorUser(HttpUser):
         ) as response:
             if response.status_code == 200:
                 response.success()
+
+
+    @task(1)
+    def verify_trace(self) -> None:
+        """Re-verifies a trace chain."""
+        self.client.get(
+            "/audit/trace-load-1/verify", name="/audit/{trace_id}/verify"
+        )
