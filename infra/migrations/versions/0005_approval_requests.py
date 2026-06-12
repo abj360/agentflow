@@ -27,7 +27,8 @@ def upgrade() -> None:
             approval_id UUID PRIMARY KEY,
             trace_id VARCHAR(64) NOT NULL,
             tool_name VARCHAR(128) NOT NULL,
-            status VARCHAR(16) NOT NULL DEFAULT 'pending',
+            status VARCHAR(16) NOT NULL DEFAULT 'pending'
+                CHECK (status IN ('pending', 'approved', 'rejected')),
             created_at TIMESTAMPTZ NOT NULL DEFAULT now()
         )
         """
