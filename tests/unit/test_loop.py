@@ -55,3 +55,9 @@ def test_loop_hooks_methods_are_async() -> None:
 
     assert inspect.iscoroutinefunction(LoopHooks.on_iteration)
     assert inspect.iscoroutinefunction(LoopHooks.on_complete)
+
+
+async def test_hooks_default_to_none() -> None:
+    """Verifies the loop runs without hooks attached."""
+    result = await run_session("session-6", "noop")
+    assert result is not None
