@@ -27,7 +27,7 @@ def upgrade() -> None:
             event_id UUID PRIMARY KEY,
             trace_id VARCHAR(64) NOT NULL,
             kind VARCHAR(32) NOT NULL,
-            payload JSONB NOT NULL DEFAULT '{}',
+            payload JSONB NOT NULL DEFAULT '{}'::jsonb,
             prev_hash VARCHAR(64) NOT NULL,
             event_hash VARCHAR(64) NOT NULL,
             created_at TIMESTAMPTZ NOT NULL DEFAULT now()
