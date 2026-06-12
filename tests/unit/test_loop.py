@@ -45,3 +45,13 @@ async def test_status_value_is_string() -> None:
     """Verifies the status field is always a string."""
     result = await run_session("session-5", "check status")
     assert isinstance(result["status"], str)
+
+
+def test_loop_hooks_methods_are_async() -> None:
+    """Verifies the hooks surface is fully awaitable."""
+    import inspect
+
+    from apps.api.orchestration.loop import LoopHooks
+
+    assert inspect.iscoroutinefunction(LoopHooks.on_iteration)
+    assert inspect.iscoroutinefunction(LoopHooks.on_complete)
