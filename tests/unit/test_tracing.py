@@ -50,3 +50,10 @@ def test_traced_section_sets_attributes() -> None:
 
     with traced_section("attrs", trace_id="t-1", role="planner") as span:
         assert span is not None
+
+
+def test_instrument_redis_callable() -> None:
+    """Verifies the Redis instrumentation helper exists."""
+    from apps.api.observability.tracing import instrument_redis
+
+    assert callable(instrument_redis)
