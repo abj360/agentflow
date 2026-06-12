@@ -56,3 +56,9 @@ test("approval card shows truncated trace id", async ({ page }) => {
   const card = page.locator(".approval-card").first();
   await expect(card.locator(".approval-trace")).toBeVisible();
 });
+
+
+test("status badge renders pending state", async ({ page }) => {
+  await page.goto("/approvals");
+  await expect(page.locator(".status-badge").first()).toBeVisible();
+});
