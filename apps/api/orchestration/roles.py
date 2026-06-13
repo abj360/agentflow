@@ -121,6 +121,8 @@ class Critic:
         Returns:
             update: State update carrying the critique verdict.
         """
+        if not state["results"]:
+            return {"critique": "revise"}
         return {"critique": "accept"}
 
 
