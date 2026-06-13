@@ -98,7 +98,19 @@ class Synthesizer:
 
 
 class Critic:
-    """Reviews plans and outputs, requesting revisions."""
+    """Reviews plans and outputs, requesting revisions.
+
+    Attributes:
+        rubric: Ordered checks the critic scores outputs against.
+    """
+
+    def __init__(self, rubric: tuple[str, ...] = ()) -> None:
+        """Initializes the critic with a scoring rubric.
+
+        Args:
+            rubric: Ordered checks the critic scores outputs against.
+        """
+        self.rubric = rubric
 
     async def run(self, state: dict) -> dict:
         """Reviews the current results and returns a verdict.
