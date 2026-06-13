@@ -16,7 +16,7 @@ export default function Home() {
           <a href="/traces">Live traces</a> — watch runs as they happen
         </li>
         <li>
-          <a href="/approvals">Approval queue</a>
+          <a href="/approvals">Approval queue</a> — review gated tool calls
         </li>
       </ul>
     </section>
