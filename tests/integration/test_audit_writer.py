@@ -11,6 +11,7 @@ import os
 import pytest
 from sqlalchemy import select
 
+from apps.api.audit.chain import verify_chain
 from apps.api.audit.models import AuditEvent, EventKind
 from apps.api.audit.writer import AuditWriter
 
@@ -163,3 +164,19 @@ async def test_event_ids_are_unique(session_factory) -> None:
         )
         ids = [e.event_id for e in result.scalars()]
     assert len(set(ids)) == 4
+
+
+async def test_verify_chain_over_persisted_events(session_factory) -> None:
+    """Verifies the persisted chain passes integrity verification."""
+    writer = AuditWriter(session_factory, batch_size=8)
+    for idx in range(3):
+        await writer.enqueue("it-trace-5", EventKind.TOOL_CALL, {"idx": idx})
+    await writer.flush()
+    async with session_factory() as session:
+        result = await session.execute(
+            select(AuditEvent)
+            .where(AuditEvent.trace_id == "it-trace-5")
+            .order_by(AuditEvent.created_at)
+        )
+        events = list(result.scalars())
+    assert verify_chain(events)
