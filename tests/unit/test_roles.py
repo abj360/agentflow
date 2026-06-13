@@ -63,3 +63,8 @@ async def test_critic_revises_empty_results() -> None:
     """Verifies empty results trigger a revision request."""
     update = await Critic().run({"results": []})
     assert update["critique"] == "revise"
+
+
+def test_critic_default_rubric_empty() -> None:
+    """Verifies the critic starts with an empty rubric by default."""
+    assert Critic().rubric == ()
