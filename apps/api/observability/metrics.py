@@ -65,3 +65,10 @@ approval_queue_depth = Gauge(
     "Pending human-in-the-loop approval requests",
     registry=registry,
 )
+
+
+budget_breaker_open = Gauge(
+    "agentflow_budget_breaker_open",
+    "Whether the budget circuit breaker is open (1) or closed (0)",
+    registry=registry,
+)
