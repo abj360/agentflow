@@ -56,3 +56,11 @@ def test_get_tool_returns_spec() -> None:
 def test_get_tool_missing_returns_none() -> None:
     """Verifies get_tool misses cleanly for unknown tools."""
     assert ToolRegistry().get_tool("nope") is None
+
+
+def test_validate_tool_spec_flags_missing_name() -> None:
+    """Verifies a spec without a name fails validation."""
+    from apps.api.mcp_servers.sse_server import validate_tool_spec
+
+    problems = validate_tool_spec(ToolSpec(name="", description="d"))
+    assert problems != []
