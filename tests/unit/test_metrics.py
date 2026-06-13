@@ -98,3 +98,9 @@ def test_breaker_gauge_binary_values() -> None:
     assert budget_breaker_open._value.get() == 1
     budget_breaker_open.set(0)
     assert budget_breaker_open._value.get() == 0
+
+
+def test_metrics_include_breaker_state() -> None:
+    """Verifies the scrape payload includes the breaker gauge."""
+    response = metrics_endpoint(None)
+    assert b"agentflow_budget_breaker_open" in response.body
