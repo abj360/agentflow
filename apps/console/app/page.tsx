@@ -13,7 +13,7 @@ export default function Home() {
       <p>Live view of orchestration runs, audit traces, and pending approvals.</p>
       <ul>
         <li>
-          <a href="/traces">Live traces</a>
+          <a href="/traces">Live traces</a> — watch runs as they happen
         </li>
         <li>
           <a href="/approvals">Approval queue</a>
