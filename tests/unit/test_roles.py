@@ -51,3 +51,9 @@ async def test_executor_without_gateway_uses_stub() -> None:
     """Verifies the executor runs with no gateway configured."""
     update = await Executor(tool_gateway=None).run({"plan": ["step"]})
     assert update["results"] == ["done: step"]
+
+
+def test_critic_stores_rubric() -> None:
+    """Verifies the critic keeps the rubric it was built with."""
+    critic = Critic(rubric=("accuracy", "coverage"))
+    assert critic.rubric == ("accuracy", "coverage")
