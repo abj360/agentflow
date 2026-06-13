@@ -88,3 +88,13 @@ def test_metrics_include_approval_depth() -> None:
     """Verifies the scrape payload includes the queue gauge."""
     response = metrics_endpoint(None)
     assert b"agentflow_approval_queue_depth" in response.body
+
+
+def test_breaker_gauge_binary_values() -> None:
+    """Verifies the breaker gauge holds 0 or 1."""
+    from apps.api.observability.metrics import budget_breaker_open
+
+    budget_breaker_open.set(1)
+    assert budget_breaker_open._value.get() == 1
+    budget_breaker_open.set(0)
+    assert budget_breaker_open._value.get() == 0
