@@ -57,3 +57,9 @@ def test_critic_stores_rubric() -> None:
     """Verifies the critic keeps the rubric it was built with."""
     critic = Critic(rubric=("accuracy", "coverage"))
     assert critic.rubric == ("accuracy", "coverage")
+
+
+async def test_critic_revises_empty_results() -> None:
+    """Verifies empty results trigger a revision request."""
+    update = await Critic().run({"results": []})
+    assert update["critique"] == "revise"
