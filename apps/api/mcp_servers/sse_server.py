@@ -52,7 +52,13 @@ class ToolRegistry:
 
         Args:
             spec: The tool description to expose to clients.
+
+        Raises:
+            ValueError: When the spec fails validation.
         """
+        problems = validate_tool_spec(spec)
+        if problems:
+            raise ValueError(f"invalid tool spec: {problems}")
         self.tools[spec.name] = spec
 
     def list_tools(self) -> list[ToolSpec]:
