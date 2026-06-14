@@ -137,3 +137,10 @@ def test_bulkhead_full_error_message() -> None:
     from apps.api.resilience.breaker import BulkheadFullError
 
     assert "32" in str(BulkheadFullError(32))
+
+
+def test_failure_count_tracks_failures() -> None:
+    """Verifies the failure counter tracks consecutive failures."""
+    breaker = ServerCircuitBreaker("srv")
+    breaker.record_failure()
+    assert breaker.failure_count() == 1
