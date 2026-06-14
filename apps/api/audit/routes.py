@@ -24,7 +24,8 @@ router = APIRouter(prefix="/audit", tags=["audit"])
 
 @router.get("/sessions")
 async def list_trace_sessions(
-    limit: int = 50, session: AsyncSession = Depends(get_session)
+    limit: int = Query(default=50, le=MAX_PAGE_SIZE),
+    session: AsyncSession = Depends(get_session),
 ) -> dict:
     """Lists recent orchestration sessions, newest first.
 
