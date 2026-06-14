@@ -83,3 +83,13 @@ def test_list_sessions_returns_all() -> None:
     registry.open_session("s5", "trace-1")
     registry.open_session("s6", "trace-2")
     assert len(registry.list_sessions()) == 2
+
+
+def test_close_unknown_session_raises() -> None:
+    """Verifies closing an unregistered session raises KeyError."""
+    registry = SessionRegistry()
+    try:
+        registry.close_session("ghost")
+    except KeyError:
+        return
+    raise AssertionError("expected KeyError")
