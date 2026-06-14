@@ -75,3 +75,11 @@ def test_bump_returns_new_record_object() -> None:
     first = registry.open_session("s4", "trace-1")
     second = registry.bump_version("s4")
     assert first is not second
+
+
+def test_list_sessions_returns_all() -> None:
+    """Verifies listing returns every registered session."""
+    registry = SessionRegistry()
+    registry.open_session("s5", "trace-1")
+    registry.open_session("s6", "trace-2")
+    assert len(registry.list_sessions()) == 2
