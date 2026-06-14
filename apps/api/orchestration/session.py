@@ -85,3 +85,12 @@ class VersionConflictError(Exception):
             record: The session's final record.
         """
         return self.records.pop(session_id)
+
+
+    def list_sessions(self) -> list[SessionRecord]:
+        """Lists all registered session records.
+
+        Returns:
+            records: Snapshot list of every registered session record.
+        """
+        return list(self.records.values())
