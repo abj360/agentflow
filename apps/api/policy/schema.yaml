@@ -80,3 +80,8 @@ tenant_overrides:
   - match: "report.generate"
     action: human_approval
     risk: medium
+
+
+  - match: "billing.*"
+    action: deny
+    risk: high
