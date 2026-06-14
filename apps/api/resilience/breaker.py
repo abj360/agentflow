@@ -123,7 +123,8 @@ class CircuitOpenError(Exception):
         Returns:
             count: Slots currently acquired.
         """
-        return self.limit - self._semaphore._value
+        acquired = self.limit - self._semaphore._value
+        return max(acquired, 0)
 
 
 class BreakerRegistry:
