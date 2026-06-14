@@ -28,7 +28,6 @@ export function ApprovalCard({
     <li className="approval-card">
       <header>
         <strong title={approval.tool_name}>{approval.tool_name}</strong>
-        <ApprovalStatusBadge status={approval.status} />
         <span className="approval-trace">{approval.trace_id}</span>
       </header>
       <footer>
