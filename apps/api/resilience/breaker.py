@@ -76,13 +76,14 @@ class Bulkhead:
         limit: Maximum concurrent in-flight calls.
     """
 
-    def __init__(self, limit: int = 32) -> None:
+    def __init__(self, limit: int = 32, acquire_timeout: float = 2.0) -> None:
         """Initializes the bulkhead with a concurrency cap.
 
         Args:
             limit: Maximum concurrent in-flight calls.
         """
         self.limit = limit
+        self.acquire_timeout = acquire_timeout
         self._semaphore = asyncio.Semaphore(limit)
 
     async def __aenter__(self) -> "Bulkhead":
