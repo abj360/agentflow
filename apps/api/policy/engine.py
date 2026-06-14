@@ -82,6 +82,7 @@ class PolicyEngine:
 
         Returns:
             decision: Allow, deny, or human_approval with the matched rule.
+            Deny decisions carry a reason; allow decisions leave it empty.
         """
         rules = self._tenant_rules(tenant_id) if tenant_id else self._load_rules()
         for rule in rules:
