@@ -14,6 +14,7 @@ export default function ApprovalsPage() {
   return (
     <section>
       <h1>Approvals</h1>
+      <p>Policy-gated tool calls waiting for a human decision.</p>
       <ApprovalQueue />
     </section>
   );
