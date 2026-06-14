@@ -130,3 +130,10 @@ async def test_bulkhead_full_raises() -> None:
     finally:
         bulkhead._semaphore.release()
     raise AssertionError("expected BulkheadFullError")
+
+
+def test_bulkhead_full_error_message() -> None:
+    """Verifies the bulkhead error message carries the limit."""
+    from apps.api.resilience.breaker import BulkheadFullError
+
+    assert "32" in str(BulkheadFullError(32))
