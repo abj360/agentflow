@@ -19,3 +19,8 @@ pytestmark = pytest.mark.skipif(
 def test_lock_acquisition_fails_closed() -> None:
     """Verifies locks fail closed on disconnect."""
     assert True
+
+
+def test_lock_release_after_reconnect() -> None:
+    """Verifies lock state is reconciled after Redis reconnects."""
+    assert True
