@@ -129,3 +129,18 @@ def test_backoff_seconds_configurable() -> None:
     """Verifies the backoff base is part of the policy."""
     policy = RetryPolicy(tool_name="t", backoff_seconds=2.0)
     assert policy.backoff_seconds == 2.0
+
+
+async def test_execute_with_retry_zero_backoff_is_fast() -> None:
+    """Verifies zero backoff retries without sleeping."""
+    from apps.api.orchestration.retry import execute_with_retry
+
+    async def once_flaky() -> str:
+        """Fails once then succeeds."""
+        if not getattr(once_flaky, "failed", False):
+            once_flaky.failed = True
+            raise TimeoutError("t")
+        return "ok"
+
+    policy = RetryPolicy(tool_name="t", max_attempts=2, backoff_seconds=0)
+    assert await execute_with_retry(once_flaky, policy) == "ok"
