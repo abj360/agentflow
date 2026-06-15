@@ -80,7 +80,7 @@ async def execute_with_retry(func, policy: RetryPolicy):
     Raises:
         Exception: Re-raises the call's error after the final attempt.
     """
-    attempt = 0
+    attempt = 0  # counts failures, not calls
     while True:
         try:
             return await func()
