@@ -4,12 +4,14 @@ engine.py --- YAML policy engine for MCP tool governance
 
 Contains:
     Decision: outcome of a policy evaluation
-    PolicyEngine: evaluates tool calls against YAML policy rules
+    CompiledRule: pre-compiled glob pattern plus its action
+    PolicyEngine: evaluates tool calls against a compiled decision table
     is_allowed(): reports whether a decision permits the call
     describe_action(): renders an action as human-readable text
 """
 
 import fnmatch
+import re
 from dataclasses import dataclass
 
 import yaml
@@ -30,20 +32,61 @@ class Decision:
     reason: str = ""
 
 
-class PolicyEngine:
-    """Evaluates tool calls against YAML policy rules.
+@dataclass(frozen=True)
+class CompiledRule:
+    """Holds a pre-compiled glob pattern plus its action.
 
     Attributes:
-        schema_path: Path to the YAML policy schema evaluated per call.
+        pattern: Regex compiled from the rule's glob.
+        action: Action the rule yields on a match.
+        match: Original glob text for reporting.
+    """
+
+    pattern: re.Pattern
+    action: str
+    match: str
+
+
+def _compile(rules: list[dict]) -> list[CompiledRule]:
+    """Compiles raw policy rules into a decision table.
+
+    Args:
+        rules: Policy rules as plain dicts with match and action keys.
+
+    Returns:
+        table: Ordered compiled rules evaluated in sequence.
+    """
+    return [
+        CompiledRule(
+            pattern=re.compile(fnmatch.translate(rule["match"])),
+            action=rule["action"],
+            match=rule["match"],
+        )
+        for rule in rules
+    ]
+
+
+class PolicyEngine:
+    """Evaluates tool calls against a compiled decision table.
+
+    Attributes:
+        schema_path: Path to the YAML policy schema, when file-backed.
     """
 
     def __init__(self, schema_path: str) -> None:
-        """Initializes the engine with a policy schema path.
+        """Initializes the engine and compiles the schema once.
 
         Args:
-            schema_path: Path to the YAML policy schema evaluated per call.
+            schema_path: Path to the YAML policy schema.
         """
         self.schema_path = schema_path
+        with open(schema_path) as handle:
+            data = yaml.safe_load(handle)
+        self._table = _compile(data["rules"])
+        self._tenant_tables = {
+            tenant: _compile(override.get("rules", []))
+            for tenant, override in data.get("tenant_overrides", {}).items()
+        }
 
     @classmethod
     def from_dict(cls, rules: list[dict]) -> "PolicyEngine":
@@ -57,57 +100,29 @@ class PolicyEngine:
         """
         engine = cls.__new__(cls)
         engine.schema_path = None
-        engine._inline_rules = rules
+        engine._table = _compile(rules)
+        engine._tenant_tables = {}
         return engine
 
-    def _load_rules(self) -> list[dict]:
-        """Loads the current rule set.
-
-        Returns:
-            rules: Policy rules as plain dicts.
-        """
-        if self.schema_path is None:
-            return self._inline_rules
-        with open(self.schema_path) as handle:
-            return yaml.safe_load(handle)["rules"]
-
-    def evaluate(
-        self, tool_name: str, args: dict, tenant_id: str | None = None
-    ) -> Decision:
-        """Evaluates a tool call against the current policy rules.
+    def evaluate(self, tool_name: str, args: dict, tenant_id: str | None = None) -> Decision:
+        """Evaluates a tool call against the compiled decision table.
 
         Args:
             tool_name: Name of the tool being called.
             args: Arguments passed to the tool.
+            tenant_id: Optional tenant whose override table applies first.
 
         Returns:
             decision: Allow, deny, or human_approval with the matched rule.
             Deny decisions carry a reason; allow decisions leave it empty.
         """
-        rules = self._tenant_rules(tenant_id) if tenant_id else self._load_rules()
-        for rule in rules:
-            if fnmatch.fnmatchcase(tool_name, rule["match"]):
-                return Decision(action=rule["action"], rule=rule["match"])
-        return Decision(
-            action="deny", rule=None, reason="no matching rule; default deny"
-        )
-
-
-    def _tenant_rules(self, tenant_id: str) -> list[dict]:
-        """Loads tenant-specific override rules, falling back to base rules.
-
-        Args:
-            tenant_id: Tenant whose overrides apply.
-
-        Returns:
-            rules: The tenant's override rules, or the base rule set.
-        """
-        if self.schema_path is None:
-            return self._inline_rules
-        with open(self.schema_path) as handle:
-            data = yaml.safe_load(handle)
-        overrides = data.get("tenant_overrides", {})
-        return overrides.get(tenant_id, {}).get("rules", data["rules"])
+        table = self._table
+        if tenant_id is not None and tenant_id in self._tenant_tables:
+            table = self._tenant_tables[tenant_id]
+        for rule in table:
+            if rule.pattern.match(tool_name):
+                return Decision(action=rule.action, rule=rule.match)
+        return Decision(action="deny", rule=None, reason="no matching rule; default deny")
 
 
 def is_allowed(decision: Decision) -> bool:
