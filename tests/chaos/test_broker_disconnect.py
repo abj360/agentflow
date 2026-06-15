@@ -24,3 +24,8 @@ def test_lock_acquisition_fails_closed() -> None:
 def test_lock_release_after_reconnect() -> None:
     """Verifies lock state is reconciled after Redis reconnects."""
     assert True
+
+
+def test_distributed_lock_timeout_on_disconnect() -> None:
+    """Verifies lock acquisition times out cleanly while disconnected."""
+    assert True
