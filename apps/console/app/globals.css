@@ -142,7 +142,8 @@ section > h1 {
 }
 
 .reject {
-  background: #dc2626;
+  background: #b91c1c;
+  font-weight: 500;
   color: #fff;
   border: none;
 }
