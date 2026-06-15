@@ -144,3 +144,9 @@ async def test_execute_with_retry_zero_backoff_is_fast() -> None:
 
     policy = RetryPolicy(tool_name="t", max_attempts=2, backoff_seconds=0)
     assert await execute_with_retry(once_flaky, policy) == "ok"
+
+
+def test_retryable_errors_is_tuple() -> None:
+    """Verifies retryable errors are declared as an immutable tuple."""
+    policy = RetryPolicy(tool_name="t")
+    assert isinstance(policy.retryable_errors, tuple)
