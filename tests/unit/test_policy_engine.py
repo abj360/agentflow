@@ -275,3 +275,15 @@ def test_base_shell_requires_human_approval() -> None:
     """Verifies the base policy gates shell tools for humans."""
     engine = PolicyEngine(str(SCHEMA_PATH))
     assert engine.evaluate("shell.exec", {}).action == "human_approval"
+
+
+def test_compiled_evaluation_is_fast() -> None:
+    """Verifies compiled evaluation is far below the old 120ms parse cost."""
+    import time
+
+    engine = PolicyEngine(str(SCHEMA_PATH))
+    start = time.perf_counter()
+    for _ in range(100):
+        engine.evaluate("search.query", {})
+    elapsed_ms = (time.perf_counter() - start) * 1000
+    assert elapsed_ms < 50
