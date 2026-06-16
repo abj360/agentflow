@@ -155,3 +155,8 @@ def test_results_grow_after_each_executor_pass() -> None:
     state = executor_node(make_state(plan=["a"]))
     state = executor_node({**state, "plan": ["b"]})
     assert len(state["results"]) == 1
+
+
+def test_iterations_start_at_zero() -> None:
+    """Verifies fresh states begin with zero iterations."""
+    assert make_state()["iterations"] == 0
