@@ -70,3 +70,11 @@ def test_build_default_server_has_fs_read() -> None:
 
     server = build_default_server()
     assert "fs.read" in server.list_tools()
+
+
+def test_default_server_fs_read_schema_requires_path() -> None:
+    """Verifies the fs.read tool declares its path argument."""
+    from apps.api.mcp_servers.stdio_server import build_default_server
+
+    spec = build_default_server().tools["fs.read"]
+    assert "path" in spec.input_schema["properties"]
