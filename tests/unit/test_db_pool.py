@@ -37,3 +37,9 @@ async def test_dispose_engine_resets_cache() -> None:
     await db.dispose_engine()
     assert db._engine is None
     assert db._session_factory is None
+
+
+async def test_get_session_yields_session() -> None:
+    """Verifies the dependency yields a usable async session."""
+    async for session in db.get_session():
+        assert session is not None
