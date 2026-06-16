@@ -33,6 +33,7 @@ def get_engine():
             max_overflow=settings.db_max_overflow,
             pool_pre_ping=True,
             pool_recycle=1800,  # recycle connections before the LB idle cutoff
+            pool_timeout=settings.db_pool_timeout,
         )
     return _engine
 
