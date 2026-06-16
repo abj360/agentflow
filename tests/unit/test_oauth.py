@@ -201,3 +201,10 @@ def test_oauth_error_message_includes_code() -> None:
 
     err = OAuthError("access_denied", "user declined")
     assert "access_denied" in str(err)
+
+
+def test_oauth_error_without_description() -> None:
+    """Verifies the OAuthError renders cleanly without a description."""
+    from apps.api.mcp_servers.oauth import OAuthError
+
+    assert str(OAuthError("server_error")) == "server_error"
