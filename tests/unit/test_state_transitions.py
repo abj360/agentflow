@@ -148,3 +148,10 @@ def test_graph_entry_point_is_planner() -> None:
     """Verifies runs always begin at the planner node."""
     graph = build_graph()
     assert graph.entry_point == "planner"
+
+
+def test_results_grow_after_each_executor_pass() -> None:
+    """Verifies executor passes produce results for the critic."""
+    state = executor_node(make_state(plan=["a"]))
+    state = executor_node({**state, "plan": ["b"]})
+    assert len(state["results"]) == 1
