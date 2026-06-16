@@ -160,3 +160,8 @@ def test_results_grow_after_each_executor_pass() -> None:
 def test_iterations_start_at_zero() -> None:
     """Verifies fresh states begin with zero iterations."""
     assert make_state()["iterations"] == 0
+
+
+def test_critique_starts_empty() -> None:
+    """Verifies fresh states carry no critique yet."""
+    assert make_state()["critique"] == ""
