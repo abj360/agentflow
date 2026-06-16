@@ -167,3 +167,29 @@ def test_token_cache_isolated_per_server() -> None:
     cache.put("srv-a", TokenSet(access_token="a", refresh_token=None,
                                 expires_at=1.0))
     assert cache.get("srv-b") is None
+
+
+async def test_exchange_code_error_payload_raises() -> None:
+    """Verifies an error payload from the provider raises OAuthError."""
+    from apps.api.mcp_servers.oauth import OAuthError
+
+    class FakeResponse:
+        """Mimics an HTTP response carrying an error payload."""
+
+        def json(self) -> dict:
+            """Returns a canned OAuth error payload."""
+            return {"error": "invalid_grant", "error_description": "code expired"}
+
+    class FakeHttp:
+        """Mimics the async HTTP client for token calls."""
+
+        async def post(self, url: str, data: dict) -> FakeResponse:
+            """Returns the canned error response."""
+            return FakeResponse()
+
+    try:
+        await build_client(FakeHttp()).exchange_code("bad-code")
+    except OAuthError as exc:
+        assert exc.error == "invalid_grant"
+        return
+    raise AssertionError("expected OAuthError")
