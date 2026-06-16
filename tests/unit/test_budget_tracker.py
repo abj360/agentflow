@@ -136,3 +136,10 @@ def test_remaining_tool_calls() -> None:
     tracker = BudgetTracker(BudgetLimits(max_tokens=100, max_tool_calls=4))
     tracker.record_tool_call()
     assert tracker.remaining()["tool_calls"] == 3
+
+
+def test_is_near_limit_flags_high_usage() -> None:
+    """Verifies the near-limit flag trips past the threshold."""
+    tracker = BudgetTracker(BudgetLimits(max_tokens=100, max_tool_calls=100))
+    tracker.record_tokens(90)
+    assert tracker.is_near_limit() is True
