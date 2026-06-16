@@ -119,3 +119,17 @@ class BudgetExhaustedError(Exception):
         """Resets all consumption counters to zero."""
         self.tokens_used = 0
         self.tool_calls_made = 0
+
+
+    def snapshot(self) -> dict:
+        """Serializes current consumption for audit events.
+
+        Returns:
+            snapshot: Consumption and limits as a JSON-ready dict.
+        """
+        return {
+            "tokens_used": self.tokens_used,
+            "tool_calls_made": self.tool_calls_made,
+            "max_tokens": self.limits.max_tokens,
+            "max_tool_calls": self.limits.max_tool_calls,
+        }
