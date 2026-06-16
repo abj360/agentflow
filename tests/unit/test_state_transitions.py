@@ -123,3 +123,22 @@ def test_second_revision_still_loops() -> None:
     from apps.api.orchestration.state_machine import route_after_critic
 
     assert route_after_critic(make_state(critique="revise", iterations=2)) == "revise"
+
+
+def test_iterations_monotonic_across_cycles() -> None:
+    """Verifies the iteration counter never decreases."""
+    from apps.api.orchestration.state_machine import critic_node
+
+    first = critic_node(make_state(results=["r"]))
+    second = critic_node({**first, "critique": "revise"})
+    assert second["iterations"] > first["iterations"]
+
+
+def test_state_carries_task_through_cycle() -> None:
+    """Verifies the task survives a full transition cycle."""
+    from apps.api.orchestration.state_machine import critic_node
+
+    state = planner_node(make_state(task="persist"))
+    state = executor_node(state)
+    state = critic_node(state)
+    assert state["task"] == "persist"
