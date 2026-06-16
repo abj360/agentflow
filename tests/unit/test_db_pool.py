@@ -43,3 +43,9 @@ async def test_get_session_yields_session() -> None:
     """Verifies the dependency yields a usable async session."""
     async for session in db.get_session():
         assert session is not None
+
+
+def test_pool_recycle_is_set() -> None:
+    """Verifies connection recycling is enabled to survive idle cutoffs."""
+    engine = db.get_engine()
+    assert engine.pool._recycle == 1800
