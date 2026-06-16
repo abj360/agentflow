@@ -62,3 +62,11 @@ def test_missing_method_returns_error() -> None:
     """Verifies a request without a method gets a clean error."""
     server = build_server()
     assert "error" in server.handle_request({})
+
+
+def test_build_default_server_has_fs_read() -> None:
+    """Verifies the default server ships fs.read."""
+    from apps.api.mcp_servers.stdio_server import build_default_server
+
+    server = build_default_server()
+    assert "fs.read" in server.list_tools()
