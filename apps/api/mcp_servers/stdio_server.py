@@ -91,3 +91,24 @@ class StdioServer:
             names: Registered tool names in registration order.
         """
         return list(self.tools)
+
+
+def build_default_server() -> StdioServer:
+    """Builds the stdio server with the built-in tool set.
+
+    Returns:
+        server: Stdio server preloaded with the default tools.
+    """
+    server = StdioServer()
+    server.register(
+        ToolSpec(
+            name="fs.read",
+            description="Reads a file from the workspace",
+            input_schema={
+                "type": "object",
+                "properties": {"path": {"type": "string"}},
+                "required": ["path"],
+            },
+        )
+    )
+    return server
