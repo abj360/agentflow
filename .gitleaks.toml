@@ -2,6 +2,6 @@
 description = "agentflow gitleaks allowlist"
 
 [[allowlist.rules]]
-id = "example-env-values"
+id = "example-env-placeholder-values"
 description = "Placeholder values in .env.example are not secrets"
 path = "(?i)^\.env\.example$"
