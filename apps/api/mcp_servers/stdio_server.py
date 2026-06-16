@@ -99,7 +99,7 @@ def build_default_server() -> StdioServer:
     Returns:
         server: Stdio server preloaded with the default tools.
     """
-    server = StdioServer()
+    server = StdioServer()  # default set covers fs.read
     server.register(
         ToolSpec(
             name="fs.read",
