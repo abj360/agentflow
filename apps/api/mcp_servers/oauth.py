@@ -208,3 +208,18 @@ class TokenCache:
             server_name: Server whose tokens should be dropped.
         """
         self.tokens.pop(server_name, None)
+
+
+class OAuthError(Exception):
+    """Raised when a token endpoint returns an error payload."""
+
+    def __init__(self, error: str, description: str = "") -> None:
+        """Initializes the error with the provider's error fields.
+
+        Args:
+            error: OAuth error code.
+            description: Optional human-readable detail.
+        """
+        super().__init__(f"{error}: {description}" if description else error)
+        self.error = error
+        self.description = description
