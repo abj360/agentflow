@@ -142,3 +142,9 @@ def test_state_carries_task_through_cycle() -> None:
     state = executor_node(state)
     state = critic_node(state)
     assert state["task"] == "persist"
+
+
+def test_graph_entry_point_is_planner() -> None:
+    """Verifies runs always begin at the planner node."""
+    graph = build_graph()
+    assert graph.entry_point == "planner"
