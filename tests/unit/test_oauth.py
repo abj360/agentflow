@@ -193,3 +193,11 @@ async def test_exchange_code_error_payload_raises() -> None:
         assert exc.error == "invalid_grant"
         return
     raise AssertionError("expected OAuthError")
+
+
+def test_oauth_error_message_includes_code() -> None:
+    """Verifies the OAuthError message carries the provider's code."""
+    from apps.api.mcp_servers.oauth import OAuthError
+
+    err = OAuthError("access_denied", "user declined")
+    assert "access_denied" in str(err)
