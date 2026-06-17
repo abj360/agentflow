@@ -306,3 +306,9 @@ def test_review_matched_rule_none_on_deny() -> None:
     """Verifies the catch-all deny still reports its rule."""
     engine = make_engine()
     assert engine.evaluate("nope", {}).rule == "*"
+
+
+def test_review_human_approval_distinct_from_deny() -> None:
+    """Verifies approval routing is distinguishable from denial."""
+    engine = make_engine()
+    assert engine.evaluate("shell.exec", {}).action != "deny"
