@@ -79,3 +79,12 @@ def test_manual_evict_works() -> None:
     evictor = build_evictor()
     evictor.evict("srv-manual")
     assert evictor.is_active("srv-manual") is False
+
+
+def test_sweep_reinstates_old_evictions() -> None:
+    """Verifies sweep reinstates servers past the max age."""
+    evictor = build_evictor()
+    evictor.evict("srv-old")
+    evictor.evicted["srv-old"] = 0.0
+    assert evictor.sweep_expired(60) == 1
+    assert evictor.is_active("srv-old") is True
