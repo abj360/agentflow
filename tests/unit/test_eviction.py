@@ -88,3 +88,11 @@ def test_sweep_reinstates_old_evictions() -> None:
     evictor.evicted["srv-old"] = 0.0
     assert evictor.sweep_expired(60) == 1
     assert evictor.is_active("srv-old") is True
+
+
+def test_sweep_keeps_fresh_evictions() -> None:
+    """Verifies sweep keeps recently evicted servers out."""
+    evictor = build_evictor()
+    evictor.evict("srv-new")
+    assert evictor.sweep_expired(3600) == 0
+    assert evictor.is_active("srv-new") is False
