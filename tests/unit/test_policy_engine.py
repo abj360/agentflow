@@ -287,3 +287,10 @@ def test_compiled_evaluation_is_fast() -> None:
         engine.evaluate("search.query", {})
     elapsed_ms = (time.perf_counter() - start) * 1000
     assert elapsed_ms < 50
+
+
+def test_review_decision_carries_matched_rule() -> None:
+    """Verifies decisions name the rule that produced them."""
+    engine = make_engine()
+    decision = engine.evaluate("search.query", {})
+    assert decision.rule == "search.*"
