@@ -108,3 +108,9 @@ async def test_hooks_receive_completion_result() -> None:
 
     await run_session("it-f4", "capture", hooks=CapturingHooks())
     assert len(captured) == 1
+
+
+async def test_run_session_without_hooks_still_works() -> None:
+    """Verifies hooks remain optional."""
+    result = await run_session("it-f5", "no hooks")
+    assert result["status"] in {"completed", "revision-bounded"}
