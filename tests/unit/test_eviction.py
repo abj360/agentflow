@@ -96,3 +96,8 @@ def test_sweep_keeps_fresh_evictions() -> None:
     evictor.evict("srv-new")
     assert evictor.sweep_expired(3600) == 0
     assert evictor.is_active("srv-new") is False
+
+
+def test_eviction_age_none_when_active() -> None:
+    """Verifies eviction_age is None for active servers."""
+    assert build_evictor().eviction_age("active-srv") is None
