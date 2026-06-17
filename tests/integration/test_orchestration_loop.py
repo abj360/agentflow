@@ -114,3 +114,13 @@ async def test_run_session_without_hooks_still_works() -> None:
     """Verifies hooks remain optional."""
     result = await run_session("it-f5", "no hooks")
     assert result["status"] in {"completed", "revision-bounded"}
+
+
+async def test_graph_state_has_expected_keys() -> None:
+    """Verifies node updates keep the graph state shape."""
+    from apps.api.orchestration.state_machine import planner_node
+
+    state = planner_node(
+        {"task": "x", "plan": [], "results": [], "critique": "", "iterations": 0}
+    )
+    assert set(state) == {"task", "plan", "results", "critique", "iterations"}
