@@ -89,3 +89,9 @@ def test_state_open_after_trip() -> None:
     breaker = BudgetCircuitBreaker(failure_threshold=1)
     breaker.record_breach()
     assert breaker.state() == "open"
+
+
+def test_call_runs_function_when_closed() -> None:
+    """Verifies call runs the function when the circuit is closed."""
+    breaker = BudgetCircuitBreaker()
+    assert breaker.call(lambda: 42) == 42
