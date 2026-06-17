@@ -42,5 +42,12 @@ services:
     depends_on:
       - api
 
+  grafana:
+    image: grafana/grafana:11
+    ports:
+      - "3001:3000"
+    volumes:
+      - ../infra/grafana:/var/lib/grafana/dashboards
+
 volumes:
   pgdata:
