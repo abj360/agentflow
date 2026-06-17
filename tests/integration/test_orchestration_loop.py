@@ -90,3 +90,21 @@ async def test_hooks_observe_iterations() -> None:
     """Verifies lifecycle hooks see the loop's progress."""
     result = await run_session("it-7", "hooked", hooks=NullHooks())
     assert result is not None
+
+
+async def test_hooks_receive_completion_result() -> None:
+    """Verifies the completion hook gets the final result."""
+    captured: list[dict] = []
+
+    class CapturingHooks:
+        """Captures the completion result."""
+
+        async def on_iteration(self, session_id: str, iteration: int) -> None:
+            """Ignores iterations."""
+
+        async def on_complete(self, session_id: str, result: dict) -> None:
+            """Captures the completion result."""
+            captured.append(result)
+
+    await run_session("it-f4", "capture", hooks=CapturingHooks())
+    assert len(captured) == 1
