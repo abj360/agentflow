@@ -93,3 +93,25 @@ class BudgetCircuitBreaker:
         if self.is_half_open():
             return "half_open"
         return "closed"
+
+
+    def call(self, func):
+        """Runs a function through the breaker, tracking the outcome.
+
+        Args:
+            func: Callable to run when the circuit allows it.
+
+        Returns:
+            result: The function's return value.
+
+        Raises:
+            CircuitOpenError: When the circuit is open.
+        """
+        self.check()
+        try:
+            result = func()
+        except Exception:
+            self.record_breach()
+            raise
+        self.record_success()
+        return result
