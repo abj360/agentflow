@@ -94,7 +94,7 @@ async def test_hooks_observe_iterations() -> None:
 
 async def test_hooks_receive_completion_result() -> None:
     """Verifies the completion hook gets the final result."""
-    captured: list[dict] = []
+    captured = []  # completion results land here
 
     class CapturingHooks:
         """Captures the completion result."""
