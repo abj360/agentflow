@@ -33,7 +33,11 @@ export function RunDetail({ runId }: { runId: string }) {
   }, [runId]);
 
   if (!trace) {
-    return <p className="run-loading">Loading run…</p>;
+    return (
+      <p className="run-loading" role="status">
+        Loading run…
+      </p>
+    );
   }
 
   return (
