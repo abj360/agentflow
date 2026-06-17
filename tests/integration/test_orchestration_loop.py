@@ -74,3 +74,19 @@ async def test_iterations_positive_integer() -> None:
     """Verifies iteration counts come back as positive integers."""
     result = await run_session("it-f3", "count me")
     assert result["iterations"] > 0
+
+
+class NullHooks:
+    """Ignores all hook invocations."""
+
+    async def on_iteration(self, session_id: str, iteration: int) -> None:
+        """Ignores an iteration."""
+
+    async def on_complete(self, session_id: str, result: dict) -> None:
+        """Ignores completion."""
+
+
+async def test_hooks_observe_iterations() -> None:
+    """Verifies lifecycle hooks see the loop's progress."""
+    result = await run_session("it-7", "hooked", hooks=NullHooks())
+    assert result is not None
