@@ -300,3 +300,9 @@ def test_review_empty_tool_name_denied() -> None:
     """Verifies an empty tool name fails closed."""
     engine = make_engine()
     assert engine.evaluate("", {}).action == "deny"
+
+
+def test_review_matched_rule_none_on_deny() -> None:
+    """Verifies the catch-all deny still reports its rule."""
+    engine = make_engine()
+    assert engine.evaluate("nope", {}).rule == "*"
