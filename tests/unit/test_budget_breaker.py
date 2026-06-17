@@ -82,3 +82,10 @@ def test_check_still_raises_when_open() -> None:
 def test_state_closed_initially() -> None:
     """Verifies the initial state string is closed."""
     assert BudgetCircuitBreaker().state() == "closed"
+
+
+def test_state_open_after_trip() -> None:
+    """Verifies the state string reports open after a trip."""
+    breaker = BudgetCircuitBreaker(failure_threshold=1)
+    breaker.record_breach()
+    assert breaker.state() == "open"
