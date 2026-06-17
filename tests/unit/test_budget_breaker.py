@@ -77,3 +77,8 @@ def test_check_still_raises_when_open() -> None:
     except CircuitOpenError:
         return
     raise AssertionError("expected CircuitOpenError")
+
+
+def test_state_closed_initially() -> None:
+    """Verifies the initial state string is closed."""
+    assert BudgetCircuitBreaker().state() == "closed"
