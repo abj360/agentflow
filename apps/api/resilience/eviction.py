@@ -136,3 +136,22 @@ class ServerEvictor:
         if evicted_at is None:
             return None
         return time.time() - evicted_at
+
+
+    def sweep_expired(self, max_age_seconds: float) -> int:
+        """Reinstates servers evicted longer than the given age.
+
+        Args:
+            max_age_seconds: Maximum eviction age before automatic reinstatement.
+
+        Returns:
+            reinstated_count: Number of servers reinstated.
+        """
+        expired = [
+            name
+            for name, evicted_at in self.evicted.items()
+            if time.time() - evicted_at > max_age_seconds
+        ]
+        for name in expired:
+            self.reinstate(name)
+        return len(expired)
