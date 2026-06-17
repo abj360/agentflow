@@ -294,3 +294,9 @@ def test_review_decision_carries_matched_rule() -> None:
     engine = make_engine()
     decision = engine.evaluate("search.query", {})
     assert decision.rule == "search.*"
+
+
+def test_review_empty_tool_name_denied() -> None:
+    """Verifies an empty tool name fails closed."""
+    engine = make_engine()
+    assert engine.evaluate("", {}).action == "deny"
