@@ -57,3 +57,9 @@ class SoakUser(HttpUser):
             "/audit/trace-soak-7?limit=100",
             name="/audit/{trace_id}?limit=100",
         )
+
+
+    @task(1)
+    def list_approvals(self) -> None:
+        """Polls the approval queue."""
+        self.client.get("/audit/sessions?limit=10", name="/audit/sessions?limit=10")
