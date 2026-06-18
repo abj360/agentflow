@@ -9,6 +9,8 @@
 
 import { useEffect, useState } from "react";
 
+const MAX_RECONNECT_ATTEMPTS = 5;
+
 export interface TraceEvent {
   kind: string;
   role: string;
@@ -46,7 +48,7 @@ export function useTraceSocket(runId: string): TraceEvent[] {
         setEvents((prev) => [...prev, event]);
       };
       socket.onclose = () => {
-        if (!stopped && attempts < 5) {
+        if (!stopped && attempts < MAX_RECONNECT_ATTEMPTS) {
           setTimeout(connect, 250 * attempts);
         }
       };
