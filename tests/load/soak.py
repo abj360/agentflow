@@ -12,7 +12,7 @@ from locust import HttpUser, between, task
 
 SOAK_DURATION_MINUTES = 120
 SOAK_TARGET_USERS = 200
-SOAK_ERROR_RATE_BUDGET = 0.001  # see tests/load/locustfile.py for the 500-user run
+SOAK_ERROR_RATE_BUDGET = 0.001  # 0.1% of requests may fail before alerting  # see tests/load/locustfile.py for the 500-user run
 
 
 class SoakUser(HttpUser):
