@@ -49,7 +49,7 @@ export function useTraceSocket(runId: string): TraceEvent[] {
       };
       socket.onclose = () => {
         if (!stopped && attempts < MAX_RECONNECT_ATTEMPTS) {
-          setTimeout(connect, 250 * attempts);
+          setTimeout(connect, 250 * attempts);  // linear backoff
         }
       };
     };
