@@ -74,3 +74,9 @@ def test_archive_event_requires_storage_uri() -> None:
     """Verifies archive markers record where the payload was moved to."""
     marker = ArchiveEvent(trace_id="trace-6", storage_uri="s3://audit/trace-6.jsonl")
     assert marker.storage_uri.endswith(".jsonl")
+
+
+def test_event_summary_includes_trace_and_kind() -> None:
+    """Verifies the summary line carries the trace id and event kind."""
+    event = AuditEvent(trace_id="trace-7", kind=EventKind.SYNTHESIS, payload={})
+    assert "trace-7" in event_summary(event)
