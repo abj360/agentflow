@@ -329,3 +329,10 @@ def test_star_rule_matches_dotted_names() -> None:
     """Verifies the catch-all glob matches deeply dotted tools."""
     engine = build_engine()
     assert engine.evaluate("a.b.c.d", {}).rule == "*"
+
+
+def test_describe_allow_label() -> None:
+    """Verifies the allow label reads correctly."""
+    from apps.api.policy.engine import describe_action
+
+    assert describe_action("allow") == "allowed by policy"
