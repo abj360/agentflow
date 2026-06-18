@@ -42,3 +42,11 @@ def test_similarity_disjoint_plans() -> None:
     from apps.api.orchestration.plan_diff import similarity
 
     assert similarity(["a"], ["b"]) == 0.0
+
+
+def test_summarize_counts_changes() -> None:
+    """Verifies the summary counts each change kind."""
+    from apps.api.orchestration.plan_diff import diff_plans, summarize
+
+    summary = summarize(diff_plans(["a", "b"], ["b", "c"]))
+    assert summary == {"added": 1, "removed": 1, "kept": 1}
