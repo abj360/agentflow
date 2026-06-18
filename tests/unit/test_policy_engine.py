@@ -323,3 +323,9 @@ def test_decision_is_frozen() -> None:
     decision = build_engine().evaluate("search.query", {})
     with pytest.raises(FrozenInstanceError):
         decision.action = "deny"
+
+
+def test_star_rule_matches_dotted_names() -> None:
+    """Verifies the catch-all glob matches deeply dotted tools."""
+    engine = build_engine()
+    assert engine.evaluate("a.b.c.d", {}).rule == "*"
