@@ -50,3 +50,10 @@ def test_summarize_counts_changes() -> None:
 
     summary = summarize(diff_plans(["a", "b"], ["b", "c"]))
     assert summary == {"added": 1, "removed": 1, "kept": 1}
+
+
+def test_similarity_empty_plans() -> None:
+    """Verifies two empty plans are treated as identical."""
+    from apps.api.orchestration.plan_diff import similarity
+
+    assert similarity([], []) == 1.0
