@@ -90,3 +90,19 @@ def summarize(diff: PlanDiff) -> dict:
         "removed": len(diff.removed),
         "kept": len(diff.kept),
     }
+
+
+def to_audit_payload(diff: PlanDiff) -> dict:
+    """Serializes a plan diff for the audit event payload.
+
+    Args:
+        diff: The plan diff to serialize.
+
+    Returns:
+        payload: JSON-ready dict of the diff for audit storage.
+    """
+    return {
+        "added": list(diff.added),
+        "removed": list(diff.removed),
+        "kept": list(diff.kept),
+    }
