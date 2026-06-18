@@ -33,7 +33,7 @@
     },
     {
       "id": 4,
-      "title": "Approval queue depth",
+      "title": "Approval queue depth (pending)",
       "type": "timeseries",
       "targets": [
         { "expr": "agentflow_approval_queue_depth" }
