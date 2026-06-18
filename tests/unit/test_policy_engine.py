@@ -312,3 +312,14 @@ def test_review_human_approval_distinct_from_deny() -> None:
     """Verifies approval routing is distinguishable from denial."""
     engine = make_engine()
     assert engine.evaluate("shell.exec", {}).action != "deny"
+
+
+def test_decision_is_frozen() -> None:
+    """Verifies decisions are immutable value objects."""
+    from dataclasses import FrozenInstanceError
+
+    import pytest
+
+    decision = build_engine().evaluate("search.query", {})
+    with pytest.raises(FrozenInstanceError):
+        decision.action = "deny"
