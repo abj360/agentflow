@@ -204,3 +204,13 @@ async def test_writer_default_batch_size_constant() -> None:
     """Verifies the module default batch size matches the constructor default."""
     writer = AuditWriter(FakeSessionFactory())
     assert writer.batch_size == 64
+
+
+async def test_writer_survives_mixed_event_kinds() -> None:
+    """Verifies buffering and flushing across all event kinds."""
+    factory = FakeSessionFactory()
+    writer = AuditWriter(factory, batch_size=32)
+    for kind in EventKind:
+        await writer.enqueue("trace-1", kind, {})
+    await writer.flush()
+    assert len(factory.session.added) == len(list(EventKind))
