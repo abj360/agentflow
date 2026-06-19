@@ -87,3 +87,12 @@ def test_validate_flags_missing_name() -> None:
         UnifiedToolSpec(name="", description="d")
     )
     assert "tool name is required" in problems
+
+
+def test_registry_register_and_resolve() -> None:
+    """Verifies servers register and resolve by name."""
+    from apps.api.mcp_servers.registry import MCPServerHandle, MCPServerRegistry
+
+    registry = MCPServerRegistry()
+    registry.register(MCPServerHandle(name="search", transport="sse"))
+    assert registry.resolve("search") is not None
