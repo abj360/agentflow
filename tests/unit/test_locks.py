@@ -172,3 +172,10 @@ async def test_acquire_or_raise_times_out() -> None:
     except TimeoutError:
         return
     raise AssertionError("expected TimeoutError")
+
+
+def test_lock_key_builds_namespaced_key() -> None:
+    """Verifies lock keys are namespaced with colons."""
+    from apps.api.concurrency.locks import lock_key
+
+    assert lock_key("audit", "trace-1") == "agentflow:lock:audit:trace-1"
