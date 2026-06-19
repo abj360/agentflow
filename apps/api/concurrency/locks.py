@@ -115,5 +115,19 @@ class DistributedLock:
         return self._token is not None
 
 
+    async def acquire_or_raise(self, timeout: float = 5.0) -> None:
+        """Acquires the lock or raises instead of returning False.
+
+        Args:
+            timeout: Seconds to keep retrying before giving up.
+
+        Raises:
+            TimeoutError: When the lock could not be acquired in time.
+        """
+        acquired = await self.acquire(timeout)
+        if not acquired:
+            raise TimeoutError(f"could not acquire lock {self.key}")
+
+
 class LockNotHeldError(Exception):
     """Raised when operating on a lock that is not held."""
