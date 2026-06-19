@@ -43,6 +43,8 @@ class PromptCache:
         """
         self.max_entries = max_entries
         self.entries: dict[str, tuple[str, float]] = {}
+        self.hits = 0
+        self.misses = 0
 
     def get(self, key: str) -> str | None:
         """Looks up a cached completion.
@@ -54,7 +56,11 @@ class PromptCache:
             completion: The cached completion, or None on a miss.
         """
         entry = self.entries.get(key)
-        return entry[0] if entry else None
+        if entry is None:
+            self.misses += 1
+            return None
+        self.hits += 1
+        return entry[0]
 
     def put(self, key: str, completion: str) -> None:
         """Stores a completion under its content hash.
