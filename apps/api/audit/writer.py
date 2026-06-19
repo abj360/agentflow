@@ -113,13 +113,12 @@ class AuditWriter:
         Returns:
             flushed_count: Number of events written by the successful flush.
         """
-        last_error: OperationalError | None = None
         for attempt in range(attempts):
             try:
                 return await self.flush()
-            except OperationalError:
+            except OperationalError as exc:
                 if attempt == attempts - 1:
-                    raise
+                    raise OperationalError("flush", {}, exc) from exc
         return 0
 
     @property
