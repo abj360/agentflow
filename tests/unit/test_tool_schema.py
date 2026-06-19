@@ -96,3 +96,10 @@ def test_registry_register_and_resolve() -> None:
     registry = MCPServerRegistry()
     registry.register(MCPServerHandle(name="search", transport="sse"))
     assert registry.resolve("search") is not None
+
+
+def test_registry_resolve_missing_returns_none() -> None:
+    """Verifies unknown servers resolve to None."""
+    from apps.api.mcp_servers.registry import MCPServerRegistry
+
+    assert MCPServerRegistry().resolve("ghost") is None
