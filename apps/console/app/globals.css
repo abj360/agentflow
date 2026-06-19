@@ -22,6 +22,9 @@
 
 body {
   margin: 0;
+  transition:
+    background 150ms ease,
+    color 150ms ease;
   background: var(--bg);
   color: var(--fg);
   font-family: ui-sans-serif, system-ui, sans-serif;
