@@ -45,6 +45,7 @@ class PromptCache:
         self.entries: dict[str, tuple[str, float]] = {}
         self.hits = 0
         self.misses = 0
+        self.evictions = 0
 
     def get(self, key: str) -> str | None:
         """Looks up a cached completion.
