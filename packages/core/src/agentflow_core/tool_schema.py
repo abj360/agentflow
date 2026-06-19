@@ -55,6 +55,7 @@ def to_mcp_schema(spec: UnifiedToolSpec) -> dict:
     return {
         "name": spec.name,
         "description": spec.description,
+        "version": "1",
         "inputSchema": {
             "type": "object",
             "properties": {
