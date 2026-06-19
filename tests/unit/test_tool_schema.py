@@ -103,3 +103,14 @@ def test_registry_resolve_missing_returns_none() -> None:
     from apps.api.mcp_servers.registry import MCPServerRegistry
 
     assert MCPServerRegistry().resolve("ghost") is None
+
+
+def test_registry_find_tool_across_servers() -> None:
+    """Verifies tools resolve across registered servers."""
+    from apps.api.mcp_servers.registry import MCPServerHandle, MCPServerRegistry
+
+    registry = MCPServerRegistry()
+    registry.register(
+        MCPServerHandle(name="search", transport="sse", tools=(SPEC,))
+    )
+    assert registry.find_tool("search.query") is SPEC
