@@ -198,3 +198,9 @@ async def test_max_buffer_forces_flush() -> None:
     for _ in range(3):
         await writer.enqueue("trace-1", EventKind.TOOL_CALL, {})
     assert writer.pending_count <= 2
+
+
+async def test_writer_default_batch_size_constant() -> None:
+    """Verifies the module default batch size matches the constructor default."""
+    writer = AuditWriter(FakeSessionFactory())
+    assert writer.batch_size == 64
