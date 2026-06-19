@@ -48,7 +48,7 @@ verification working for old traces.
 Hashes are computed over `json.dumps(event, sort_keys=True, separators=(",",
 ":"))` covering exactly: `trace_id`, `kind`, `payload`, `prev_hash`. Anything
 else (timestamps, server-assigned ids) stays outside the hash so replays verify
-against the original values only.
+against the original values only — never against server-assigned fields.
 
 
 ## Genesis sentinel
