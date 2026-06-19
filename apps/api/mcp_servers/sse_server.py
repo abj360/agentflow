@@ -33,7 +33,13 @@ class ToolSpec:
         Returns:
             schema: MCP-compliant tool schema dict.
         """
-        return self.input_schema
+        unified = UnifiedToolSpec(
+            name=self.name,
+            description=self.description,
+        )
+        schema = to_mcp_schema(unified)
+        schema["inputSchema"] = self.input_schema
+        return schema
 
 
 class ToolRegistry:
