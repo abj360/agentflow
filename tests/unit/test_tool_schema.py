@@ -114,3 +114,10 @@ def test_registry_find_tool_across_servers() -> None:
         MCPServerHandle(name="search", transport="sse", tools=(SPEC,))
     )
     assert registry.find_tool("search.query") is SPEC
+
+
+def test_registry_find_tool_missing_returns_none() -> None:
+    """Verifies unknown tools find nothing."""
+    from apps.api.mcp_servers.registry import MCPServerRegistry
+
+    assert MCPServerRegistry().find_tool("nope") is None
