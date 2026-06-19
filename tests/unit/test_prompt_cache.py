@@ -107,3 +107,9 @@ def test_hits_and_misses_counted() -> None:
     cache.get("k")
     cache.get("missing")
     assert cache.hits == 1 and cache.misses == 1
+
+
+def test_counters_start_at_zero() -> None:
+    """Verifies a fresh cache has no recorded lookups."""
+    cache = PromptCache()
+    assert cache.hits == 0 and cache.misses == 0
