@@ -98,3 +98,12 @@ def test_cache_respects_max_entries() -> None:
     for idx in range(10):
         cache.put(f"k{idx}", "v")
     assert len(cache.entries) <= 3
+
+
+def test_hits_and_misses_counted() -> None:
+    """Verifies lookups increment the hit and miss counters."""
+    cache = PromptCache()
+    cache.put("k", "v")
+    cache.get("k")
+    cache.get("missing")
+    assert cache.hits == 1 and cache.misses == 1
