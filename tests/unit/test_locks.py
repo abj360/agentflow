@@ -153,3 +153,10 @@ async def test_is_held_false_after_release() -> None:
     await lock.acquire()
     await lock.release()
     assert lock.is_held is False
+
+
+async def test_acquire_or_raise_succeeds() -> None:
+    """Verifies acquire_or_raise acquires a free lock."""
+    lock = DistributedLock(FakeRedis(), "k1")
+    await lock.acquire_or_raise()
+    assert lock.is_held is True
