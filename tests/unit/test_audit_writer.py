@@ -189,3 +189,12 @@ async def test_flush_with_retry_single_attempt_surfaces_error() -> None:
     except OperationalError:
         return
     raise AssertionError("expected OperationalError")
+
+
+async def test_max_buffer_forces_flush() -> None:
+    """Verifies hitting max_buffer flushes even below batch size."""
+    factory = FakeSessionFactory()
+    writer = AuditWriter(factory, batch_size=100, max_buffer=2)
+    for _ in range(3):
+        await writer.enqueue("trace-1", EventKind.TOOL_CALL, {})
+    assert writer.pending_count <= 2
