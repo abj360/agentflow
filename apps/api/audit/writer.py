@@ -31,15 +31,20 @@ class AuditWriter:
     """
 
     def __init__(
-        self, session_factory: SessionFactory, batch_size: int = DEFAULT_BATCH_SIZE
+        self,
+        session_factory: SessionFactory,
+        batch_size: int = DEFAULT_BATCH_SIZE,
+        max_buffer: int = DEFAULT_MAX_BUFFER,
     ) -> None:
         """Initializes the writer with a session factory and batch size.
 
         Args:
             session_factory: Factory producing async sessions for flush transactions.
             batch_size: Number of buffered events that triggers an automatic flush.
+            max_buffer: Hard cap on buffered events; enqueue flushes beyond it.
         """
         self.session_factory = session_factory
+        self.max_buffer = max_buffer
         self.batch_size = batch_size
         self._pending: list[AuditEvent] = []
         self._linker = ChainLinker()
