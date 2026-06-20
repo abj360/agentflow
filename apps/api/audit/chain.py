@@ -83,3 +83,7 @@ def verify_chain(events: list) -> bool:
             return False
         prev_hash = event.event_hash
     return True
+
+
+class ChainVerificationError(Exception):
+    """Raised when an audit chain fails integrity verification."""
