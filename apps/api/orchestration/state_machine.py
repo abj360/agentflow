@@ -98,7 +98,9 @@ def route_after_critic(state: GraphState) -> str:
     Returns:
         route: "revise" to loop back to the planner, "accept" to finish.
     """
-    return "accept" if state["critique"] == "accept" else "revise"
+    if state["critique"] == "accept":
+        return "accept"
+    return "revise"
 
 
 def validate_graph(graph: StateGraph) -> list[str]:
