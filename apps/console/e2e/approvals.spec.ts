@@ -62,3 +62,9 @@ test("status badge renders pending state", async ({ page }) => {
   await page.goto("/approvals");
   await expect(page.locator(".status-badge").first()).toBeVisible();
 });
+
+
+test("traces page renders the live viewer", async ({ page }) => {
+  await page.goto("/traces");
+  await expect(page.getByRole("heading", { name: "Live traces" })).toBeVisible();
+});
