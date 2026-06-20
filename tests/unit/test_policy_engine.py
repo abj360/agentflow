@@ -350,3 +350,10 @@ def test_initech_default_is_approval() -> None:
     engine = PolicyEngine(str(SCHEMA_PATH))
     decision = engine.evaluate("misc.tool", {}, tenant_id="initech")
     assert decision.action == "human_approval"
+
+
+def test_tenant_decision_names_override_rule() -> None:
+    """Verifies tenant decisions report the override rule matched."""
+    engine = PolicyEngine(str(SCHEMA_PATH))
+    decision = engine.evaluate("db.read", {}, tenant_id="acme")
+    assert decision.rule == "db.*"
