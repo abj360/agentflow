@@ -112,7 +112,7 @@ def validate_graph(graph: StateGraph) -> list[str]:
     Returns:
         problems: Wiring problems found, empty when the graph is sound.
     """
-    problems = []
+    problems: list[str] = []
     for required in ("planner", "executor", "critic"):
         if required not in graph.nodes:
             problems.append(f"{required} node missing")
