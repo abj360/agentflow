@@ -336,3 +336,10 @@ def test_describe_allow_label() -> None:
     from apps.api.policy.engine import describe_action
 
     assert describe_action("allow") == "allowed by policy"
+
+
+def test_globex_shell_denied_by_override() -> None:
+    """Verifies the globex override denies shell tools."""
+    engine = PolicyEngine(str(SCHEMA_PATH))
+    decision = engine.evaluate("shell.exec", {}, tenant_id="globex")
+    assert decision.action == "deny"
