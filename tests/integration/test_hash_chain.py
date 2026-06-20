@@ -10,6 +10,7 @@ Contains:
 from apps.api.audit.chain import (
     GENESIS_HASH,
     ChainLinker,
+    ChainVerificationError,
     compute_event_hash,
     verify_chain,
 )
@@ -107,3 +108,8 @@ def test_linker_chains_three_events_sequentially() -> None:
     prev_3, _ = linker.link("trace-1", "tool_result", {})
     assert prev_2 == hash_1
     assert prev_3 == hash_2
+
+
+def test_chain_verification_error_is_exception() -> None:
+    """Verifies the dedicated exception type exists for callers to catch."""
+    assert issubclass(ChainVerificationError, Exception)
