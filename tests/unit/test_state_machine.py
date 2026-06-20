@@ -103,3 +103,11 @@ def test_route_after_critic_handles_empty_critique() -> None:
     from apps.api.orchestration.state_machine import route_after_critic
 
     assert route_after_critic(make_state()) == "revise"
+
+
+def test_executor_marks_results_with_done_prefix() -> None:
+    """Verifies executor results carry the done marker per step."""
+    from apps.api.orchestration.state_machine import executor_node
+
+    results = executor_node(make_state(plan=["step"]))["results"]
+    assert results == ["done: step"]
