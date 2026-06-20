@@ -343,3 +343,10 @@ def test_globex_shell_denied_by_override() -> None:
     engine = PolicyEngine(str(SCHEMA_PATH))
     decision = engine.evaluate("shell.exec", {}, tenant_id="globex")
     assert decision.action == "deny"
+
+
+def test_initech_default_is_approval() -> None:
+    """Verifies initech's catch-all routes to human approval."""
+    engine = PolicyEngine(str(SCHEMA_PATH))
+    decision = engine.evaluate("misc.tool", {}, tenant_id="initech")
+    assert decision.action == "human_approval"
