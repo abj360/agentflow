@@ -96,3 +96,10 @@ def test_validate_graph_flags_missing_nodes() -> None:
 
     problems = validate_graph(EmptyGraph())
     assert "planner node missing" in problems
+
+
+def test_route_after_critic_handles_empty_critique() -> None:
+    """Verifies an empty critique is treated as a revision request."""
+    from apps.api.orchestration.state_machine import route_after_critic
+
+    assert route_after_critic(make_state()) == "revise"
