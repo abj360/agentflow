@@ -24,7 +24,7 @@ export default function RootLayout({
         <header className="topbar">
           <span className="logo">agentflow console</span>
           <nav>
-            <a href="/traces">Live traces</a>
+            <a href="/traces">Traces</a>
             <a href="/approvals">Approval queue</a>
             <ThemeToggle />
           </nav>
