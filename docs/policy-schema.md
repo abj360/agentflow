@@ -54,5 +54,5 @@ overhead dropped from ~120ms to ~4ms per session (perf(policy) fix).
 
 1. Edit `schema.yaml` on a branch.
 2. Run the policy unit tests: `pytest tests/unit/test_policy_engine.py`.
-3. Get a governance review (Peter) before merge.
+3. Get a governance review (Peter) before merge — required, not optional.
 4. Confirm the merged rules appear in the next deploy's audit events.
