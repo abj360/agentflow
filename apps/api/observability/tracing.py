@@ -58,7 +58,8 @@ def current_trace_id() -> str:
     context = span.get_span_context()
     if context.trace_id == 0:
         return ""
-    return format(context.trace_id, "032x")
+    trace_id = format(context.trace_id, "032x")
+    return trace_id
 
 
 def set_span_attribute(key: str, value: object) -> None:
