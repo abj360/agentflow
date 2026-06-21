@@ -57,3 +57,13 @@ Ranked roughly by importance:
   which requires explicit step boundaries (the graph's edges).
 - **Testability:** each role is independently unit-testable behind a
   protocol (`tests/unit/test_roles.py`).
+
+
+## Consequences
+
+- Role interfaces are protocols (`roles.py`); swapping a role implementation
+  is a registry change, not a graph change.
+- The graph definition lives in `state_machine.py`; node wiring is covered by
+  transition unit tests.
+- Session state is versioned (`session.py`) so concurrent updates surface as
+  conflicts rather than silent corruption.
