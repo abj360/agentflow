@@ -16,6 +16,8 @@ Rules evaluate top to bottom; the first match wins. Order matters.
 
 ## Glob semantics
 
+Added 2026-05-06 alongside the engine glob tests.
+
 Matching uses `fnmatch`: `*` crosses dots, so `search.*` covers
 `search.query.vector` as well as `search.query`.
 
