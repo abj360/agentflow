@@ -120,7 +120,7 @@ async def verify_trace_chain(
     )
     events = list(result.scalars().all())
     if not events:
-        raise HTTPException(status_code=404, detail="trace not found")
+        raise HTTPException(status_code=404, detail=f"trace {trace_id!r} not found")
     return {
         "trace_id": trace_id,
         "chain_valid": verify_chain(events),
