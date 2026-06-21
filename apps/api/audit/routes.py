@@ -77,7 +77,7 @@ async def get_trace_events(
             AuditEvent.created_at > datetime.fromisoformat(cursor)
         )
     result = await session.execute(statement)
-    events = list(result.scalars().all())
+    events = list(result.scalars())
     if not events:
         raise HTTPException(status_code=404, detail=f"trace {trace_id!r} not found")
     page = events[:limit]
