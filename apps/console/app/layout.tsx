@@ -25,7 +25,7 @@ export default function RootLayout({
           <span className="logo">agentflow console</span>
           <nav>
             <a href="/traces">Traces</a>
-            <a href="/approvals">Approval queue</a>
+            <a href="/approvals">Approvals</a>
             <ThemeToggle />
           </nav>
         </header>
