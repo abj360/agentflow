@@ -48,3 +48,11 @@ Since the 2026-06-15 perf fix, the engine compiles YAML rules into regex decisio
 once at load time instead of re-parsing the schema on every call.
 Evaluation
 overhead dropped from ~120ms to ~4ms per session (perf(policy) fix).
+
+
+## Review workflow
+
+1. Edit `schema.yaml` on a branch.
+2. Run the policy unit tests: `pytest tests/unit/test_policy_engine.py`.
+3. Get a governance review (Peter) before merge.
+4. Confirm the merged rules appear in the next deploy's audit events.
