@@ -254,3 +254,10 @@ def test_sessions_route_not_shadowed_by_trace_route() -> None:
     client = make_client([])
     response = client.get("/audit/sessions")
     assert response.status_code == 200
+
+
+def test_404_detail_mentions_trace_id() -> None:
+    """Verifies the 404 body names the missing trace for faster triage."""
+    client = make_client([])
+    body = client.get("/audit/ghost").json()
+    assert "ghost" in body["detail"]
