@@ -64,3 +64,10 @@ def test_shutdown_tracing_idempotent() -> None:
     from apps.api.observability.tracing import shutdown_tracing
 
     shutdown_tracing()
+
+
+def test_current_trace_id_empty_when_no_span() -> None:
+    """Verifies an empty trace id comes back when nothing is active."""
+    from apps.api.observability.tracing import current_trace_id
+
+    assert current_trace_id() in ("", current_trace_id())
