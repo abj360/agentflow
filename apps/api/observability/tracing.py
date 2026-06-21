@@ -100,3 +100,10 @@ def instrument_redis(redis_client) -> None:
     from opentelemetry.instrumentation.redis import RedisInstrumentor
 
     RedisInstrumentor().instrument(client=redis_client)
+
+
+def shutdown_tracing() -> None:
+    """Flushes and shuts down the tracer provider."""
+    provider = trace.get_tracer_provider()
+    if hasattr(provider, "shutdown"):
+        provider.shutdown()
