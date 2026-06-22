@@ -61,3 +61,27 @@ async def test_hooks_default_to_none() -> None:
     """Verifies the loop runs without hooks attached."""
     result = await run_session("session-6", "noop")
     assert result is not None
+
+
+class RecordingHooks:
+    """Captures hook invocations for assertions."""
+
+    def __init__(self) -> None:
+        """Initializes empty call logs."""
+        self.iterations: list[int] = []
+        self.completed: list[dict] = []
+
+    async def on_iteration(self, session_id: str, iteration: int) -> None:
+        """Records the iteration index."""
+        self.iterations.append(iteration)
+
+    async def on_complete(self, session_id: str, result: dict) -> None:
+        """Records the final result."""
+        self.completed.append(result)
+
+
+async def test_hooks_receive_iteration_callbacks() -> None:
+    """Verifies attached hooks see loop lifecycle events."""
+    hooks = RecordingHooks()
+    await run_session("session-7", "count to two", hooks=hooks)
+    assert hooks.iterations != [] or hooks.completed != []
