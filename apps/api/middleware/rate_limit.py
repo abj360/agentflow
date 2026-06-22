@@ -4,6 +4,7 @@ rate_limit.py --- in-memory fixed-window rate limiting middleware
 
 Contains:
     RateLimitMiddleware: caps requests per client within a fixed window
+    RedisRateCounter: counts requests in Redis for multi-instance deployments
 """
 
 import time
