@@ -64,3 +64,13 @@ def test_validate_tool_spec_flags_missing_name() -> None:
 
     problems = validate_tool_spec(ToolSpec(name="", description="d"))
     assert problems != []
+
+
+def test_register_rejects_invalid_spec() -> None:
+    """Verifies registering an invalid spec raises ValueError."""
+    registry = ToolRegistry()
+    try:
+        registry.register(ToolSpec(name="", description="d"))
+    except ValueError:
+        return
+    raise AssertionError("expected ValueError")
