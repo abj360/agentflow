@@ -16,7 +16,7 @@ export default function TracesPage() {
 
   return (
     <section>
-      <h1>Live trace viewer</h1>
+      <h1>Live traces</h1>
       <label>
         Run id
         <input
