@@ -145,3 +145,10 @@ async def test_health_path_is_exempt() -> None:
     middleware = build_middleware(max_requests=0)
     response = await middleware.dispatch(PathRequest("/health"), passthrough)
     assert response.status_code == 200
+
+
+async def test_metrics_path_is_exempt() -> None:
+    """Verifies the metrics endpoint bypasses the rate limiter."""
+    middleware = build_middleware(max_requests=0)
+    response = await middleware.dispatch(PathRequest("/metrics"), passthrough)
+    assert response.status_code == 200
