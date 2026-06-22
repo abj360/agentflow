@@ -117,3 +117,11 @@ def test_metrics_include_policy_denials() -> None:
     """Verifies the scrape payload includes policy denials."""
     response = metrics_endpoint(None)
     assert b"agentflow_policy_denials_total" in response.body
+
+
+def test_denials_multiple_rules() -> None:
+    """Verifies separate rules track separate denial counts."""
+    from apps.api.observability.metrics import policy_denials_total
+
+    policy_denials_total.labels(rule="net.*").inc()
+    policy_denials_total.labels(rule="*").inc()
