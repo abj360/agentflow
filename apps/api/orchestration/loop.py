@@ -12,7 +12,9 @@ from apps.api.orchestration.state_machine import build_graph
 MAX_REVISIONS = 3  # hard cap per ADR-001; never let a run spin unbounded
 
 
-async def run_session(session_id: str, task: str) -> dict:
+async def run_session(
+    session_id: str, task: str, hooks: LoopHooks | None = None
+) -> dict:
     """Runs one orchestration session to completion.
 
     Args:
@@ -42,6 +44,8 @@ async def run_session(session_id: str, task: str) -> dict:
         if graph_state["critique"] == "accept":
             break
         revisions += 1
+        if hooks is not None:
+            await hooks.on_iteration(session_id, revisions)
     else:
         graph_state["critique"] = "revision-bounded"  # surfaced in result status
     accepted = graph_state["critique"] == "accept"  # anything else ends bounded
