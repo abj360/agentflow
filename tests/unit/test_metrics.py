@@ -104,3 +104,10 @@ def test_metrics_include_breaker_state() -> None:
     """Verifies the scrape payload includes the breaker gauge."""
     response = metrics_endpoint(None)
     assert b"agentflow_budget_breaker_open" in response.body
+
+
+def test_policy_denials_by_rule() -> None:
+    """Verifies denials count per matched rule."""
+    from apps.api.observability.metrics import policy_denials_total
+
+    policy_denials_total.labels(rule="shell.*").inc()
