@@ -19,7 +19,11 @@ export default function TracesPage() {
       <h1>Live trace viewer</h1>
       <label>
         Run id
-        <input value={runId} onChange={(e) => setRunId(e.target.value)} />
+        <input
+          aria-label="Run id"
+          value={runId}
+          onChange={(e) => setRunId(e.target.value)}
+        />
       </label>
       <TraceViewer runId={runId} />
     </section>
