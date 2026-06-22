@@ -16,7 +16,7 @@ from starlette.responses import JSONResponse, Response
 
 MAX_REQUESTS = 120
 WINDOW_SECONDS = 60
-EXEMPT_PATHS = frozenset({"/health", "/metrics"})
+EXEMPT_PATHS = frozenset({"/health", "/metrics", "/ready"})
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
