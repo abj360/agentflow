@@ -86,6 +86,17 @@ class ToolRegistry:
         """
         return self.tools.get(name)
 
+    def unregister(self, name: str) -> bool:
+        """Removes a tool from the registry.
+
+        Args:
+            name: Tool name to remove.
+
+        Returns:
+            removed: True when the tool was present and removed.
+        """
+        return self.tools.pop(name, None) is not None
+
 
 def default_registry() -> ToolRegistry:
     """Builds the registry with the built-in demo tools.
