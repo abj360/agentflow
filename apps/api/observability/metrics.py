@@ -72,3 +72,11 @@ budget_breaker_open = Gauge(
     "Whether the budget circuit breaker is open (1) or closed (0)",
     registry=registry,
 )
+
+
+policy_denials_total = Counter(
+    "agentflow_policy_denials_total",
+    "Tool calls denied by the policy engine",
+    labelnames=["rule"],
+    registry=registry,
+)
