@@ -20,6 +20,7 @@ async def run_session(
     Args:
         session_id: Identifier of the session being run.
         task: The user's task handed to the planner.
+        hooks: Optional lifecycle callbacks for iteration and completion.
 
     Returns:
         result: Final synthesized output and the session's iteration count.
