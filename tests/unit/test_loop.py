@@ -85,3 +85,10 @@ async def test_hooks_receive_iteration_callbacks() -> None:
     hooks = RecordingHooks()
     await run_session("session-7", "count to two", hooks=hooks)
     assert hooks.iterations != [] or hooks.completed != []
+
+
+async def test_on_complete_called_exactly_once() -> None:
+    """Verifies completion hooks fire once per session."""
+    hooks = RecordingHooks()
+    await run_session("session-8", "once", hooks=hooks)
+    assert len(hooks.completed) == 1
