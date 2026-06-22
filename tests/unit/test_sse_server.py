@@ -74,3 +74,11 @@ def test_register_rejects_invalid_spec() -> None:
     except ValueError:
         return
     raise AssertionError("expected ValueError")
+
+
+def test_unregister_removes_tool() -> None:
+    """Verifies unregister drops the tool from the registry."""
+    registry = ToolRegistry()
+    registry.register(ToolSpec(name="t", description="d"))
+    assert registry.unregister("t") is True
+    assert registry.list_tools() == []
