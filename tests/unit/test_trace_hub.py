@@ -112,3 +112,12 @@ async def test_register_under_cap_still_accepted() -> None:
     await hub.register("run-1", socket)
     assert socket.accepted is True
     assert socket in hub.connections["run-1"]
+
+
+async def test_multiple_runs_have_separate_connection_sets() -> None:
+    """Verifies connections are grouped per run id."""
+    hub = TraceHub()
+    socket_a, socket_b = FakeSocket(), FakeSocket()
+    await hub.register("run-a", socket_a)
+    await hub.register("run-b", socket_b)
+    assert set(hub.connections) == {"run-a", "run-b"}
