@@ -152,3 +152,11 @@ def test_failure_count_resets_on_success() -> None:
     breaker.record_failure()
     breaker.record_success()
     assert breaker.failure_count() == 0
+
+
+def test_breaker_reset_method() -> None:
+    """Verifies reset closes a tripped breaker."""
+    breaker = ServerCircuitBreaker("srv", failure_threshold=1)
+    breaker.record_failure()
+    breaker.reset()
+    assert breaker.allows_call() is True
