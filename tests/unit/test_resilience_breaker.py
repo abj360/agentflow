@@ -144,3 +144,11 @@ def test_failure_count_tracks_failures() -> None:
     breaker = ServerCircuitBreaker("srv")
     breaker.record_failure()
     assert breaker.failure_count() == 1
+
+
+def test_failure_count_resets_on_success() -> None:
+    """Verifies the failure counter resets on success."""
+    breaker = ServerCircuitBreaker("srv")
+    breaker.record_failure()
+    breaker.record_success()
+    assert breaker.failure_count() == 0
