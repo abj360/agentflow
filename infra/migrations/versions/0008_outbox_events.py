@@ -28,7 +28,8 @@ def upgrade() -> None:
             trace_id VARCHAR(64) NOT NULL,
             topic VARCHAR(64) NOT NULL,
             payload JSONB NOT NULL DEFAULT '{}',
-            published_at TIMESTAMPTZ
+            published_at TIMESTAMPTZ,
+            attempts INTEGER NOT NULL DEFAULT 0
         )
         """
     )
