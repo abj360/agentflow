@@ -76,7 +76,7 @@ class Bulkhead:
         limit: Maximum concurrent in-flight calls.
     """
 
-    def __init__(self, limit: int = 32, acquire_timeout: float = 2.0) -> None:
+    def __init__(self, limit: int = 32, acquire_timeout: float = 5.0) -> None:
         """Initializes the bulkhead with a concurrency cap.
 
         Args:
