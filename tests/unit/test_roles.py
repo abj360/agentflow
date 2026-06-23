@@ -77,3 +77,14 @@ def test_registry_resolves_default_roles() -> None:
     registry = RoleRegistry()
     for name in ("planner", "executor", "synthesizer", "critic"):
         assert registry.resolve(name) is not None
+
+
+def test_registry_unknown_role_raises() -> None:
+    """Verifies resolving an unknown role raises a KeyError."""
+    from apps.api.orchestration.roles import RoleRegistry
+
+    try:
+        RoleRegistry().resolve("oracle")
+    except KeyError:
+        return
+    raise AssertionError("expected KeyError")
