@@ -27,7 +27,7 @@ rules:
     risk: unknown
 
 
-  - match: "metrics.emit"
+  - match: "metrics.*"
     action: allow
     risk: low
 
