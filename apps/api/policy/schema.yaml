@@ -92,3 +92,8 @@ tenant_overrides:
   - match: "deploy.*"
     action: human_approval
     risk: critical
+
+
+  - match: "secrets.*"
+    action: deny
+    risk: critical
