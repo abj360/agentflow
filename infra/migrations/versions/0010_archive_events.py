@@ -27,7 +27,8 @@ def upgrade() -> None:
             archive_id UUID PRIMARY KEY,
             trace_id VARCHAR(64) NOT NULL,
             archived_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-            storage_uri VARCHAR(256) NOT NULL
+            storage_uri VARCHAR(256) NOT NULL,
+            event_count INTEGER NOT NULL DEFAULT 0
         )
         """
     )
