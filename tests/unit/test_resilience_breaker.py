@@ -160,3 +160,10 @@ def test_breaker_reset_method() -> None:
     breaker.record_failure()
     breaker.reset()
     assert breaker.allows_call() is True
+
+
+def test_breaker_failure_threshold_configurable() -> None:
+    """Verifies the failure threshold is configurable per breaker."""
+    breaker = ServerCircuitBreaker("srv", failure_threshold=1)
+    breaker.record_failure()
+    assert breaker.allows_call() is False
