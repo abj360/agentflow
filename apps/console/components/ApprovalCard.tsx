@@ -49,3 +49,14 @@ export function ApprovalCard({
     </li>
   );
 }
+
+
+/**
+ * Renders a small status badge for an approval request.
+ *
+ * @param props.status - The approval status to badge.
+ * @returns The status badge element.
+ */
+export function ApprovalStatusBadge({ status }: { status: string }) {
+  return <span className={`status-badge status-${status}`}>{status}</span>;
+}
