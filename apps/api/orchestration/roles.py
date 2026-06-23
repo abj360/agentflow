@@ -140,3 +140,31 @@ class LLMClient(Protocol):
             completion: The model's response text.
         """
         ...
+
+
+class RoleRegistry:
+    """Maps role names to role instances for the graph builder.
+
+    Attributes:
+        roles: Registered role instances keyed by role name.
+    """
+
+    def __init__(self) -> None:
+        """Initializes the registry with the four default roles."""
+        self.roles: dict[str, AgentRole] = {
+            "planner": Planner(),
+            "executor": Executor(),
+            "synthesizer": Synthesizer(),
+            "critic": Critic(),
+        }
+
+    def resolve(self, name: str) -> AgentRole:
+        """Resolves a role instance by name.
+
+        Args:
+            name: Registered role name.
+
+        Returns:
+            role: The role instance bound to that name.
+        """
+        return self.roles[name]
