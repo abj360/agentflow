@@ -87,3 +87,8 @@ tenant_overrides:
   - match: "billing.*"
     action: deny
     risk: high
+
+
+  - match: "deploy.*"
+    action: human_approval
+    risk: critical
