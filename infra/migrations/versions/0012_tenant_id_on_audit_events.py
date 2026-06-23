@@ -26,6 +26,11 @@ def upgrade() -> None:
         ALTER TABLE audit_events ADD COLUMN tenant_id VARCHAR(64) NOT NULL DEFAULT 'default'
         """
     )
+    op.execute(
+        """
+        UPDATE audit_events SET tenant_id = 'legacy' WHERE trace_id LIKE 'import-%'
+        """
+    )
 
 
 def downgrade() -> None:
