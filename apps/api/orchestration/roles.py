@@ -167,4 +167,6 @@ class RoleRegistry:
         Returns:
             role: The role instance bound to that name.
         """
+        if name not in self.roles:
+            raise KeyError(f"unregistered role: {name}")
         return self.roles[name]
