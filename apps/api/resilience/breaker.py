@@ -92,7 +92,12 @@ class Bulkhead:
         Returns:
             bulkhead: The bulkhead instance with an acquired slot.
         """
-        await self._semaphore.acquire()
+        try:
+            await asyncio.wait_for(
+                self._semaphore.acquire(), timeout=self.acquire_timeout
+            )
+        except TimeoutError as exc:
+            raise BulkheadFullError(self.limit) from exc
         return self
 
     async def __aexit__(self, *exc_info: object) -> None:
@@ -158,3 +163,16 @@ class BreakerRegistry:
                 server_name, failure_threshold=self.failure_threshold
             )
         return self.breakers[server_name]
+
+
+class BulkheadFullError(Exception):
+    """Raised when no bulkhead slot frees up in time."""
+
+    def __init__(self, limit: int) -> None:
+        """Initializes the error with the bulkhead's limit.
+
+        Args:
+            limit: The bulkhead concurrency cap that was hit.
+        """
+        super().__init__(f"bulkhead full at {limit} in-flight calls")
+        self.limit = limit
