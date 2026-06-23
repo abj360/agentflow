@@ -68,3 +68,12 @@ async def test_critic_revises_empty_results() -> None:
 def test_critic_default_rubric_empty() -> None:
     """Verifies the critic starts with an empty rubric by default."""
     assert Critic().rubric == ()
+
+
+def test_registry_resolves_default_roles() -> None:
+    """Verifies all four default roles resolve from the registry."""
+    from apps.api.orchestration.roles import RoleRegistry
+
+    registry = RoleRegistry()
+    for name in ("planner", "executor", "synthesizer", "critic"):
+        assert registry.resolve(name) is not None
