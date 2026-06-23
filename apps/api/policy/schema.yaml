@@ -13,8 +13,10 @@ rules:
   - match: "shell.*"
     action: human_approval
     risk: high
-  - match: "db.*"
+  - match: "db.write"
     action: human_approval
+  - match: "db.read"
+    action: allow
     risk: medium
   - match: "net.*"
     action: deny
