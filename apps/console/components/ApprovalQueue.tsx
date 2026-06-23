@@ -49,7 +49,7 @@ export function ApprovalQueue() {
       }
     );
     setApprovals((prev) =>
-      prev.filter((item) => item.approval_id !== approvalId)
+      prev.filter((item) => item.approval_id !== approvalId)  // drop resolved card
     );
   };
 
