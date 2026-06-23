@@ -94,3 +94,23 @@ class VersionConflictError(Exception):
             records: Snapshot list of every registered session record.
         """
         return list(self.records.values())
+
+
+    def expire_older_than(self, max_age_seconds: float) -> int:
+        """Removes sessions idle longer than the given age.
+
+        Args:
+            max_age_seconds: Maximum idle age before a session expires.
+
+        Returns:
+            expired_count: Number of sessions removed.
+        """
+        cutoff = time.time() - max_age_seconds
+        stale = [
+            session_id
+            for session_id, record in self.records.items()
+            if record.created_at < cutoff
+        ]
+        for session_id in stale:
+            del self.records[session_id]
+        return len(stale)
