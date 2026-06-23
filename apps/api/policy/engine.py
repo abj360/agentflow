@@ -118,8 +118,8 @@ class PolicyEngine:
             Deny decisions carry a reason; allow decisions leave it empty.
         """
         table = self._table
-        if tenant_id is not None and tenant_id in self._tenant_tables:
-            table = self._tenant_tables[tenant_id]
+        if tenant_id is not None:
+            table = self._tenant_tables.get(tenant_id, self._table)
         for rule in table:
             if rule.pattern.match(tool_name):
                 return Decision(action=rule.action, rule=rule.match)
