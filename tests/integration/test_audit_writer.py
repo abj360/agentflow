@@ -193,3 +193,10 @@ async def test_max_buffer_flush_keeps_all_events(session_factory) -> None:
             select(AuditEvent).where(AuditEvent.trace_id == "it-trace-6")
         )
         assert len(list(result.scalars())) == 6
+
+
+async def test_enqueue_returns_event_before_persist(session_factory) -> None:
+    """Verifies enqueue returns the event even before it hits Postgres."""
+    writer = AuditWriter(session_factory)
+    event = await writer.enqueue("it-trace-h", EventKind.TOOL_CALL, {"k": 1})
+    assert event.trace_id == "it-trace-h"
