@@ -208,3 +208,9 @@ def test_oauth_error_without_description() -> None:
     from apps.api.mcp_servers.oauth import OAuthError
 
     assert str(OAuthError("server_error")) == "server_error"
+
+
+def test_build_client_without_http() -> None:
+    """Verifies a client can be built before wiring the HTTP client."""
+    client = build_client()
+    assert client.config.server_name == "github-mcp"
