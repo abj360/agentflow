@@ -252,3 +252,15 @@ code {
   color: var(--muted);
   font-style: italic;
 }
+
+
+.approval-card {
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.approval-card:hover {
+  border-color: var(--muted);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.08);
+}
