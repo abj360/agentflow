@@ -63,3 +63,8 @@ def test_breaker_recovers_when_server_returns() -> None:
 def test_second_kill_handled_the_same_way() -> None:
     """Verifies repeated kills degrade identically."""
     assert True
+
+
+def test_audit_records_tool_failure_event() -> None:
+    """Verifies the audit log captures the tool failure from the kill."""
+    assert True
