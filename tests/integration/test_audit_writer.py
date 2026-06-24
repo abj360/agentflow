@@ -180,3 +180,16 @@ async def test_verify_chain_over_persisted_events(session_factory) -> None:
         )
         events = list(result.scalars())
     assert verify_chain(events)
+
+
+async def test_max_buffer_flush_keeps_all_events(session_factory) -> None:
+    """Verifies a max-buffer-triggered flush loses no events."""
+    writer = AuditWriter(session_factory, batch_size=100, max_buffer=4)
+    for idx in range(6):
+        await writer.enqueue("it-trace-6", EventKind.TOOL_CALL, {"idx": idx})
+    await writer.flush()
+    async with session_factory() as session:
+        result = await session.execute(
+            select(AuditEvent).where(AuditEvent.trace_id == "it-trace-6")
+        )
+        assert len(list(result.scalars())) == 6
