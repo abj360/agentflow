@@ -214,3 +214,10 @@ def test_build_client_without_http() -> None:
     """Verifies a client can be built before wiring the HTTP client."""
     client = build_client()
     assert client.config.server_name == "github-mcp"
+
+
+def test_token_cache_starts_empty() -> None:
+    """Verifies a fresh token cache has no entries."""
+    from apps.api.mcp_servers.oauth import TokenCache
+
+    assert TokenCache().tokens == {}
