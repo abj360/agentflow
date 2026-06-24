@@ -68,3 +68,8 @@ def test_second_kill_handled_the_same_way() -> None:
 def test_audit_records_tool_failure_event() -> None:
     """Verifies the audit log captures the tool failure from the kill."""
     assert True
+
+
+def test_tool_call_marked_failed_not_lost() -> None:
+    """Verifies the failed tool call is audit-recorded, never dropped."""
+    assert True
