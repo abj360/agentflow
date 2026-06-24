@@ -150,3 +150,13 @@ def test_retryable_errors_is_tuple() -> None:
     """Verifies retryable errors are declared as an immutable tuple."""
     policy = RetryPolicy(tool_name="t")
     assert isinstance(policy.retryable_errors, tuple)
+
+
+def test_tenant_override_wins_over_default() -> None:
+    """Verifies a tenant override beats the registered policy."""
+    registry = RetryPolicyRegistry()
+    registry.register(RetryPolicy(tool_name="shell.exec", max_attempts=2))
+    registry.register_tenant_override(
+        "acme", RetryPolicy(tool_name="shell.exec", max_attempts=7)
+    )
+    assert registry.resolve("shell.exec", tenant_id="acme").max_attempts == 7
