@@ -19,6 +19,37 @@ from apps.api.db import get_session
 
 MAX_PAGE_SIZE = 500
 
+
+def encode_cursor(created_at: datetime) -> str:
+    """Encodes the timestamp of the last seen event as a cursor token.
+
+    Args:
+        created_at: Timestamp of the last event on the current page.
+
+    Returns:
+        cursor: Opaque pagination cursor for the next request.
+    """
+    return created_at.isoformat()
+
+
+def decode_cursor(cursor: str) -> datetime:
+    """Decodes a cursor token back into a comparable timestamp.
+
+    Args:
+        cursor: Opaque pagination cursor from a previous response.
+
+    Returns:
+        created_at: Timestamp to page strictly after.
+
+    Raises:
+        HTTPException: 400 when the cursor is not a valid ISO timestamp.
+    """
+    try:
+        return datetime.fromisoformat(cursor)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="invalid cursor") from exc
+
+
 router = APIRouter(prefix="/audit", tags=["audit"])
 
 
@@ -74,7 +105,7 @@ async def get_trace_events(
     )
     if cursor is not None:
         statement = statement.where(
-            AuditEvent.created_at > datetime.fromisoformat(cursor)
+            AuditEvent.created_at > decode_cursor(cursor)
         )
     result = await session.execute(statement)
     events = list(result.scalars())
@@ -82,7 +113,7 @@ async def get_trace_events(
         raise HTTPException(status_code=404, detail=f"trace {trace_id!r} not found")
     page = events[:limit]
     next_cursor = (
-        page[-1].created_at.isoformat() if len(events) > limit else None
+        encode_cursor(page[-1].created_at) if len(events) > limit else None
     )
     return {
         "trace_id": trace_id,
