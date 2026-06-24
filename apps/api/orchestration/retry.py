@@ -45,6 +45,7 @@ class RetryPolicyRegistry:
             default_policy: Fallback policy for unlisted tools.
         """
         self.policies: dict[str, RetryPolicy] = {}
+        self.tenant_overrides: dict[str, dict[str, RetryPolicy]] = {}
         self.default_policy = default_policy or RetryPolicy(tool_name="__default__")
 
     def register(self, policy: RetryPolicy) -> None:
@@ -65,6 +66,15 @@ class RetryPolicyRegistry:
             policy: The tool's policy, or the default when unlisted.
         """
         return self.policies.get(tool_name, self.default_policy)
+
+    def register_tenant_override(self, tenant_id: str, policy: RetryPolicy) -> None:
+        """Registers a tenant-specific policy override for a tool.
+
+        Args:
+            tenant_id: Tenant the override applies to.
+            policy: The overriding retry policy.
+        """
+        self.tenant_overrides.setdefault(tenant_id, {})[policy.tool_name] = policy
 
 
 async def execute_with_retry(func, policy: RetryPolicy):
