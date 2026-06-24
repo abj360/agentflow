@@ -116,6 +116,8 @@ class OAuthClient:
             },
         )
         body = response.json()
+        if "error" in body:
+            raise OAuthError(body["error"], body.get("error_description", ""))
         return TokenSet(
             access_token=body["access_token"],
             refresh_token=body.get("refresh_token"),
