@@ -221,3 +221,9 @@ def test_token_cache_starts_empty() -> None:
     from apps.api.mcp_servers.oauth import TokenCache
 
     assert TokenCache().tokens == {}
+
+
+def test_authorize_url_uses_response_type_code() -> None:
+    """Verifies the consent URL requests an authorization code."""
+    url = build_client().build_authorize_url(state="s")
+    assert "response_type=code" in url
