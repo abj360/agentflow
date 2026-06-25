@@ -5,6 +5,7 @@ stdio_server.py --- MCP server exposed over stdio transport
 Contains:
     ToolSpec: describes one tool exposed by the stdio server
     StdioServer: serves MCP requests over stdin/stdout
+    build_default_server(): builds the server with the built-in tool set
 """
 
 import json
