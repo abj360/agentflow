@@ -48,7 +48,7 @@ async def run_session(
         if hooks is not None:
             await hooks.on_iteration(session_id, revisions)
     else:
-        graph_state["critique"] = "revision-bounded"  # surfaced in result status
+        graph_state["critique"] = "revision-bounded"  # ends the run
     accepted = graph_state["critique"] == "accept"  # anything else ends bounded
     status = "completed" if accepted else "revision-bounded"
     return {
