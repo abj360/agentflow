@@ -99,3 +99,10 @@ def test_max_revisions_is_three() -> None:
     from apps.api.orchestration.loop import MAX_REVISIONS
 
     assert MAX_REVISIONS == 3
+
+
+async def test_revision_bound_constant_documented() -> None:
+    """Verifies the bound constant stays small enough to cap cost."""
+    from apps.api.orchestration.loop import MAX_REVISIONS
+
+    assert 1 <= MAX_REVISIONS <= 5
