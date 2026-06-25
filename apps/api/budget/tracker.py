@@ -133,3 +133,16 @@ class BudgetExhaustedError(Exception):
             "max_tokens": self.limits.max_tokens,
             "max_tool_calls": self.limits.max_tool_calls,
         }
+
+
+    def is_near_limit(self, threshold: float = 0.8) -> bool:
+        """Reports whether any budget is above the given usage fraction.
+
+        Args:
+            threshold: Usage fraction treated as near-limit.
+
+        Returns:
+            near_limit: True when any budget is past the threshold.
+        """
+        ratios = self.usage_ratio()
+        return any(ratio >= threshold for ratio in ratios.values())
