@@ -92,3 +92,10 @@ async def test_on_complete_called_exactly_once() -> None:
     hooks = RecordingHooks()
     await run_session("session-8", "once", hooks=hooks)
     assert len(hooks.completed) == 1
+
+
+def test_max_revisions_is_three() -> None:
+    """Verifies the bound constant matches the ADR."""
+    from apps.api.orchestration.loop import MAX_REVISIONS
+
+    assert MAX_REVISIONS == 3
