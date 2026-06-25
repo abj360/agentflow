@@ -143,3 +143,10 @@ def test_is_near_limit_flags_high_usage() -> None:
     tracker = BudgetTracker(BudgetLimits(max_tokens=100, max_tool_calls=100))
     tracker.record_tokens(90)
     assert tracker.is_near_limit() is True
+
+
+def test_is_near_limit_false_when_low() -> None:
+    """Verifies low usage stays below the near-limit threshold."""
+    tracker = BudgetTracker(BudgetLimits(max_tokens=100, max_tool_calls=100))
+    tracker.record_tokens(10)
+    assert tracker.is_near_limit() is False
