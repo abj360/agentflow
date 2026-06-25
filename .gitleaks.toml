@@ -3,6 +3,6 @@ description = "agentflow gitleaks allowlist"
 
 # extend with care; every entry is a potential blind spot
 [[allowlist.rules]]
-id = "example-env-placeholder-values"
+id = "example-env-values"
 description = "Placeholder values in .env.example are not secrets"
 path = "(?i)^\.env\.example$"
