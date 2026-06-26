@@ -181,3 +181,9 @@ def test_critic_revise_path_preserves_plan() -> None:
 
     state = critic_node(make_state(plan=["keep me"]))
     assert state["plan"] == ["keep me"]
+
+
+def test_plan_after_planner_contains_task() -> None:
+    """Verifies the task text lands in the first plan draft."""
+    after = planner_node(make_state(task="very specific task"))
+    assert "very specific task" in after["plan"]
