@@ -67,3 +67,17 @@ async def dispose_engine() -> None:
         await _engine.dispose()
     _engine = None
     _session_factory = None
+
+
+def pool_status() -> dict:
+    """Reports current connection pool occupancy.
+
+    Returns:
+        status: Mapping of pool size, checked-out and overflow counts.
+    """
+    pool = get_engine().pool
+    return {
+        "size": pool.size(),
+        "checked_out": pool.checkedout(),
+        "overflow": pool.overflow(),
+    }
