@@ -37,6 +37,7 @@ class BudgetCircuitBreaker:
     def record_breach(self) -> None:
         """Records one budget breach, opening the circuit at the threshold."""
         self._failures += 1
+        self._breach_total += 1
         if self._failures >= self.failure_threshold:
             if self._opened_at is None:
                 self._opened_at = time.time()
@@ -69,6 +70,7 @@ class BudgetCircuitBreaker:
         """Closes the circuit and clears the breach count."""
         self._failures = 0
         self._opened_at = None
+        self._breach_total = 0
 
 
     def is_half_open(self) -> bool:
