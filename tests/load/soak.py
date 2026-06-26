@@ -46,7 +46,8 @@ class SoakUser(HttpUser):
     def fetch_chain_head(self) -> None:
         """Fetches the head hash of a trace chain."""
         self.client.get(
-            "/audit/trace-soak-7/head", name="/audit/{trace_id}/head"
+            "/audit/trace-soak-7/head",
+            name="/audit/{trace_id}/head",
         )
 
 
