@@ -49,3 +49,9 @@ def test_pool_recycle_is_set() -> None:
     """Verifies connection recycling is enabled to survive idle cutoffs."""
     engine = db.get_engine()
     assert engine.pool._recycle == 1800
+
+
+def test_pool_status_reports_keys() -> None:
+    """Verifies pool_status exposes the expected occupancy keys."""
+    status = db.pool_status()
+    assert {"size", "checked_out", "overflow"} <= set(status)
