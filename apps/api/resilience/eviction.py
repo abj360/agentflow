@@ -21,13 +21,14 @@ class HealthChecker:
         failures: Consecutive failure counts keyed by server name.
     """
 
-    def __init__(self, failure_threshold: int = 3) -> None:
+    def __init__(self, failure_threshold: int = 3, window_seconds: float = 60.0) -> None:
         """Initializes the checker with a failure threshold.
 
         Args:
             failure_threshold: Consecutive failed probes before unhealthy.
         """
         self.failure_threshold = failure_threshold
+        self.window_seconds = window_seconds
         self.failures: dict[str, int] = {}
 
     def record_probe(self, server_name: str, ok: bool) -> bool:
