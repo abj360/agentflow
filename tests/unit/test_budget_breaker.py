@@ -110,3 +110,14 @@ def test_call_records_failure_and_reraises() -> None:
     except RuntimeError:
         pass
     assert breaker._failures == 1
+
+
+def test_call_blocks_when_open() -> None:
+    """Verifies call refuses to run while the circuit is open."""
+    breaker = BudgetCircuitBreaker(failure_threshold=1)
+    breaker.record_breach()
+    try:
+        breaker.call(lambda: 1)
+    except CircuitOpenError:
+        return
+    raise AssertionError("expected CircuitOpenError")
