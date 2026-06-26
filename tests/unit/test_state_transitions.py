@@ -165,3 +165,19 @@ def test_iterations_start_at_zero() -> None:
 def test_critique_starts_empty() -> None:
     """Verifies fresh states carry no critique yet."""
     assert make_state()["critique"] == ""
+
+
+def test_graph_nodes_match_role_names() -> None:
+    """Verifies graph node names match the canonical role names."""
+    graph = build_graph()
+    assert "planner" in graph.nodes
+    assert "executor" in graph.nodes
+    assert "critic" in graph.nodes
+
+
+def test_critic_revise_path_preserves_plan() -> None:
+    """Verifies a revise cycle keeps the current plan in state."""
+    from apps.api.orchestration.state_machine import critic_node
+
+    state = critic_node(make_state(plan=["keep me"]))
+    assert state["plan"] == ["keep me"]
