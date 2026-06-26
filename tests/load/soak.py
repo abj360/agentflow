@@ -63,3 +63,9 @@ class SoakUser(HttpUser):
     def list_approvals(self) -> None:
         """Polls the approval queue."""
         self.client.get("/audit/sessions?limit=10", name="/audit/sessions?limit=10")
+
+
+    @task(1)
+    def fetch_metrics(self) -> None:
+        """Scrapes the metrics endpoint."""
+        self.client.get("/metrics")
