@@ -124,3 +124,14 @@ async def test_graph_state_has_expected_keys() -> None:
         {"task": "x", "plan": [], "results": [], "critique": "", "iterations": 0}
     )
     assert set(state) == {"task", "plan", "results", "critique", "iterations"}
+
+
+async def test_graph_routes_to_accept_with_results() -> None:
+    """Verifies the graph accepts once results exist."""
+    from apps.api.orchestration.state_machine import critic_node, route_after_critic
+
+    state = critic_node(
+        {"task": "t", "plan": ["p"], "results": ["r"], "critique": "",
+         "iterations": 0}
+    )
+    assert route_after_critic(state) == "accept"
