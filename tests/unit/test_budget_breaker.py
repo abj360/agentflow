@@ -121,3 +121,11 @@ def test_call_blocks_when_open() -> None:
     except CircuitOpenError:
         return
     raise AssertionError("expected CircuitOpenError")
+
+
+def test_breach_total_counts_all_breaches() -> None:
+    """Verifies the lifetime breach counter accumulates."""
+    breaker = BudgetCircuitBreaker(failure_threshold=5)
+    breaker.record_breach()
+    breaker.record_breach()
+    assert breaker._breach_total == 2
