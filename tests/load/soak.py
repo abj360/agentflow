@@ -68,4 +68,4 @@ class SoakUser(HttpUser):
     @task(1)
     def fetch_metrics(self) -> None:
         """Scrapes the metrics endpoint."""
-        self.client.get("/metrics")
+        self.client.get("/metrics", name="/metrics")
