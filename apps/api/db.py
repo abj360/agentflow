@@ -75,7 +75,7 @@ def pool_status() -> dict:
     Returns:
         status: Mapping of pool size, checked-out and overflow counts.
     """
-    pool = get_engine().pool
+    pool = get_engine().pool  # sync_pool exposes the raw counters
     return {
         "size": pool.size(),
         "checked_out": pool.checkedout(),
