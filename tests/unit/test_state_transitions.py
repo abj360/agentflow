@@ -187,3 +187,13 @@ def test_plan_after_planner_contains_task() -> None:
     """Verifies the task text lands in the first plan draft."""
     after = planner_node(make_state(task="very specific task"))
     assert "very specific task" in after["plan"]
+
+
+def test_revise_then_accept_eventually() -> None:
+    """Verifies a state with results accepts after a revise cycle."""
+    from apps.api.orchestration.state_machine import critic_node
+
+    state = critic_node(make_state())
+    state = executor_node({**state, "plan": ["retry"]})
+    state = critic_node(state)
+    assert state["critique"] == "accept"
