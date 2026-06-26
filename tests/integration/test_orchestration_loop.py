@@ -140,3 +140,14 @@ async def test_graph_routes_to_accept_with_results() -> None:
         }
     )
     assert route_after_critic(state) == "accept"
+
+
+async def test_registry_rejects_unknown_role() -> None:
+    """Verifies unknown roles fail fast at resolve time."""
+    from apps.api.orchestration.roles import RoleRegistry
+
+    try:
+        RoleRegistry().resolve("oracle")
+    except KeyError:
+        return
+    raise AssertionError("expected KeyError")
