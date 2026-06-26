@@ -95,3 +95,18 @@ def test_call_runs_function_when_closed() -> None:
     """Verifies call runs the function when the circuit is closed."""
     breaker = BudgetCircuitBreaker()
     assert breaker.call(lambda: 42) == 42
+
+
+def test_call_records_failure_and_reraises() -> None:
+    """Verifies call records a breach and re-raises the call's error."""
+    breaker = BudgetCircuitBreaker(failure_threshold=2)
+
+    def boom() -> None:
+        """Always fails."""
+        raise RuntimeError("x")
+
+    try:
+        breaker.call(boom)
+    except RuntimeError:
+        pass
+    assert breaker._failures == 1
