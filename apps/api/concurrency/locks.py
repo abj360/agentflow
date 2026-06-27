@@ -76,9 +76,7 @@ class DistributedLock:
         Raises:
             TimeoutError: When the lock could not be acquired in time.
         """
-        acquired = await self.acquire()
-        if not acquired:
-            raise TimeoutError(f"could not acquire lock {self.key}")
+        await self.acquire_or_raise()
         return self
 
     async def __aexit__(self, *exc_info: object) -> None:
