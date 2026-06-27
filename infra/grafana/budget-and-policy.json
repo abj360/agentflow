@@ -3,6 +3,7 @@
   "uid": "agentflow-budget",
   "tags": ["agentflow", "budget", "policy"],
   "schemaVersion": 39,
+  "refresh": "30s",
   "panels": [
     {
       "id": 1,
