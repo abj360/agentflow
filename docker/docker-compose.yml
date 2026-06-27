@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16
+    image: postgres:16-alpine
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U agentflow"]
       interval: 5s
