@@ -5,6 +5,7 @@
 - Last reviewed: 2026-06-19
 - Deciders: Peter, Kenny
 - Reviewers: Angel, Yannick
+- Related: governance review batch 2026-06-27
 
 ## Context
 
