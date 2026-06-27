@@ -179,3 +179,15 @@ def test_lock_key_builds_namespaced_key() -> None:
     from apps.api.concurrency.locks import lock_key
 
     assert lock_key("audit", "trace-1") == "agentflow:lock:audit:trace-1"
+
+
+async def test_acquire_or_raise_times_out() -> None:
+    """Verifies acquire_or_raise raises when the lock stays held."""
+    redis = FakeRedis()
+    holder = DistributedLock(redis, "k1")
+    await holder.acquire()
+    try:
+        await DistributedLock(redis, "k1").acquire_or_raise(timeout=0.2)
+    except TimeoutError:
+        return
+    raise AssertionError("expected TimeoutError")
