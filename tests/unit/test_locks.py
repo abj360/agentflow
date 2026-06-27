@@ -191,3 +191,11 @@ async def test_acquire_or_raise_times_out() -> None:
     except TimeoutError:
         return
     raise AssertionError("expected TimeoutError")
+
+
+async def test_is_held_false_after_release() -> None:
+    """Verifies is_held clears after release."""
+    lock = DistributedLock(FakeRedis(), "k1")
+    await lock.acquire()
+    await lock.release()
+    assert lock.is_held is False
