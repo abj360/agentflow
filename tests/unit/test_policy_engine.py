@@ -357,3 +357,9 @@ def test_tenant_decision_names_override_rule() -> None:
     engine = PolicyEngine(str(SCHEMA_PATH))
     decision = engine.evaluate("db.read", {}, tenant_id="acme")
     assert decision.rule == "db.*"
+
+
+def test_review_search_does_not_match_shell() -> None:
+    """Verifies search.* never matches shell tools."""
+    engine = make_engine()
+    assert engine.evaluate("shell.search", {}).action != "allow"
