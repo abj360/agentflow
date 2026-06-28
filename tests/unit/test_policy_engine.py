@@ -363,3 +363,12 @@ def test_review_search_does_not_match_shell() -> None:
     """Verifies search.* never matches shell tools."""
     engine = make_engine()
     assert engine.evaluate("shell.search", {}).action != "allow"
+
+
+def test_is_allowed_helper() -> None:
+    """Verifies the is_allowed convenience check."""
+    from apps.api.policy.engine import is_allowed
+
+    engine = build_engine()
+    assert is_allowed(engine.evaluate("search.query", {})) is True
+    assert is_allowed(engine.evaluate("nope", {})) is False
