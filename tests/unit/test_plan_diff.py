@@ -57,3 +57,11 @@ def test_similarity_empty_plans() -> None:
     from apps.api.orchestration.plan_diff import similarity
 
     assert similarity([], []) == 1.0
+
+
+def test_to_audit_payload_uses_lists() -> None:
+    """Verifies the audit payload carries JSON-friendly lists."""
+    from apps.api.orchestration.plan_diff import diff_plans, to_audit_payload
+
+    payload = to_audit_payload(diff_plans(["a"], ["a", "b"]))
+    assert payload["added"] == ["b"]
