@@ -106,3 +106,15 @@ def to_audit_payload(diff: PlanDiff) -> dict:
         "removed": list(diff.removed),
         "kept": list(diff.kept),
     }
+
+
+def has_changes(diff: PlanDiff) -> bool:
+    """Reports whether a plan diff contains any change.
+
+    Args:
+        diff: The plan diff to inspect.
+
+    Returns:
+        changed: True when steps were added or removed.
+    """
+    return bool(diff.added or diff.removed)
