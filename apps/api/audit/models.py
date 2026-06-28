@@ -9,6 +9,7 @@ Contains:
     AuditSession: one row per orchestration run, grouping its events
     ApprovalRequest: human-in-the-loop approval linked to a tool call
     event_summary(): builds a one-line summary of an audit event
+    new_trace_id(): generates a unique trace identifier for a new run
     ArchiveEvent: cold-storage marker for events moved out of the hot table
 """
 
@@ -157,3 +158,12 @@ class ArchiveEvent(Base):
         DateTime(timezone=True), server_default=func.now()
     )
     storage_uri: Mapped[str] = mapped_column(String(256), nullable=False)
+
+
+def new_trace_id() -> str:
+    """Generates a unique trace identifier for a new orchestration run.
+
+    Returns:
+        trace_id: Hex-encoded random identifier used across the audit chain.
+    """
+    return uuid.uuid4().hex
