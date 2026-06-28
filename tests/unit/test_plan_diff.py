@@ -71,3 +71,9 @@ def test_diff_keeps_shared_steps() -> None:
     """Verifies steps present in both plans land in kept."""
     diff = diff_plans(["a", "b"], ["b", "c"])
     assert diff.kept == ("b",)
+
+
+def test_diff_empty_old_plan() -> None:
+    """Verifies diffing against an empty plan marks everything added."""
+    diff = diff_plans([], ["x"])
+    assert diff.added == ("x",) and diff.removed == ()
