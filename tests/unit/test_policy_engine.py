@@ -372,3 +372,10 @@ def test_is_allowed_helper() -> None:
     engine = build_engine()
     assert is_allowed(engine.evaluate("search.query", {})) is True
     assert is_allowed(engine.evaluate("nope", {})) is False
+
+
+def test_describe_deny_label() -> None:
+    """Verifies the deny label reads correctly."""
+    from apps.api.policy.engine import describe_action
+
+    assert describe_action("deny") == "denied by policy"
