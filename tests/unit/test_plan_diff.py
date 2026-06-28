@@ -65,3 +65,9 @@ def test_to_audit_payload_uses_lists() -> None:
 
     payload = to_audit_payload(diff_plans(["a"], ["a", "b"]))
     assert payload["added"] == ["b"]
+
+
+def test_diff_keeps_shared_steps() -> None:
+    """Verifies steps present in both plans land in kept."""
+    diff = diff_plans(["a", "b"], ["b", "c"])
+    assert diff.kept == ("b",)
