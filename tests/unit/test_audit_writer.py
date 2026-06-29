@@ -222,3 +222,10 @@ async def test_linker_assigns_distinct_hashes_per_event() -> None:
     first = await writer.enqueue("trace-1", EventKind.TOOL_CALL, {})
     second = await writer.enqueue("trace-1", EventKind.TOOL_CALL, {})
     assert first.event_hash != second.event_hash
+
+
+async def test_first_event_chains_from_genesis() -> None:
+    """Verifies the first event of a trace chains from the genesis sentinel."""
+    writer = AuditWriter(FakeSessionFactory())
+    event = await writer.enqueue("trace-new", EventKind.PLAN_CREATED, {})
+    assert event.prev_hash == "0" * 64
