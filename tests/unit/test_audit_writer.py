@@ -214,3 +214,11 @@ async def test_writer_survives_mixed_event_kinds() -> None:
         await writer.enqueue("trace-1", kind, {})
     await writer.flush()
     assert len(factory.session.added) == len(list(EventKind))
+
+
+async def test_linker_assigns_distinct_hashes_per_event() -> None:
+    """Verifies chained events receive distinct hashes from the linker."""
+    writer = AuditWriter(FakeSessionFactory(), batch_size=16)
+    first = await writer.enqueue("trace-1", EventKind.TOOL_CALL, {})
+    second = await writer.enqueue("trace-1", EventKind.TOOL_CALL, {})
+    assert first.event_hash != second.event_hash
