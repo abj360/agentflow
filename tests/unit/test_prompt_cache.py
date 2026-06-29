@@ -113,3 +113,8 @@ def test_counters_start_at_zero() -> None:
     """Verifies a fresh cache has no recorded lookups."""
     cache = PromptCache()
     assert cache.hits == 0 and cache.misses == 0
+
+
+def test_hit_rate_zero_without_lookups() -> None:
+    """Verifies the hit rate is 0.0 before any lookups."""
+    assert PromptCache().hit_rate() == 0.0
