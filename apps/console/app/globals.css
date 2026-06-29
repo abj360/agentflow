@@ -263,3 +263,11 @@ code {
   border-color: var(--muted);
   box-shadow: 0 2px 4px rgb(0 0 0 / 0.08);
 }
+
+
+@media (prefers-color-scheme: dark) {
+  .status-pending {
+    background: #451a03;
+    color: #fbbf24;
+  }
+}
