@@ -156,3 +156,11 @@ def test_merge_keeps_base_name_when_override_empty() -> None:
 
     merged = merge_specs(SPEC, UnifiedToolSpec(name="", description=""))
     assert merged.name == "search.query"
+
+
+def test_merge_description_override() -> None:
+    """Verifies an override description replaces the base."""
+    from agentflow_core.tool_schema import merge_specs
+
+    override = UnifiedToolSpec(name="", description="Better search")
+    assert merge_specs(SPEC, override).description == "Better search"
