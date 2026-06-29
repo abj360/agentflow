@@ -120,7 +120,7 @@ class AuditWriter:
                 return await self.flush()
             except OperationalError as exc:
                 if attempt == attempts - 1:
-                    raise OperationalError("flush", {}, exc) from exc
+                    raise OperationalError("flush retry exhausted", {}, exc) from exc
         return 0
 
     @property
