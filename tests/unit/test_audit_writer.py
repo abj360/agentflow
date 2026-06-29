@@ -229,3 +229,11 @@ async def test_first_event_chains_from_genesis() -> None:
     writer = AuditWriter(FakeSessionFactory())
     event = await writer.enqueue("trace-new", EventKind.PLAN_CREATED, {})
     assert event.prev_hash == "0" * 64
+
+
+async def test_second_event_chains_from_first() -> None:
+    """Verifies the second event's prev_hash equals the first event's hash."""
+    writer = AuditWriter(FakeSessionFactory(), batch_size=16)
+    first = await writer.enqueue("trace-1", EventKind.TOOL_CALL, {})
+    second = await writer.enqueue("trace-1", EventKind.TOOL_RESULT, {})
+    assert second.prev_hash == first.event_hash
