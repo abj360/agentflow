@@ -121,3 +121,16 @@ def test_registry_find_tool_missing_returns_none() -> None:
     from apps.api.mcp_servers.registry import MCPServerRegistry
 
     assert MCPServerRegistry().find_tool("nope") is None
+
+
+def test_merge_adds_new_parameter() -> None:
+    """Verifies merging adds override-only parameters."""
+    from agentflow_core.tool_schema import merge_specs
+
+    override = UnifiedToolSpec(
+        name="search.query",
+        description="",
+        parameters=(ToolParameter(name="lang", type="string"),),
+    )
+    merged = merge_specs(SPEC, override)
+    assert "lang" in {p.name for p in merged.parameters}
