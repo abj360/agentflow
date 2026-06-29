@@ -76,7 +76,7 @@ def set_span_attribute(key: str, value: object) -> None:
     """
     span = trace.get_current_span()
     if span.is_recording():
-        span.set_attribute(key, value)
+        span.set_attribute(str(key), value)
 
 
 @contextmanager
