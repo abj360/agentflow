@@ -63,6 +63,8 @@ class AuditWriter:
         """
         if self._draining:
             raise RuntimeError("writer is draining; enqueue rejected")
+        if len(self._pending) >= self.max_buffer:
+            await self.flush_with_retry()
         prev_hash, event_hash = self._linker.link(trace_id, kind, payload)
         event = AuditEvent(
             trace_id=trace_id,
