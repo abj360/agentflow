@@ -71,3 +71,10 @@ def test_current_trace_id_empty_when_no_span() -> None:
     from apps.api.observability.tracing import current_trace_id
 
     assert current_trace_id() in ("", current_trace_id())
+
+
+def test_record_exception_no_active_span() -> None:
+    """Verifies recording an exception without a span does not raise."""
+    from apps.api.observability.tracing import record_exception
+
+    record_exception(RuntimeError("test"))
