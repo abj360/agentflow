@@ -75,6 +75,7 @@ class PromptCache:
                 self.entries, key=lambda entry_key: self.entries[entry_key][1]
             )
             del self.entries[oldest]
+            self.evictions += 1
         self.entries[key] = (completion, time.time())
 
 
