@@ -97,3 +97,15 @@ class PromptCache:
             del self.entries[key]
             return None
         return value
+
+
+    def hit_rate(self) -> float:
+        """Computes the cache hit rate since startup.
+
+        Returns:
+            rate: Hits over total lookups, 0.0 when no lookups happened yet.
+        """
+        total = self.hits + self.misses
+        if total == 0:
+            return 0.0
+        return self.hits / total
