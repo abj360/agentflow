@@ -114,3 +114,23 @@ def validate_unified_spec(spec: UnifiedToolSpec) -> list[str]:
         if not param.name:
             problems.append(f"{spec.name}: unnamed parameter")
     return problems
+
+
+def merge_specs(base: UnifiedToolSpec, override: UnifiedToolSpec) -> UnifiedToolSpec:
+    """Merges an override spec onto a base spec for tenant customizations.
+
+    Args:
+        base: The base tool description.
+        override: Fields and parameters that override the base.
+
+    Returns:
+        merged: The merged unified tool description.
+    """
+    parameters = {param.name: param for param in base.parameters}
+    for param in override.parameters:
+        parameters[param.name] = param
+    return UnifiedToolSpec(
+        name=override.name or base.name,
+        description=override.description or base.description,
+        parameters=tuple(parameters.values()),
+    )
