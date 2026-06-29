@@ -5,6 +5,11 @@ tracing.py --- OpenTelemetry tracing instrumentation for the API
 Contains:
     setup_tracing(): configures the OTLP tracer provider and FastAPI instrumentation
     get_tracer(): returns the module-level tracer for manual spans
+    current_trace_id(): returns the active span's trace id as hex
+    set_span_attribute(): sets an attribute on the current span
+    traced_section(): wraps a block in a manual span
+    instrument_redis(): instruments an async Redis client
+    shutdown_tracing(): flushes and shuts down the tracer provider
 """
 
 from contextlib import contextmanager
