@@ -118,3 +118,12 @@ def test_counters_start_at_zero() -> None:
 def test_hit_rate_zero_without_lookups() -> None:
     """Verifies the hit rate is 0.0 before any lookups."""
     assert PromptCache().hit_rate() == 0.0
+
+
+def test_hit_rate_computes_ratio() -> None:
+    """Verifies the hit rate reflects actual lookups."""
+    cache = PromptCache()
+    cache.put("k", "v")
+    cache.get("k")
+    cache.get("nope")
+    assert cache.hit_rate() == 0.5
