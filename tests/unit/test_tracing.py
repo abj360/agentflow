@@ -84,3 +84,12 @@ def test_get_tracer_scope_name() -> None:
     """Verifies the tracer accepts a custom scope name."""
     tracer = get_tracer("agentflow.test")
     assert tracer is not None
+
+
+def test_traced_section_nested() -> None:
+    """Verifies traced sections nest without error."""
+    from apps.api.observability.tracing import traced_section
+
+    with traced_section("outer"):
+        with traced_section("inner") as inner:
+            assert inner is not None
