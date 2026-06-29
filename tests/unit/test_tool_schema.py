@@ -134,3 +134,17 @@ def test_merge_adds_new_parameter() -> None:
     )
     merged = merge_specs(SPEC, override)
     assert "lang" in {p.name for p in merged.parameters}
+
+
+def test_merge_override_wins_on_conflict() -> None:
+    """Verifies the override parameter wins on a name conflict."""
+    from agentflow_core.tool_schema import merge_specs
+
+    override = UnifiedToolSpec(
+        name="",
+        description="",
+        parameters=(ToolParameter(name="q", type="text"),),
+    )
+    merged = merge_specs(SPEC, override)
+    by_name = {p.name: p for p in merged.parameters}
+    assert by_name["q"].type == "text"
