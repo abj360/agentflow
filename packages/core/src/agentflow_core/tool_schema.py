@@ -126,7 +126,9 @@ def merge_specs(base: UnifiedToolSpec, override: UnifiedToolSpec) -> UnifiedTool
     Returns:
         merged: The merged unified tool description.
     """
-    parameters = {param.name: param for param in base.parameters}
+    parameters: dict[str, ToolParameter] = {
+        param.name: param for param in base.parameters
+    }
     for param in override.parameters:
         parameters[param.name] = param
     return UnifiedToolSpec(
