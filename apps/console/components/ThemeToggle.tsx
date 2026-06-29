@@ -20,6 +20,7 @@ export function ThemeToggle() {
 
   return (
     <button
+      className="theme-toggle"
       aria-pressed={dark}
       onClick={() => {
         const next = dark ? "light" : "dark";
