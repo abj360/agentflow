@@ -78,3 +78,9 @@ def test_record_exception_no_active_span() -> None:
     from apps.api.observability.tracing import record_exception
 
     record_exception(RuntimeError("test"))
+
+
+def test_get_tracer_scope_name() -> None:
+    """Verifies the tracer accepts a custom scope name."""
+    tracer = get_tracer("agentflow.test")
+    assert tracer is not None
