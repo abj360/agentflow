@@ -148,3 +148,11 @@ def test_merge_override_wins_on_conflict() -> None:
     merged = merge_specs(SPEC, override)
     by_name = {p.name: p for p in merged.parameters}
     assert by_name["q"].type == "text"
+
+
+def test_merge_keeps_base_name_when_override_empty() -> None:
+    """Verifies the base name survives an unnamed override."""
+    from agentflow_core.tool_schema import merge_specs
+
+    merged = merge_specs(SPEC, UnifiedToolSpec(name="", description=""))
+    assert merged.name == "search.query"
