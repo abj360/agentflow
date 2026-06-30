@@ -26,7 +26,7 @@ sessions_total = Counter(
 )
 
 
-def metrics_endpoint(request) -> Response:
+def metrics_endpoint(_request) -> Response:
     """Serves the /metrics scrape endpoint.
 
     Args:
