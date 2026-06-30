@@ -74,4 +74,4 @@ There is exactly one sentinel; it is not a secret.
 
 `audit_events` is append-only and grows without bound unless we act. Retention
 is tracked as a follow-up: partition by month, archive cold traces to object
-storage, and keep the hot table small (see issue #88).
+storage, and keep the hot table small. Tracked as issue #88.
