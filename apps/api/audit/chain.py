@@ -10,6 +10,7 @@ Contains:
 """
 
 import hashlib
+import hmac
 import json
 
 GENESIS_HASH = "0" * 64
@@ -74,7 +75,7 @@ def verify_chain(events: list) -> bool:
     """
     prev_hash = GENESIS_HASH
     for event in events:
-        if event.prev_hash != prev_hash:
+        if not hmac.compare_digest(str(event.prev_hash), prev_hash):
             return False
         recomputed = compute_event_hash(
             event.trace_id, str(event.kind), event.payload, prev_hash
