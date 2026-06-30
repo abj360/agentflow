@@ -74,5 +74,5 @@ test("traces page renders the live viewer", async ({ page }) => {
 
 test("run detail shows chain validity", async ({ page }) => {
   await page.goto("/traces/run-e2e-1");
-  await expect(page.getByText(/chain/)).toBeVisible();
+  await expect(page.getByText(/chain valid/i)).toBeVisible();
 });
