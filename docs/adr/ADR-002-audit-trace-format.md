@@ -68,3 +68,10 @@ There is exactly one sentinel; it is not a secret.
    dropped or reordered event at exactly that position.
 4. With the chain verified, re-run orchestration deterministically from the
    recorded tool results, comparing outputs against the recorded synthesis.
+
+
+## Retention and growth
+
+`audit_events` is append-only and grows without bound unless we act. Retention
+is tracked as a follow-up: partition by month, archive cold traces to object
+storage, and keep the hot table small (see issue #88).
