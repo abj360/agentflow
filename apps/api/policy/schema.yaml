@@ -61,6 +61,7 @@ tenant_overrides:
 
 
   initech:
+    # per 2026-06 contract: everything not search.* needs sign-off
     rules:
       - match: "search.*"
         action: allow
