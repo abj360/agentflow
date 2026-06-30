@@ -70,3 +70,9 @@ test("traces page renders the live viewer", async ({ page }) => {
     page.getByRole("heading", { name: "Live traces" })
   ).toBeVisible();
 });
+
+
+test("run detail shows chain validity", async ({ page }) => {
+  await page.goto("/traces/run-e2e-1");
+  await expect(page.getByText(/chain/)).toBeVisible();
+});
