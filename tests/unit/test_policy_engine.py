@@ -379,3 +379,9 @@ def test_describe_deny_label() -> None:
     from apps.api.policy.engine import describe_action
 
     assert describe_action("deny") == "denied by policy"
+
+
+def test_no_tenant_uses_base_table() -> None:
+    """Verifies omitting tenant_id evaluates the base table."""
+    engine = PolicyEngine(str(SCHEMA_PATH))
+    assert engine.evaluate("shell.exec", {}).action == "human_approval"
