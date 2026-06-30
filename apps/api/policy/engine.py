@@ -112,6 +112,7 @@ class PolicyEngine:
             tool_name: Name of the tool being called.
             args: Arguments passed to the tool.
             tenant_id: Optional tenant whose override table applies first.
+            Unknown tenants silently use the base table.
 
         Returns:
             decision: Allow, deny, or human_approval with the matched rule.
