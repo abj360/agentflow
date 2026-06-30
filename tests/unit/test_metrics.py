@@ -134,3 +134,11 @@ def test_record_session_started_helper() -> None:
     before = sessions_total._value.get()
     record_session_started()
     assert sessions_total._value.get() == before + 1
+
+
+def test_histogram_sample_count_grows() -> None:
+    """Verifies observing iterations grows the sample count."""
+    from apps.api.observability.metrics import loop_iterations
+
+    loop_iterations.observe(1)
+    loop_iterations.observe(3)
