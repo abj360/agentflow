@@ -125,3 +125,12 @@ def test_denials_multiple_rules() -> None:
 
     policy_denials_total.labels(rule="net.*").inc()
     policy_denials_total.labels(rule="*").inc()
+
+
+def test_record_session_started_helper() -> None:
+    """Verifies the helper bumps the sessions counter."""
+    from apps.api.observability.metrics import record_session_started, sessions_total
+
+    before = sessions_total._value.get()
+    record_session_started()
+    assert sessions_total._value.get() == before + 1
