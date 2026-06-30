@@ -80,3 +80,8 @@ policy_denials_total = Counter(
     labelnames=["rule"],
     registry=registry,
 )
+
+
+def record_session_started() -> None:
+    """Bumps the sessions-started counter."""
+    sessions_total.inc()
