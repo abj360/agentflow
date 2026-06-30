@@ -70,6 +70,12 @@ There is exactly one sentinel; it is not a secret.
    recorded tool results, comparing outputs against the recorded synthesis.
 
 
+## Consequences
+
+- Writers must compute hashes before insert (`chain.py` ChainLinker).
+- Readers get free integrity verification on every trace fetch.
+- Backfills that touch `payload` must re-chain the affected suffix.
+
 ## Retention and growth
 
 `audit_events` is append-only and grows without bound unless we act.
