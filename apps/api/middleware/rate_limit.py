@@ -42,6 +42,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.max_requests = max_requests
         self.window_seconds = window_seconds
         self._counters: dict[str, tuple[float, int]] = defaultdict(lambda: (0.0, 0))
+        self._now = time.monotonic
 
     async def dispatch(self, request: Request, call_next) -> Response:
         """Rejects requests that exceed the per-client window allowance.
@@ -57,7 +58,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
         client = request.client.host if request.client else "unknown"
         window_start, count = self._counters[client]
-        now = time.monotonic()
+        now = self._now()
         if now - window_start > self.window_seconds:
             window_start, count = now, 0
         count += 1
