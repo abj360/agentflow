@@ -5,6 +5,8 @@ state_machine.py --- LangGraph planner/executor/critic state machine
 Contains:
     GraphState: typed state flowing through the orchestration graph
     build_graph(): assembles the planner/executor/critic LangGraph
+    route_after_critic(): routes the graph on the critic's verdict
+    validate_graph(): checks the assembled graph for wiring mistakes
 """
 
 from typing import TypedDict
