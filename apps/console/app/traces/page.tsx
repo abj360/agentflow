@@ -20,8 +20,7 @@ export default function TracesPage() {
       <label>
         Run id
         <input
-          aria-label="Run id to stream"
-          placeholder="run id"
+          aria-label="Run id"
           value={runId}
           onChange={(e) => setRunId(e.target.value)}
         />
