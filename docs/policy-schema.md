@@ -1,5 +1,7 @@
 # Policy schema reference
 
+Last updated: 2026-06-21.
+
 Tool governance policies (the "policy schema") live in `apps/api/policy/schema.yaml` and are
 evaluated before every governed tool call (see `apps/api/policy/engine.py`).
 
