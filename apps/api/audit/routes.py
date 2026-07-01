@@ -5,6 +5,8 @@ routes.py --- read API for the hash-chained audit log
 Contains:
     router: APIRouter exposing the audit endpoints
     get_trace_events(): returns the ordered event chain for one trace
+    list_trace_sessions(): lists recent orchestration sessions
+    verify_trace_chain(): recomputes the hash chain and reports integrity
 """
 
 from datetime import datetime
