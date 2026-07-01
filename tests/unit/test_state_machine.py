@@ -111,3 +111,10 @@ def test_executor_marks_results_with_done_prefix() -> None:
 
     results = executor_node(make_state(plan=["step"]))["results"]
     assert results == ["done: step"]
+
+
+def test_critic_accepts_when_results_present() -> None:
+    """Verifies the critic accepts once results exist."""
+    from apps.api.orchestration.state_machine import critic_node
+
+    assert critic_node(make_state(results=["r"]))["critique"] == "accept"
