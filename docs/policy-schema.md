@@ -60,3 +60,21 @@ All policy edits go through the weekly governance batch.
 2. Run the policy unit tests: `pytest tests/unit/test_policy_engine.py`.
 3. Get a governance review (Peter) before merge — required, not optional.
 4. Confirm the merged rules appear in the next deploy's audit events.
+
+
+## Examples
+
+Allow read-only search, gate shell, deny everything else:
+
+```yaml
+rules:
+  - match: "search.*"
+    action: allow
+    risk: low
+  - match: "shell.*"
+    action: human_approval
+    risk: high
+  - match: "*"
+    action: deny
+    risk: unknown
+```
