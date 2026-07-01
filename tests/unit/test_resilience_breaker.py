@@ -167,3 +167,12 @@ def test_breaker_failure_threshold_configurable() -> None:
     breaker = ServerCircuitBreaker("srv", failure_threshold=1)
     breaker.record_failure()
     assert breaker.allows_call() is False
+
+
+def test_registry_breakers_isolated_state() -> None:
+    """Verifies one server's trip doesn't affect another's breaker."""
+    from apps.api.resilience.breaker import BreakerRegistry
+
+    registry = BreakerRegistry(failure_threshold=1)
+    registry.for_server("bad").record_failure()
+    assert registry.for_server("good").allows_call() is True
