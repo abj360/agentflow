@@ -66,6 +66,8 @@ All policy edits go through the weekly governance batch.
 
 ## Examples
 
+More examples live in the tests: `tests/unit/test_policy_engine.py`.
+
 Allow read-only search, gate shell, deny everything else:
 
 ```yaml
