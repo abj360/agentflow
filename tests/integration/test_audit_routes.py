@@ -268,3 +268,9 @@ def test_trace_events_payload_passthrough() -> None:
     client = make_client(make_events("trace-8", 1))
     body = client.get("/audit/trace-8").json()
     assert body["events"][0]["payload"] == {"idx": 0}
+
+
+def test_verify_endpoint_single_event_chain() -> None:
+    """Verifies a single-event chain verifies cleanly."""
+    client = make_client(make_events("trace-9", 1))
+    assert client.get("/audit/trace-9/verify").json()["chain_valid"] is True
