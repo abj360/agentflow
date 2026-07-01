@@ -7,6 +7,7 @@ Contains:
     Bulkhead: caps concurrent calls to one downstream server
     BreakerRegistry: keeps one circuit breaker per downstream server
     CircuitOpenError: raised when calling through an open breaker
+    BulkheadFullError: raised when no bulkhead slot frees in time
 """
 
 import asyncio
