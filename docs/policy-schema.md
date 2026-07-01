@@ -80,3 +80,5 @@ rules:
     action: deny
     risk: unknown
 ```
+
+Never ship a schema without the catch-all.
