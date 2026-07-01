@@ -41,7 +41,8 @@ def planner_node(state: GraphState) -> GraphState:
     Returns:
         update: State update carrying the first plan draft.
     """
-    return {**state, "plan": [state["task"]]}
+    task = state["task"]
+    return {**state, "plan": [task]}
 
 
 def executor_node(state: GraphState) -> GraphState:
