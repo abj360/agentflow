@@ -144,7 +144,7 @@ async def verify_trace_chain(
         session: Async database session injected by FastAPI.
 
     Returns:
-        verification: Chain validity plus the checked event count.
+        verification: Chain validity plus the number of events checked.
     """
     result = await session.execute(
         select(AuditEvent)
