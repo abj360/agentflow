@@ -261,3 +261,10 @@ def test_404_detail_mentions_trace_id() -> None:
     client = make_client([])
     body = client.get("/audit/ghost").json()
     assert "ghost" in body["detail"]
+
+
+def test_trace_events_payload_passthrough() -> None:
+    """Verifies event payloads reach the response unmodified."""
+    client = make_client(make_events("trace-8", 1))
+    body = client.get("/audit/trace-8").json()
+    assert body["events"][0]["payload"] == {"idx": 0}
