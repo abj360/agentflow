@@ -44,3 +44,14 @@ export function TraceViewer({ runId }: { runId: string }) {
 export function TraceEmptyState() {
   return <p className="trace-empty">Waiting for trace events…</p>;
 }
+
+
+/**
+ * Renders the running event count badge.
+ *
+ * @param props.count - Number of events received so far.
+ * @returns The count badge element.
+ */
+export function TraceEventCount({ count }: { count: number }) {
+  return <span className="trace-count">{count} events</span>;
+}
