@@ -121,3 +121,9 @@ async def test_multiple_runs_have_separate_connection_sets() -> None:
     await hub.register("run-a", socket_a)
     await hub.register("run-b", socket_b)
     assert set(hub.connections) == {"run-a", "run-b"}
+
+
+async def test_hub_starts_with_no_connections() -> None:
+    """Verifies a fresh hub has no viewers."""
+    hub = TraceHub()
+    assert hub.connections == {}
