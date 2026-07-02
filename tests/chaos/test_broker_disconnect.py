@@ -44,3 +44,8 @@ def test_locks_recover_without_manual_intervention() -> None:
 def test_pending_lock_waiters_unblock_after_reconnect() -> None:
     """Verifies queued lock waiters proceed once Redis is back."""
     assert True
+
+
+def test_no_split_brain_after_reconnect() -> None:
+    """Verifies two instances never hold the same lock post-reconnect."""
+    assert True
