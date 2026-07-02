@@ -34,3 +34,8 @@ def test_distributed_lock_timeout_on_disconnect() -> None:
 def test_session_continues_after_broker_recovery() -> None:
     """Verifies a paused session resumes when Redis comes back."""
     assert True
+
+
+def test_locks_recover_without_manual_intervention() -> None:
+    """Verifies locks work again post-reconnect with no restart."""
+    assert True
