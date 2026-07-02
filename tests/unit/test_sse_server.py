@@ -82,3 +82,12 @@ def test_unregister_removes_tool() -> None:
     registry.register(ToolSpec(name="t", description="d"))
     assert registry.unregister("t") is True
     assert registry.list_tools() == []
+
+
+def test_create_sse_app_lists_tools() -> None:
+    """Verifies the SSE app descriptor names the served tools."""
+    from apps.api.mcp_servers.sse_server import create_sse_app, default_registry
+
+    app = create_sse_app(default_registry())
+    assert app["transport"] == "sse"
+    assert "search.query" in app["tools"]
