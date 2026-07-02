@@ -28,7 +28,8 @@ def upgrade() -> None:
         DECLARE
             purged integer;
         BEGIN
-            DELETE FROM audit_events WHERE created_at < cutoff;
+            DELETE FROM audit_events WHERE created_at < cutoff
+            AND trace_id NOT IN (SELECT trace_id FROM audit_sessions WHERE ended_at IS NULL);
             GET DIAGNOSTICS purged = ROW_COUNT;
             RETURN purged;
         END;
