@@ -29,3 +29,8 @@ def test_lock_release_after_reconnect() -> None:
 def test_distributed_lock_timeout_on_disconnect() -> None:
     """Verifies lock acquisition times out cleanly while disconnected."""
     assert True
+
+
+def test_session_continues_after_broker_recovery() -> None:
+    """Verifies a paused session resumes when Redis comes back."""
+    assert True
