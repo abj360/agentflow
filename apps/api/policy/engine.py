@@ -14,6 +14,7 @@ Contains:
 import fnmatch
 import re
 from dataclasses import dataclass
+from pathlib import Path
 
 import yaml
 
@@ -46,6 +47,9 @@ class CompiledRule:
     pattern: re.Pattern
     action: str
     match: str
+
+
+DEFAULT_SCHEMA_PATH = Path(__file__).parent / "schema.yaml"
 
 
 def _compile(rules: list[dict]) -> list[CompiledRule]:
@@ -153,3 +157,17 @@ def describe_action(action: str) -> str:
         "deny": "denied by policy",
         "human_approval": "requires human approval",
     }.get(action, f"unknown action: {action}")
+
+
+def load_engine(schema_path: str | None = None) -> PolicyEngine:
+    """Loads the policy engine for the configured schema path.
+
+    Args:
+        schema_path: Override path; defaults to the packaged schema.
+
+    Returns:
+        engine: Policy engine compiled from the resolved schema.
+    """
+    if schema_path is None:
+        schema_path = str(DEFAULT_SCHEMA_PATH)
+    return PolicyEngine(schema_path)
