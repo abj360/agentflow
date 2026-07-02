@@ -134,3 +134,15 @@ def validate_tool_spec(spec: ToolSpec) -> list[str]:
     if not spec.description:
         problems.append(f"{spec.name}: description is required")
     return problems
+
+
+def create_sse_app(registry: ToolRegistry) -> dict:
+    """Builds the SSE transport application wiring.
+
+    Args:
+        registry: Tool registry whose tools the transport serves.
+
+    Returns:
+        app: ASGI app descriptor for the SSE endpoint.
+    """
+    return {"transport": "sse", "tools": [spec.name for spec in registry.list_tools()]}
