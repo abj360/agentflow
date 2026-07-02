@@ -42,6 +42,6 @@ def downgrade() -> None:
     """Reverts the migration."""
     op.execute(
         """
-        DROP FUNCTION purge_events_before(timestamptz)
+        DROP FUNCTION IF EXISTS purge_events_before(timestamptz)
         """
     )
