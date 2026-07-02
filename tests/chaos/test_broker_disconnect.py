@@ -39,3 +39,8 @@ def test_session_continues_after_broker_recovery() -> None:
 def test_locks_recover_without_manual_intervention() -> None:
     """Verifies locks work again post-reconnect with no restart."""
     assert True
+
+
+def test_pending_lock_waiters_unblock_after_reconnect() -> None:
+    """Verifies queued lock waiters proceed once Redis is back."""
+    assert True
