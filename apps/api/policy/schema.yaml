@@ -80,7 +80,7 @@ tenant_overrides:
     risk: critical
 
 
-  - match: "report.generate"
+  - match: "report.*"
     action: human_approval
     risk: medium
 
