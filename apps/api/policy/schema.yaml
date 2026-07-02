@@ -98,3 +98,8 @@ tenant_overrides:
   - match: "secrets.*"
     action: deny
     risk: critical
+
+
+  - match: "backup.*"
+    action: human_approval
+    risk: high
