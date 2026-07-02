@@ -29,7 +29,7 @@ export function ApprovalCard({
       <header>
         <strong title={approval.tool_name}>{approval.tool_name}</strong>
         <span className="approval-trace">
-          trace {approval.trace_id.slice(0, 8)}…
+          trace {approval.trace_id.slice(0, 8)}
         </span>
       </header>
       <footer>
