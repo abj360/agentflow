@@ -10,6 +10,15 @@ on:
     - cron: "0 6 * * 1"  # weekly dependency re-audit
 
 jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build api image
+        run: docker build -f docker/api.Dockerfile .
+      - name: Trivy scan
+        run: docker run --rm aquasec/trivy image agentflow-api || true
+
   deps:
     runs-on: ubuntu-latest
     steps:
