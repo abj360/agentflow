@@ -45,7 +45,7 @@ body {
 
 .topbar nav {
   display: flex;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .topbar a {
