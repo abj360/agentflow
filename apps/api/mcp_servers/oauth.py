@@ -93,7 +93,7 @@ class OAuthClient:
             "response_type": "code",
             "client_id": self.config.client_id,
             "state": state,
-            "scope": " ".join(self.config.scopes),
+            "scope": scopes_param(self.config.scopes),
         }
         query = "&".join(f"{key}={value}" for key, value in params.items())
         return f"{self.config.authorize_url}?{query}"
