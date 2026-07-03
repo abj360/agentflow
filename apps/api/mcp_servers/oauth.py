@@ -225,3 +225,15 @@ class OAuthError(Exception):
         super().__init__(f"{error}: {description}" if description else error)
         self.error = error
         self.description = description
+
+
+def scopes_param(scopes: tuple[str, ...]) -> str:
+    """Renders OAuth scopes as a space-separated parameter value.
+
+    Args:
+        scopes: The scopes to render.
+
+    Returns:
+        param: Space-separated scope string for OAuth parameters.
+    """
+    return " ".join(sorted(scopes))
