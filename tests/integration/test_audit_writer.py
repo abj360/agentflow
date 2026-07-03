@@ -208,3 +208,10 @@ async def test_enqueue_after_drain_raises_against_db(session_factory) -> None:
     await writer.drain()
     with pytest.raises(RuntimeError):
         await writer.enqueue("it-trace-7", EventKind.SYNTHESIS, {})
+
+
+async def test_session_factory_fixture_yields_working_session(session_factory) -> None:
+    """Verifies the shared fixture produces a usable session."""
+    async with session_factory() as session:
+        result = await session.execute(select(AuditEvent))
+        assert list(result.scalars()) is not None
