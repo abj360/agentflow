@@ -234,3 +234,10 @@ def test_scopes_param_sorted() -> None:
     from apps.api.mcp_servers.oauth import scopes_param
 
     assert scopes_param(("b", "a")) == "a b"
+
+
+def test_scopes_param_empty() -> None:
+    """Verifies an empty scope tuple renders as an empty string."""
+    from apps.api.mcp_servers.oauth import scopes_param
+
+    assert scopes_param(()) == ""
