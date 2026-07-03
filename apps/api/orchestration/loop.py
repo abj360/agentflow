@@ -51,11 +51,14 @@ async def run_session(
         graph_state["critique"] = "revision-bounded"  # ends the run
     accepted = graph_state["critique"] == "accept"  # anything else ends bounded
     status = "completed" if accepted else "revision-bounded"
-    return {
+    result = {
         "output": graph_state["results"],
         "iterations": graph_state["iterations"],
         "status": status,
     }
+    if hooks is not None:
+        await hooks.on_complete(session_id, result)
+    return result
 
 
 def session_summary(result: dict) -> str:
