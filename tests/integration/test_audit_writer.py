@@ -200,3 +200,11 @@ async def test_enqueue_returns_event_before_persist(session_factory) -> None:
     writer = AuditWriter(session_factory)
     event = await writer.enqueue("it-trace-h", EventKind.TOOL_CALL, {"k": 1})
     assert event.trace_id == "it-trace-h"
+
+
+async def test_enqueue_after_drain_raises_against_db(session_factory) -> None:
+    """Verifies a drained writer rejects new events even mid-session."""
+    writer = AuditWriter(session_factory)
+    await writer.drain()
+    with pytest.raises(RuntimeError):
+        await writer.enqueue("it-trace-7", EventKind.SYNTHESIS, {})
