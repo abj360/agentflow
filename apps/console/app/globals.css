@@ -90,6 +90,7 @@ section > h1 {
 .trace-event {
   display: flex;
   gap: 0.75rem;
+  align-items: baseline;
   padding: 0.375rem 0.625rem;
   border: 1px solid var(--border);
   border-radius: 0.375rem;
