@@ -15,7 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build api image
-        run: docker build -f docker/api.Dockerfile .
+        run: docker build -t agentflow-api -f docker/api.Dockerfile .
+      - name: Build console image
+        run: docker build -t agentflow-console -f docker/console.Dockerfile .
       - name: Trivy scan
         run: docker run --rm aquasec/trivy image agentflow-api || true
 
