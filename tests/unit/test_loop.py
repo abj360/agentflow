@@ -106,3 +106,11 @@ async def test_revision_bound_constant_documented() -> None:
     from apps.api.orchestration.loop import MAX_REVISIONS
 
     assert 1 <= MAX_REVISIONS <= 5
+
+
+async def test_iterations_never_exceed_bound() -> None:
+    """Verifies the revise loop respects the bound constant."""
+    from apps.api.orchestration.loop import MAX_REVISIONS
+
+    result = await run_session("session-9", "loop forever")
+    assert result["iterations"] <= MAX_REVISIONS + 1
