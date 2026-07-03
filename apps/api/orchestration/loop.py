@@ -70,7 +70,8 @@ def session_summary(result: dict) -> str:
     Returns:
         summary: One-line description of the run for logs.
     """
-    return f"finished after {result['iterations']} iterations"
+    count = result['iterations']
+    return f"finished after {count} iterations"
 
 
 class LoopHooks:
