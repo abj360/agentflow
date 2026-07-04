@@ -88,3 +88,17 @@ def test_registry_unknown_role_raises() -> None:
     except KeyError:
         return
     raise AssertionError("expected KeyError")
+
+
+async def test_planner_with_llm_uses_completion_lines() -> None:
+    """Verifies LLM-backed planning splits completions into steps."""
+
+    class FakeLLM:
+        """Returns a fixed multi-line completion."""
+
+        async def complete(self, prompt: str, **kwargs: object) -> str:
+            """Returns two canned plan lines."""
+            return "step one\nstep two"
+
+    update = await Planner(llm=FakeLLM()).run({"task": "t"})
+    assert update["plan"] == ["step one", "step two"]
