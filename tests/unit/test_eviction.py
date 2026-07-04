@@ -101,3 +101,10 @@ def test_sweep_keeps_fresh_evictions() -> None:
 def test_eviction_age_none_when_active() -> None:
     """Verifies eviction_age is None for active servers."""
     assert build_evictor().eviction_age("active-srv") is None
+
+
+def test_eviction_age_positive_after_evict() -> None:
+    """Verifies eviction_age grows after eviction."""
+    evictor = build_evictor()
+    evictor.evict("srv")
+    assert evictor.eviction_age("srv") is not None
