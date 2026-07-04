@@ -112,4 +112,15 @@ def build_default_server() -> StdioServer:
             },
         )
     )
+    server.register(
+        ToolSpec(
+            name="search.query",
+            description="Runs a search query and returns ranked results",
+            input_schema={
+                "type": "object",
+                "properties": {"q": {"type": "string"}},
+                "required": ["q"],
+            },
+        )
+    )
     return server
