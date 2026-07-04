@@ -31,3 +31,9 @@ def test_encode_cursor_produces_iso_string() -> None:
     """Verifies the encoded cursor is an ISO-8601 timestamp string."""
     stamp = datetime(2026, 6, 24, 10, 15, tzinfo=timezone.utc)
     assert encode_cursor(stamp).startswith("2026-06-24T10:15")
+
+
+def test_decode_cursor_returns_datetime() -> None:
+    """Verifies decoding yields a datetime for the WHERE clause comparison."""
+    decoded = decode_cursor("2026-07-04T00:00:00+00:00")
+    assert isinstance(decoded, datetime)
