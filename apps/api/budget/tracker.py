@@ -5,6 +5,9 @@ tracker.py --- token and tool-call budget tracking per session
 Contains:
     BudgetLimits: caps on tokens and tool calls per session
     BudgetTracker: records consumption and flags exhausted budgets
+    BudgetTracker.check(): raises when any budget is exhausted
+    BudgetTracker.usage_ratio(): consumption as fraction of limits
+    BudgetTracker.snapshot(): serializes consumption for audit events
     BudgetExhaustedError: raised when a call would exceed the budget
 """
 
