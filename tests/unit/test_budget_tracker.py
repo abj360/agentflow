@@ -150,3 +150,10 @@ def test_is_near_limit_false_when_low() -> None:
     tracker = BudgetTracker(BudgetLimits(max_tokens=100, max_tool_calls=100))
     tracker.record_tokens(10)
     assert tracker.is_near_limit() is False
+
+
+def test_usage_ratio_tool_calls_component() -> None:
+    """Verifies the tool-call component of the usage ratio."""
+    tracker = BudgetTracker(BudgetLimits(max_tokens=100, max_tool_calls=10))
+    tracker.record_tool_call()
+    assert tracker.usage_ratio()["tool_calls"] == 0.1
