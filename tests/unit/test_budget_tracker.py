@@ -157,3 +157,9 @@ def test_usage_ratio_tool_calls_component() -> None:
     tracker = BudgetTracker(BudgetLimits(max_tokens=100, max_tool_calls=10))
     tracker.record_tool_call()
     assert tracker.usage_ratio()["tool_calls"] == 0.1
+
+
+def test_tracker_limits_stored() -> None:
+    """Verifies the tracker keeps the limits it was built with."""
+    limits = BudgetLimits(max_tokens=5, max_tool_calls=5)
+    assert BudgetTracker(limits).limits is limits
