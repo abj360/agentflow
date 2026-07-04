@@ -52,7 +52,12 @@ class Planner:
         Returns:
             update: State update carrying the plan steps.
         """
-        return {"plan": [state["task"]]}
+        task = state["task"]
+        if self.llm is None:
+            return {"plan": [task]}
+        prompt = f"Plan: {task}"
+        draft = await self.llm.complete(prompt)
+        return {"plan": [line for line in draft.splitlines() if line.strip()]}
 
 
 class Executor:
