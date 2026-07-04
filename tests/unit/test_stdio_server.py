@@ -78,3 +78,10 @@ def test_default_server_fs_read_schema_requires_path() -> None:
 
     spec = build_default_server().tools["fs.read"]
     assert "path" in spec.input_schema["properties"]
+
+
+def test_default_server_has_search_tool() -> None:
+    """Verifies the default server also ships search.query."""
+    from apps.api.mcp_servers.stdio_server import build_default_server
+
+    assert "search.query" in build_default_server().list_tools()
