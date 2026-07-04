@@ -7,6 +7,8 @@ Contains:
     get_trace_events(): returns the ordered event chain for one trace
     list_trace_sessions(): lists recent orchestration sessions
     verify_trace_chain(): recomputes the hash chain and reports integrity
+    encode_cursor(): encodes a cursor token from an ISO timestamp
+    decode_cursor(): decodes a cursor token into an ISO timestamp
 """
 
 from datetime import datetime
