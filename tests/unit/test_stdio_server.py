@@ -85,3 +85,10 @@ def test_default_server_has_search_tool() -> None:
     from apps.api.mcp_servers.stdio_server import build_default_server
 
     assert "search.query" in build_default_server().list_tools()
+
+
+def test_tools_list_shape_is_mcp_schema() -> None:
+    """Verifies the tools/list payload carries MCP schema fields."""
+    response = build_server().handle_request({"method": "tools/list"})
+    tool = response["tools"][0]
+    assert "inputSchema" in tool
