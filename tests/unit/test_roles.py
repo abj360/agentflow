@@ -102,3 +102,17 @@ async def test_planner_with_llm_uses_completion_lines() -> None:
 
     update = await Planner(llm=FakeLLM()).run({"task": "t"})
     assert update["plan"] == ["step one", "step two"]
+
+
+async def test_planner_llm_skips_blank_lines() -> None:
+    """Verifies blank completion lines never become plan steps."""
+
+    class BlankLLM:
+        """Returns a completion with blank lines."""
+
+        async def complete(self, prompt: str, **kwargs: object) -> str:
+            """Returns a gappy completion."""
+            return "one\n\n\ntwo"
+
+    update = await Planner(llm=BlankLLM()).run({"task": "t"})
+    assert update["plan"] == ["one", "two"]
