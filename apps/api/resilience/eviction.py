@@ -8,6 +8,8 @@ Contains:
     ServerEvictor.evict(): evicts a server immediately
     ServerEvictor.reinstate(): reinstates an evicted server
     ServerEvictor.eviction_age(): how long a server has been evicted
+    ServerEvictor.sweep_expired(): reinstates long-evicted servers
+    HealthChecker: probes servers and tracks consecutive failures
 """
 
 import time
