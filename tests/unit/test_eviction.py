@@ -108,3 +108,9 @@ def test_eviction_age_positive_after_evict() -> None:
     evictor = build_evictor()
     evictor.evict("srv")
     assert evictor.eviction_age("srv") is not None
+
+
+def test_checker_window_seconds_stored() -> None:
+    """Verifies the checker keeps its probe window setting."""
+    checker = HealthChecker(failure_threshold=3, window_seconds=30.0)
+    assert checker.window_seconds == 30.0
