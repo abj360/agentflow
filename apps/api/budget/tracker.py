@@ -42,7 +42,7 @@ class BudgetTracker:
         Args:
             limits: The budget caps enforced for the session.
         """
-        self.limits = limits or BudgetLimits()
+        self.limits = limits if limits is not None else BudgetLimits()
         self.tokens_used = 0
         self.tool_calls_made = 0
 
