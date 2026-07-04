@@ -5,6 +5,7 @@ test_pagination.py --- unit tests for cursor pagination helpers
 Contains:
     test_cursor_round_trip(): verifies an encoded cursor decodes to the same instant
     test_decode_cursor_rejects_garbage(): verifies malformed cursors raise a 400
+    test_encode_cursor_produces_iso_string(): verifies cursor encoding format
 """
 
 from datetime import datetime, timezone
