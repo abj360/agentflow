@@ -116,3 +116,23 @@ async def test_planner_llm_skips_blank_lines() -> None:
 
     update = await Planner(llm=BlankLLM()).run({"task": "t"})
     assert update["plan"] == ["one", "two"]
+
+
+async def test_planner_llm_receives_task_prompt() -> None:
+    """Verifies the planner hands the task to the LLM in the prompt."""
+
+    class RecordingLLM:
+        """Captures the prompt it receives."""
+
+        def __init__(self) -> None:
+            """Starts with no recorded prompt."""
+            self.prompt = ""
+
+        async def complete(self, prompt: str, **kwargs: object) -> str:
+            """Records and echoes the prompt."""
+            self.prompt = prompt
+            return "step"
+
+    llm = RecordingLLM()
+    await Planner(llm=llm).run({"task": "audit me"})
+    assert "audit me" in llm.prompt
