@@ -117,7 +117,7 @@ class ServerEvictor:
         return True
 
 
-    def list_evicted(self) -> list[str]:
+    def list_evicted(self) -> list[str]:  # active-pool inverse
         """Lists currently evicted servers.
 
         Returns:
