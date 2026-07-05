@@ -160,3 +160,9 @@ async def test_roles_registry_covers_loop_roles() -> None:
     registry = RoleRegistry()
     for role in ("planner", "executor", "synthesizer", "critic"):
         assert registry.resolve(role) is not None
+
+
+async def test_run_session_returns_plain_dict() -> None:
+    """Verifies the loop result is JSON-serializable."""
+    result = await run_session("it-f6", "serialize me")
+    assert isinstance(result, dict)
