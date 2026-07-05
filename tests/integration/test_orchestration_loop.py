@@ -151,3 +151,12 @@ async def test_registry_rejects_unknown_role() -> None:
     except KeyError:
         return
     raise AssertionError("expected KeyError")
+
+
+async def test_roles_registry_covers_loop_roles() -> None:
+    """Verifies the registry supplies every role the loop needs."""
+    from apps.api.orchestration.roles import RoleRegistry
+
+    registry = RoleRegistry()
+    for role in ("planner", "executor", "synthesizer", "critic"):
+        assert registry.resolve(role) is not None
