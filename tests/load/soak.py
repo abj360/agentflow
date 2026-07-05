@@ -23,7 +23,8 @@ class SoakUser(HttpUser):
     @task(5)
     def fetch_trace(self) -> None:
         """Fetches an audit trace by id."""
-        self.client.get("/audit/trace-soak-7", name="/audit/{trace_id}")
+        trace_id = f"trace-soak-{self.user_variant}"
+        self.client.get(f"/audit/{trace_id}", name="/audit/{trace_id}")
 
     @task(2)
     def verify_trace(self) -> None:
@@ -36,6 +37,8 @@ class SoakUser(HttpUser):
         """Lists recent orchestration sessions."""
         self.client.get("/audit/sessions")
 
+
+    user_variant = 7
 
     def on_start(self) -> None:
         """Runs once per simulated user at startup (warms the connection)."""
