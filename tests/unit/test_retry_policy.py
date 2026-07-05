@@ -170,3 +170,11 @@ def test_other_tenant_gets_default_policy() -> None:
         "acme", RetryPolicy(tool_name="shell.exec", max_attempts=7)
     )
     assert registry.resolve("shell.exec", tenant_id="globex").max_attempts == 2
+
+
+def test_register_overwrites_existing_policy() -> None:
+    """Verifies re-registering a tool replaces its policy."""
+    registry = RetryPolicyRegistry()
+    registry.register(RetryPolicy(tool_name="t", max_attempts=1))
+    registry.register(RetryPolicy(tool_name="t", max_attempts=5))
+    assert registry.resolve("t").max_attempts == 5
