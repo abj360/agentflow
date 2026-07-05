@@ -74,3 +74,12 @@ def test_index_migrations_use_if_not_exists() -> None:
     ]
     for path in index_migrations:
         assert "IF NOT EXISTS" in path.read_text(), path.name
+
+
+def test_brin_index_only_on_append_only_table() -> None:
+    """Verifies the BRIN index targets the append-only events table."""
+    brin = [
+        path for path in migration_files() if "brin" in path.read_text().lower()
+    ]
+    for path in brin:
+        assert "audit_events" in path.read_text(), path.name
