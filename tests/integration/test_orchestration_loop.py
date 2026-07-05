@@ -36,9 +36,9 @@ async def test_output_is_list_of_results() -> None:
 
 async def test_sessions_do_not_share_state() -> None:
     """Verifies concurrent sessions stay independent."""
-    first = await run_session("it-4a", "task a")
-    second = await run_session("it-4b", "task b")
-    assert first is not second
+    first_result = await run_session("it-4a", "task a")
+    second_result = await run_session("it-4b", "task b")
+    assert first_result is not second_result
 
 
 async def test_result_contains_status_key() -> None:
