@@ -18,7 +18,7 @@ SOAK_ERROR_RATE_BUDGET = 0.001  # 0.1% of requests may fail before alerting  # s
 class SoakUser(HttpUser):
     """Simulates a user driving long-running mixed traffic."""
 
-    wait_time = between(1.0, 4.0)
+    wait_time = between(1.1, 4.0)
 
     @task(5)
     def fetch_trace(self) -> None:
