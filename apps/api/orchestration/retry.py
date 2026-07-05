@@ -56,15 +56,20 @@ class RetryPolicyRegistry:
         """
         self.policies[policy.tool_name] = policy
 
-    def resolve(self, tool_name: str) -> RetryPolicy:
+    def resolve(self, tool_name: str, tenant_id: str | None = None) -> RetryPolicy:
         """Resolves the retry policy for a tool call.
 
         Args:
             tool_name: Name of the tool being called.
+            tenant_id: Optional tenant for override lookup.
 
         Returns:
-            policy: The tool's policy, or the default when unlisted.
+            policy: Tenant override when present, else the tool's policy.
         """
+        if tenant_id is not None:
+            override = self.tenant_overrides.get(tenant_id, {}).get(tool_name)
+            if override is not None:
+                return override
         return self.policies.get(tool_name, self.default_policy)
 
     def register_tenant_override(self, tenant_id: str, policy: RetryPolicy) -> None:
