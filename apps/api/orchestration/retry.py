@@ -27,7 +27,7 @@ class RetryPolicy:
     tool_name: str
     max_attempts: int = 3
     backoff_seconds: float = 0.5
-    retryable_errors: tuple[str, ...] = ("timeout", "rate_limited")
+    retryable_errors: tuple[str, ...] = ("timeout", "rate_limited", "unavailable")
 
 
 class RetryPolicyRegistry:
