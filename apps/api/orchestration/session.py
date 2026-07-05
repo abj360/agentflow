@@ -40,7 +40,9 @@ class SessionRegistry:
         """Initializes the registry with no sessions."""
         self.records: dict[str, SessionRecord] = {}
 
-    def open_session(self, session_id: str, trace_id: str) -> SessionRecord:
+    def open_session(
+        self, session_id: str, trace_id: str, tenant_id: str = "default"
+    ) -> SessionRecord:
         """Registers a new session at version zero.
 
         Args:
@@ -50,6 +52,7 @@ class SessionRegistry:
         Returns:
             record: The initial version-zero session record.
         """
+        _ = tenant_id  # tenant lives on the audit row, not the version record
         record = SessionRecord(session_id=session_id, version=0, trace_id=trace_id)
         self.records[session_id] = record
         return record
