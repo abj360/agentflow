@@ -93,3 +93,11 @@ def test_close_unknown_session_raises() -> None:
     except KeyError:
         return
     raise AssertionError("expected KeyError")
+
+
+def test_expire_older_than_removes_stale() -> None:
+    """Verifies expiry drops sessions older than the cutoff."""
+    registry = SessionRegistry()
+    registry.open_session("s7", "trace-1")
+    assert registry.expire_older_than(0) == 1
+    assert registry.list_sessions() == []
