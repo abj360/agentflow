@@ -140,4 +140,4 @@ def lock_key(*parts: str) -> str:
     Returns:
         key: Namespaced lock key for Redis.
     """
-    return "agentflow:lock:" + ":".join(parts)
+    return ":".join(["agentflow", "lock", *parts])
