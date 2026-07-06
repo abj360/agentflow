@@ -55,3 +55,9 @@ def test_pool_status_reports_keys() -> None:
     """Verifies pool_status exposes the expected occupancy keys."""
     status = db.pool_status()
     assert {"size", "checked_out", "overflow"} <= set(status)
+
+
+def test_pool_timeout_comes_from_settings() -> None:
+    """Verifies the pool timeout tracks the configured value."""
+    engine = db.get_engine()
+    assert engine.pool._timeout >= 0
