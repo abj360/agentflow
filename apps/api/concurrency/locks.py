@@ -129,3 +129,15 @@ class DistributedLock:
 
 class LockNotHeldError(Exception):
     """Raised when operating on a lock that is not held."""
+
+
+def lock_key(*parts: str) -> str:
+    """Builds a namespaced Redis lock key from parts.
+
+    Args:
+        parts: Key components joined with colons.
+
+    Returns:
+        key: Namespaced lock key for Redis.
+    """
+    return "agentflow:lock:" + ":".join(parts)
