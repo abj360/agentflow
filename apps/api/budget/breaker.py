@@ -5,6 +5,8 @@ breaker.py --- circuit breaker that trips on budget breaches
 Contains:
     CircuitOpenError: raised when calls are attempted through an open circuit
     BudgetCircuitBreaker: trips after repeated budget breaches
+    BudgetCircuitBreaker.call(): runs a function through the breaker
+    BudgetCircuitBreaker.state(): reports the breaker state as a string
 """
 
 import time
