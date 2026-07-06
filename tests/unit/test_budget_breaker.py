@@ -141,3 +141,11 @@ def test_open_error_mentions_probe_time() -> None:
         assert "probe again" in str(exc)
         return
     raise AssertionError("expected CircuitOpenError")
+
+
+def test_success_after_failure_keeps_closed() -> None:
+    """Verifies one failure followed by success keeps the circuit closed."""
+    breaker = BudgetCircuitBreaker(failure_threshold=2)
+    breaker.record_breach()
+    breaker.record_success()
+    assert breaker.state() == "closed"
