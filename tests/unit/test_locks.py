@@ -211,3 +211,25 @@ async def test_acquire_assigns_unique_tokens() -> None:
     second = DistributedLock(redis, "k1")
     await second.acquire()
     assert redis.store["k1"] != token_one
+
+
+async def test_acquire_retries_until_deadline() -> None:
+    """Verifies acquisition keeps retrying until the lock frees."""
+    redis = FakeRedis()
+    holder = DistributedLock(redis, "k1")
+    await holder.acquire()
+
+    async def release_soon() -> None:
+        """Releases the held lock after a short delay."""
+        import asyncio
+
+        await asyncio.sleep(0.1)
+        await holder.release()
+
+    import asyncio
+
+    task = asyncio.create_task(release_soon())
+    waiter = DistributedLock(redis, "k1")
+    acquired = await waiter.acquire(timeout=1.0)
+    await task
+    assert acquired is True
