@@ -61,3 +61,9 @@ def test_pool_timeout_comes_from_settings() -> None:
     """Verifies the pool timeout tracks the configured value."""
     engine = db.get_engine()
     assert engine.pool._timeout >= 0
+
+
+async def test_dispose_engine_is_idempotent() -> None:
+    """Verifies disposing twice does not raise."""
+    await db.dispose_engine()
+    await db.dispose_engine()
