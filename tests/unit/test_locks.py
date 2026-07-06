@@ -233,3 +233,10 @@ async def test_acquire_retries_until_deadline() -> None:
     acquired = await waiter.acquire(timeout=1.0)
     await task
     assert acquired is True
+
+
+def test_lock_key_single_part() -> None:
+    """Verifies a single-part lock key is still namespaced."""
+    from apps.api.concurrency.locks import lock_key
+
+    assert lock_key("global") == "agentflow:lock:global"
