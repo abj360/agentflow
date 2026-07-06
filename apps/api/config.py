@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     redis_url: str = "redis://redis:6379/0"
     db_pool_size: int = 20
     db_max_overflow: int = 20
-    db_pool_timeout: int = 30
+    db_pool_timeout: int = 30  # seconds to wait for a free connection
 
 
 @lru_cache
