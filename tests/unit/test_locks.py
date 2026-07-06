@@ -199,3 +199,15 @@ async def test_is_held_false_after_release() -> None:
     await lock.acquire()
     await lock.release()
     assert lock.is_held is False
+
+
+async def test_acquire_assigns_unique_tokens() -> None:
+    """Verifies two holders get distinct lock tokens."""
+    redis = FakeRedis()
+    first = DistributedLock(redis, "k1")
+    await first.acquire()
+    token_one = redis.store["k1"]
+    await first.release()
+    second = DistributedLock(redis, "k1")
+    await second.acquire()
+    assert redis.store["k1"] != token_one
