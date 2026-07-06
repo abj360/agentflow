@@ -35,7 +35,7 @@ async def run_session(
         "iterations": 0,
     }
     revisions = 0
-    while revisions < MAX_REVISIONS:
+    while revisions < MAX_REVISIONS:  # bounded per ADR-001
         graph_state = await graph.ainvoke(graph_state)
         store.advance(
             session_id,
