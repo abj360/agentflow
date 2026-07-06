@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     database_url: str = "postgresql+asyncpg://agentflow:change-me@postgres:5432/agentflow"
     redis_url: str = "redis://redis:6379/0"
-    db_pool_size: int = 10
+    db_pool_size: int = 20
     db_max_overflow: int = 20
     db_pool_timeout: int = 30
 
