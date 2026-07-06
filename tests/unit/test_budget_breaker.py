@@ -129,3 +129,15 @@ def test_breach_total_counts_all_breaches() -> None:
     breaker.record_breach()
     breaker.record_breach()
     assert breaker._breach_total == 2
+
+
+def test_open_error_mentions_probe_time() -> None:
+    """Verifies the open error suggests when to probe again."""
+    breaker = BudgetCircuitBreaker(failure_threshold=1, reset_seconds=30)
+    breaker.record_breach()
+    try:
+        breaker.check()
+    except CircuitOpenError as exc:
+        assert "probe again" in str(exc)
+        return
+    raise AssertionError("expected CircuitOpenError")
