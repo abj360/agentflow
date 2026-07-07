@@ -14,6 +14,7 @@ from apps.api.audit.models import (
     AuditSession,
     EventKind,
     event_summary,
+    new_trace_id,
 )
 
 
