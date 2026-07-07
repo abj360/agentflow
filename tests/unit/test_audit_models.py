@@ -93,3 +93,9 @@ def test_new_trace_id_is_hex() -> None:
 def test_new_trace_id_unique_per_call() -> None:
     """Verifies consecutive trace ids never repeat."""
     assert new_trace_id() != new_trace_id()
+
+
+def test_approval_status_enum_in_table() -> None:
+    """Verifies the approval status column uses a constrained enum type."""
+    status_type = ApprovalRequest.__table__.c.status.type
+    assert "pending" in status_type.enums
