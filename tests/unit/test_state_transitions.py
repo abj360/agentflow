@@ -213,3 +213,10 @@ def test_results_trigger_accept_route() -> None:
 
     state = critic_node(make_state(results=["ok"]))
     assert route_after_critic(state) == "accept"
+
+
+def test_route_after_critic_returns_string() -> None:
+    """Verifies the router returns a string route name."""
+    from apps.api.orchestration.state_machine import route_after_critic
+
+    assert isinstance(route_after_critic(make_state()), str)
