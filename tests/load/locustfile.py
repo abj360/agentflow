@@ -79,3 +79,9 @@ class ApprovalReviewerUser(HttpUser):
     def poll_approvals(self) -> None:
         """Polls the pending approval queue."""
         self.client.get("/audit/sessions")
+
+
+    @task(1)
+    def fetch_sessions_page(self) -> None:
+        """Fetches a page of sessions."""
+        self.client.get("/audit/sessions?limit=20", name="/audit/sessions?limit=20")
