@@ -29,7 +29,7 @@
     },
     {
       "id": 3,
-      "title": "Policy denials per hour",
+      "title": "Policy denials per hour (by rule)",
       "type": "timeseries",
       "targets": [
         { "expr": "rate(agentflow_policy_denials_total[1h])" }
