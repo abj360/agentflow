@@ -88,3 +88,8 @@ def test_new_trace_id_is_hex() -> None:
     trace_id = new_trace_id()
     int(trace_id, 16)
     assert "-" not in trace_id
+
+
+def test_new_trace_id_unique_per_call() -> None:
+    """Verifies consecutive trace ids never repeat."""
+    assert new_trace_id() != new_trace_id()
