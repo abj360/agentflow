@@ -10,6 +10,7 @@ Contains:
     ApprovalRequest: human-in-the-loop approval linked to a tool call
     event_summary(): builds a one-line summary of an audit event
     new_trace_id(): generates a unique trace identifier for a new run
+    event_to_dict(): serializes an audit event for API responses
     ArchiveEvent: cold-storage marker for events moved out of the hot table
 """
 
@@ -167,3 +168,23 @@ def new_trace_id() -> str:
         trace_id: Hex-encoded random identifier used across the audit chain.
     """
     return uuid.uuid4().hex
+
+
+def event_to_dict(event: AuditEvent) -> dict:
+    """Serializes an audit event for API responses.
+
+    Args:
+        event: The audit event to serialize.
+
+    Returns:
+        event_dict: JSON-ready dict of the event's public fields.
+    """
+    return {
+        "event_id": str(event.event_id),
+        "trace_id": event.trace_id,
+        "kind": str(event.kind),
+        "payload": event.payload,
+        "prev_hash": event.prev_hash,
+        "event_hash": event.event_hash,
+        "created_at": event.created_at.isoformat() if event.created_at else None,
+    }
