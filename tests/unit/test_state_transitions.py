@@ -197,3 +197,19 @@ def test_revise_then_accept_eventually() -> None:
     state = executor_node({**state, "plan": ["retry"]})
     state = critic_node(state)
     assert state["critique"] == "accept"
+
+
+def test_empty_results_trigger_revise_route() -> None:
+    """Verifies empty results route the graph into revision."""
+    from apps.api.orchestration.state_machine import critic_node, route_after_critic
+
+    state = critic_node(make_state())
+    assert route_after_critic(state) == "revise"
+
+
+def test_results_trigger_accept_route() -> None:
+    """Verifies present results route the graph to acceptance."""
+    from apps.api.orchestration.state_machine import critic_node, route_after_critic
+
+    state = critic_node(make_state(results=["ok"]))
+    assert route_after_critic(state) == "accept"
