@@ -99,3 +99,9 @@ def test_approval_status_enum_in_table() -> None:
     """Verifies the approval status column uses a constrained enum type."""
     status_type = ApprovalRequest.__table__.c.status.type
     assert "pending" in status_type.enums
+
+
+def test_event_summary_handles_none_created_at() -> None:
+    """Verifies the summary renders before the server timestamp is set."""
+    event = AuditEvent(trace_id="trace-8", kind=EventKind.TOOL_CALL, payload={})
+    assert "trace-8" in event_summary(event)
