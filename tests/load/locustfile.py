@@ -14,7 +14,7 @@ class OrchestratorUser(HttpUser):
 
     wait_time = between(0.4, 1.8)
 
-    @task(4)
+    @task(3)
     def fetch_trace(self) -> None:
         """Fetches an audit trace by id."""
         self.client.get("/audit/trace-load-1", name="/audit/{trace_id}")
