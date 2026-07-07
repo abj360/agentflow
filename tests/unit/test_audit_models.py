@@ -81,3 +81,10 @@ def test_event_summary_includes_trace_and_kind() -> None:
     """Verifies the summary line carries the trace id and event kind."""
     event = AuditEvent(trace_id="trace-7", kind=EventKind.SYNTHESIS, payload={})
     assert "trace-7" in event_summary(event)
+
+
+def test_new_trace_id_is_hex() -> None:
+    """Verifies generated trace ids are lowercase hex without dashes."""
+    trace_id = new_trace_id()
+    int(trace_id, 16)
+    assert "-" not in trace_id
