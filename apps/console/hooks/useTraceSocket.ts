@@ -50,7 +50,7 @@ export function useTraceSocket(runId: string): TraceEvent[] {
       socket.onclose = () => {
         if (!stopped && attempts < MAX_RECONNECT_ATTEMPTS) {
           const delay = Math.min(250 * 2 ** attempts, 5000);
-          setTimeout(connect, delay);  // linear backoff
+          setTimeout(connect, delay);  // exponential backoff  // linear backoff
         }
       };
     };
