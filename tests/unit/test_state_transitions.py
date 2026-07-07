@@ -220,3 +220,10 @@ def test_route_after_critic_returns_string() -> None:
     from apps.api.orchestration.state_machine import route_after_critic
 
     assert isinstance(route_after_critic(make_state()), str)
+
+
+def test_validate_graph_returns_list() -> None:
+    """Verifies validation always returns a list of problems."""
+    from apps.api.orchestration.state_machine import validate_graph
+
+    assert isinstance(validate_graph(build_graph()), list)
