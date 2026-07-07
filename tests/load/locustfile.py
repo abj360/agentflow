@@ -68,3 +68,14 @@ class OrchestratorUser(HttpUser):
     def fetch_metrics(self) -> None:
         """Scrapes the metrics endpoint."""
         self.client.get("/metrics", name="/metrics")
+
+
+class ApprovalReviewerUser(HttpUser):
+    """Simulates a reviewer working the approval queue."""
+
+    wait_time = between(1.0, 3.0)
+
+    @task(1)
+    def poll_approvals(self) -> None:
+        """Polls the pending approval queue."""
+        self.client.get("/audit/sessions")
