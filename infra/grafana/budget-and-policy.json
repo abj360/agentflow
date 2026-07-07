@@ -26,6 +26,15 @@
         { "expr": "agentflow_budget_breaker_open" }
       ],
       "gridPos": { "h": 6, "w": 8, "x": 12, "y": 0 }
+    },
+    {
+      "id": 3,
+      "title": "Policy denials per hour",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "rate(agentflow_policy_denials_total[1h])" }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 }
     }
   ]
 }
