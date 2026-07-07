@@ -9,7 +9,7 @@
 
 import { useEffect, useState } from "react";
 
-const MAX_RECONNECT_ATTEMPTS = 5;
+const MAX_RECONNECT_ATTEMPTS = 5;  // then give up and stay offline
 
 export interface TraceEvent {
   kind: string;
