@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agentflow"
-version = "0.1.10"
+version = "0.1.11"
 description = "Production multi-agent orchestrator with audit logging and MCP tool governance"
 requires-python = ">=3.12"
 dependencies = [
