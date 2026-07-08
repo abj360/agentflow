@@ -385,3 +385,9 @@ def test_no_tenant_uses_base_table() -> None:
     """Verifies omitting tenant_id evaluates the base table."""
     engine = PolicyEngine(str(SCHEMA_PATH))
     assert engine.evaluate("shell.exec", {}).action == "human_approval"
+
+
+def test_review_wildcard_rule_matches_anything() -> None:
+    """Verifies the star rule is a true catch-all."""
+    engine = make_engine()
+    assert engine.evaluate("anything.at.all", {}).action == "deny"
