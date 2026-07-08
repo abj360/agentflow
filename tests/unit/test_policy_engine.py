@@ -399,3 +399,9 @@ def test_review_evaluate_is_pure() -> None:
     first = engine.evaluate("search.query", {})
     second = engine.evaluate("search.query", {})
     assert first.action == second.action
+
+
+def test_review_rules_evaluated_in_order() -> None:
+    """Verifies the first matching rule wins."""
+    engine = make_engine()
+    assert engine.evaluate("search.query", {}).rule == "search.*"
