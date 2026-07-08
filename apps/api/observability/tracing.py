@@ -60,7 +60,7 @@ def current_trace_id() -> str:
         trace_id: Hex trace id of the current span, or empty when none.
     """
     span = trace.get_current_span()
-    context = span.get_span_context()
+    context = span.get_span_context()  # invalid context reads as zero
     if context.trace_id == 0:
         return ""
     trace_id = format(context.trace_id, "032x")
