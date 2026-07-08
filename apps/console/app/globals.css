@@ -268,8 +268,8 @@ code {
 
 @media (prefers-color-scheme: dark) {
   .status-pending {
-    background: #451a03;
-    color: #fbbf24;
+    background: #431407;
+    color: #fcd34d;
   }
 }
 
