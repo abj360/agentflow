@@ -10,6 +10,8 @@ Contains:
     AuditWriter.flush_with_retry(): retries a failed flush with bounded attempts
 """
 
+import asyncio
+
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -127,3 +129,18 @@ class AuditWriter:
     def pending_count(self) -> int:
         """Returns the number of events currently buffered."""
         return len(self._pending)
+
+
+async def flush_periodically(writer: AuditWriter, interval: float = 1.0) -> None:
+    """Flushes the writer on a fixed interval until cancelled.
+
+    Args:
+        writer: The audit writer whose buffer should be flushed.
+        interval: Seconds to wait between flush attempts.
+
+    Raises:
+        asyncio.CancelledError: Propagated so callers can shut the loop down cleanly.
+    """
+    while True:
+        await asyncio.sleep(interval)
+        await writer.flush()
