@@ -22,7 +22,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.sampling import ParentBasedTraceIdRatio
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-DEFAULT_SAMPLER = ParentBasedTraceIdRatio(0.25)
+DEFAULT_SAMPLER = ParentBasedTraceIdRatio(0.25)  # head-based, per ADR-001
 
 
 def setup_tracing(app, service_name: str = "agentflow-api") -> None:
