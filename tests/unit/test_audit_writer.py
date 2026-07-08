@@ -237,3 +237,12 @@ async def test_second_event_chains_from_first() -> None:
     first = await writer.enqueue("trace-1", EventKind.TOOL_CALL, {})
     second = await writer.enqueue("trace-1", EventKind.TOOL_RESULT, {})
     assert second.prev_hash == first.event_hash
+
+
+async def test_flush_periodically_helper_exists() -> None:
+    """Verifies the periodic flush helper is importable and coroutine-based."""
+    import inspect
+
+    from apps.api.audit.writer import flush_periodically
+
+    assert inspect.iscoroutinefunction(flush_periodically)
