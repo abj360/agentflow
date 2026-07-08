@@ -416,3 +416,10 @@ def test_review_empty_args_accepted() -> None:
 def test_review_make_engine_each_call_fresh() -> None:
     """Verifies the factory builds a fresh engine per call."""
     assert make_engine() is not make_engine()
+
+
+def test_describe_action_labels() -> None:
+    """Verifies action labels render for reviewers."""
+    from apps.api.policy.engine import describe_action
+
+    assert "human" in describe_action("human_approval")
