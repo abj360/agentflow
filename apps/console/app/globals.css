@@ -277,3 +277,11 @@ code {
 .theme-toggle {
   margin-left: 0.75rem;
 }
+
+
+@media (prefers-color-scheme: dark) {
+  .status-approved {
+    background: #052e16;
+    color: #4ade80;
+  }
+}
