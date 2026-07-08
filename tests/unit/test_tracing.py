@@ -93,3 +93,10 @@ def test_traced_section_nested() -> None:
     with traced_section("outer"):
         with traced_section("inner") as inner:
             assert inner is not None
+
+
+def test_record_exception_callable() -> None:
+    """Verifies the exception recorder is exposed."""
+    from apps.api.observability.tracing import record_exception
+
+    assert callable(record_exception)
