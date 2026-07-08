@@ -435,3 +435,9 @@ def test_describe_action_unknown_passthrough() -> None:
 def test_build_engine_fresh_instance() -> None:
     """Verifies the factory returns a fresh engine per call."""
     assert build_engine() is not build_engine()
+
+
+def test_rule_attribute_populated_on_match() -> None:
+    """Verifies decisions name the matched rule."""
+    decision = build_engine().evaluate("shell.exec", {})
+    assert decision.rule == "shell.*"
