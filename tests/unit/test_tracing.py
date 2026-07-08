@@ -100,3 +100,10 @@ def test_record_exception_callable() -> None:
     from apps.api.observability.tracing import record_exception
 
     assert callable(record_exception)
+
+
+def test_setup_tracing_callable() -> None:
+    """Verifies the setup entrypoint is exposed."""
+    from apps.api.observability.tracing import setup_tracing
+
+    assert callable(setup_tracing)
