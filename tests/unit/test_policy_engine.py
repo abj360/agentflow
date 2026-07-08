@@ -405,3 +405,9 @@ def test_review_rules_evaluated_in_order() -> None:
     """Verifies the first matching rule wins."""
     engine = make_engine()
     assert engine.evaluate("search.query", {}).rule == "search.*"
+
+
+def test_review_empty_args_accepted() -> None:
+    """Verifies an empty args dict is a valid evaluation input."""
+    engine = make_engine()
+    assert engine.evaluate("search.query", {}).action == "allow"
