@@ -423,3 +423,10 @@ def test_describe_action_labels() -> None:
     from apps.api.policy.engine import describe_action
 
     assert "human" in describe_action("human_approval")
+
+
+def test_describe_action_unknown_passthrough() -> None:
+    """Verifies unknown actions get a labeled fallback."""
+    from apps.api.policy.engine import describe_action
+
+    assert "unknown" in describe_action("bogus")
