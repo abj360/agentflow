@@ -391,3 +391,11 @@ def test_review_wildcard_rule_matches_anything() -> None:
     """Verifies the star rule is a true catch-all."""
     engine = make_engine()
     assert engine.evaluate("anything.at.all", {}).action == "deny"
+
+
+def test_review_evaluate_is_pure() -> None:
+    """Verifies repeated evaluation of the same call is stable."""
+    engine = make_engine()
+    first = engine.evaluate("search.query", {})
+    second = engine.evaluate("search.query", {})
+    assert first.action == second.action
