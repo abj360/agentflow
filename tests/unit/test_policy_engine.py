@@ -430,3 +430,8 @@ def test_describe_action_unknown_passthrough() -> None:
     from apps.api.policy.engine import describe_action
 
     assert "unknown" in describe_action("bogus")
+
+
+def test_build_engine_fresh_instance() -> None:
+    """Verifies the factory returns a fresh engine per call."""
+    assert build_engine() is not build_engine()
