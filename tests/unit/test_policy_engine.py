@@ -411,3 +411,8 @@ def test_review_empty_args_accepted() -> None:
     """Verifies an empty args dict is a valid evaluation input."""
     engine = make_engine()
     assert engine.evaluate("search.query", {}).action == "allow"
+
+
+def test_review_make_engine_each_call_fresh() -> None:
+    """Verifies the factory builds a fresh engine per call."""
+    assert make_engine() is not make_engine()
