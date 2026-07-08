@@ -21,6 +21,7 @@ export function ThemeToggle() {
   return (
     <button
       className="theme-toggle"
+      aria-label="Toggle color theme"
       aria-pressed={dark}
       onClick={() => {
         const next = dark ? "light" : "dark";
