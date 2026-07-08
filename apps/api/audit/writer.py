@@ -136,7 +136,7 @@ async def flush_periodically(writer: AuditWriter, interval: float = 1.0) -> None
 
     Args:
         writer: The audit writer whose buffer should be flushed.
-        interval: Seconds to wait between flush attempts.
+        interval: Seconds to wait between flush attempts; defaults to one second.
 
     Raises:
         asyncio.CancelledError: Propagated so callers can shut the loop down cleanly.
