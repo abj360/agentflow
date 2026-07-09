@@ -149,3 +149,12 @@ def test_record_policy_decision_helper() -> None:
     from apps.api.observability.metrics import record_policy_decision
 
     record_policy_decision("allow")
+
+
+def test_record_tokens_helper() -> None:
+    """Verifies the helper adds to the token counter."""
+    from apps.api.observability.metrics import record_tokens, tokens_total
+
+    before = tokens_total._value.get()
+    record_tokens(100)
+    assert tokens_total._value.get() == before + 100
