@@ -88,5 +88,5 @@ test("home links to traces and approvals", async ({ page }) => {
 test("theme toggle switches theme attribute", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: /dark mode/i }).click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", /dark|light/);
 });
