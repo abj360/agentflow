@@ -88,3 +88,17 @@ def verify_chain(events: list) -> bool:
 
 class ChainVerificationError(Exception):
     """Raised when an audit chain fails integrity verification."""
+
+
+def chain_head(events: list) -> str:
+    """Returns the hash of the most recent event in a verified chain.
+
+    Args:
+        events: Audit events ordered by created_at for one trace.
+
+    Returns:
+        head_hash: Event hash of the chain tip, or GENESIS_HASH for an empty chain.
+    """
+    if not events:
+        return GENESIS_HASH
+    return events[-1].event_hash
