@@ -85,3 +85,21 @@ policy_denials_total = Counter(
 def record_session_started() -> None:
     """Bumps the sessions-started counter."""
     sessions_total.inc()
+
+
+def record_policy_decision(action: str) -> None:
+    """Records one policy decision by action.
+
+    Args:
+        action: The policy action taken: allow, deny, or human_approval.
+    """
+    tool_calls_total.labels(action=action).inc()
+
+
+def record_tokens(count: int) -> None:
+    """Records model token consumption.
+
+    Args:
+        count: Tokens consumed by the latest model call.
+    """
+    tokens_total.inc(count)
