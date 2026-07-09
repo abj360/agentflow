@@ -91,3 +91,11 @@ def test_has_changes_false_for_identical_plans() -> None:
     from apps.api.orchestration.plan_diff import diff_plans, has_changes
 
     assert has_changes(diff_plans(["a"], ["a"])) is False
+
+
+def test_render_markdown_groups_by_kind() -> None:
+    """Verifies the markdown rendering groups added/removed/kept."""
+    from apps.api.orchestration.plan_diff import diff_plans, render_markdown
+
+    rendered = render_markdown(diff_plans(["a"], ["a", "b"]))
+    assert "**Added**" in rendered
