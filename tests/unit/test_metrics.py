@@ -158,3 +158,11 @@ def test_record_tokens_helper() -> None:
     before = tokens_total._value.get()
     record_tokens(100)
     assert tokens_total._value.get() == before + 100
+
+
+def test_record_policy_decision_all_actions() -> None:
+    """Verifies every policy action can be recorded."""
+    from apps.api.observability.metrics import record_policy_decision
+
+    for action in ("allow", "deny", "human_approval"):
+        record_policy_decision(action)
