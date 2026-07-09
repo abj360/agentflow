@@ -166,3 +166,11 @@ def test_record_policy_decision_all_actions() -> None:
 
     for action in ("allow", "deny", "human_approval"):
         record_policy_decision(action)
+
+
+def test_metrics_endpoint_idempotent() -> None:
+    """Verifies repeated scrapes render consistently."""
+    first = metrics_endpoint(None)
+    second = metrics_endpoint(None)
+    assert b"agentflow_sessions_total" in first.body
+    assert b"agentflow_sessions_total" in second.body
