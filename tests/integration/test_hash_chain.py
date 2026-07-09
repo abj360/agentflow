@@ -11,6 +11,7 @@ from apps.api.audit.chain import (
     GENESIS_HASH,
     ChainLinker,
     ChainVerificationError,
+    chain_head,
     compute_event_hash,
     verify_chain,
 )
@@ -113,3 +114,8 @@ def test_linker_chains_three_events_sequentially() -> None:
 def test_chain_verification_error_is_exception() -> None:
     """Verifies the dedicated exception type exists for callers to catch."""
     assert issubclass(ChainVerificationError, Exception)
+
+
+def test_chain_head_empty_returns_genesis() -> None:
+    """Verifies the head of an empty chain is the genesis sentinel."""
+    assert chain_head([]) == GENESIS_HASH
