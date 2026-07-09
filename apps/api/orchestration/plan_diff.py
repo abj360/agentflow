@@ -118,3 +118,22 @@ def has_changes(diff: PlanDiff) -> bool:
         changed: True when steps were added or removed.
     """
     return bool(diff.added or diff.removed)
+
+
+def render_markdown(diff: PlanDiff) -> str:
+    """Renders a plan diff as a markdown list for the console UI.
+
+    Args:
+        diff: The plan diff to render.
+
+    Returns:
+        markdown: Bullet-list rendering grouped by change kind.
+    """
+    sections: list[str] = []
+    if diff.added:
+        sections.append("**Added**\n" + "\n".join(f"- {s}" for s in diff.added))
+    if diff.removed:
+        sections.append("**Removed**\n" + "\n".join(f"- {s}" for s in diff.removed))
+    if diff.kept:
+        sections.append("**Kept**\n" + "\n".join(f"- {s}" for s in diff.kept))
+    return "\n\n".join(sections)
