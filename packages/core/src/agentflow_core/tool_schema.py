@@ -6,6 +6,9 @@ Contains:
     ToolParameter: one named argument of a tool
     UnifiedToolSpec: transport-agnostic tool description
     to_mcp_schema(): renders a UnifiedToolSpec as an MCP tool schema
+    from_mcp_schema(): parses an MCP schema back into a UnifiedToolSpec
+    validate_unified_spec(): checks a unified spec for required fields
+    merge_specs(): merges an override spec onto a base spec
 """
 
 from dataclasses import dataclass
