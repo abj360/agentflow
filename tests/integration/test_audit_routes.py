@@ -274,3 +274,10 @@ def test_verify_endpoint_single_event_chain() -> None:
     """Verifies a single-event chain verifies cleanly."""
     client = make_client(make_events("trace-9", 1))
     assert client.get("/audit/trace-9/verify").json()["chain_valid"] is True
+
+
+def test_trace_events_include_prev_hash_after_serialization() -> None:
+    """Verifies serialized events expose the chain linkage fields."""
+    client = make_client(make_events("trace-10", 2))
+    body = client.get("/audit/trace-10").json()
+    assert body["events"][1]["prev_hash"] == body["events"][0]["event_hash"]
