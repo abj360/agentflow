@@ -84,3 +84,10 @@ def test_has_changes_true_when_steps_added() -> None:
     from apps.api.orchestration.plan_diff import diff_plans, has_changes
 
     assert has_changes(diff_plans(["a"], ["a", "b"])) is True
+
+
+def test_has_changes_false_for_identical_plans() -> None:
+    """Verifies identical plans report no changes."""
+    from apps.api.orchestration.plan_diff import diff_plans, has_changes
+
+    assert has_changes(diff_plans(["a"], ["a"])) is False
