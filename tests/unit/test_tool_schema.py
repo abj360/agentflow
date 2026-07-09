@@ -164,3 +164,8 @@ def test_merge_description_override() -> None:
 
     override = UnifiedToolSpec(name="", description="Better search")
     assert merge_specs(SPEC, override).description == "Better search"
+
+
+def test_to_mcp_schema_includes_version() -> None:
+    """Verifies rendered schemas carry the schema version."""
+    assert to_mcp_schema(SPEC)["version"] == "1"
