@@ -77,3 +77,10 @@ def test_diff_empty_old_plan() -> None:
     """Verifies diffing against an empty plan marks everything added."""
     diff = diff_plans([], ["x"])
     assert diff.added == ("x",) and diff.removed == ()
+
+
+def test_has_changes_true_when_steps_added() -> None:
+    """Verifies has_changes flags an actual change."""
+    from apps.api.orchestration.plan_diff import diff_plans, has_changes
+
+    assert has_changes(diff_plans(["a"], ["a", "b"])) is True
