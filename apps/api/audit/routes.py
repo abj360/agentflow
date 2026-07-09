@@ -18,7 +18,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.api.audit.chain import verify_chain
-from apps.api.audit.models import AuditEvent, AuditSession
+from apps.api.audit.models import AuditEvent, AuditSession, event_to_dict
 from apps.api.db import get_session
 
 MAX_PAGE_SIZE = 500
@@ -124,14 +124,7 @@ async def get_trace_events(
         "event_count": len(page),
         "chain_valid": verify_chain(page),
         "next_cursor": next_cursor,
-        "events": [
-            {
-                "event_hash": event.event_hash,
-                "kind": str(event.kind),
-                "payload": event.payload,
-            }
-            for event in page
-        ],
+        "events": [event_to_dict(event) for event in page],
     }
 
 
