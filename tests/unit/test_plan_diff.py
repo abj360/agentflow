@@ -99,3 +99,10 @@ def test_render_markdown_groups_by_kind() -> None:
 
     rendered = render_markdown(diff_plans(["a"], ["a", "b"]))
     assert "**Added**" in rendered
+
+
+def test_render_markdown_empty_diff() -> None:
+    """Verifies an empty diff renders as an empty string."""
+    from apps.api.orchestration.plan_diff import PlanDiff, render_markdown
+
+    assert render_markdown(PlanDiff()) == ""
