@@ -142,3 +142,10 @@ def test_histogram_sample_count_grows() -> None:
 
     loop_iterations.observe(1)
     loop_iterations.observe(3)
+
+
+def test_record_policy_decision_helper() -> None:
+    """Verifies the helper counts a decision by action."""
+    from apps.api.observability.metrics import record_policy_decision
+
+    record_policy_decision("allow")
