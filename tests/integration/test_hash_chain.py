@@ -119,3 +119,15 @@ def test_chain_verification_error_is_exception() -> None:
 def test_chain_head_empty_returns_genesis() -> None:
     """Verifies the head of an empty chain is the genesis sentinel."""
     assert chain_head([]) == GENESIS_HASH
+
+
+def test_chain_head_returns_last_event_hash() -> None:
+    """Verifies the head of a non-empty chain is the tip event's hash."""
+    linker = ChainLinker()
+    _, hash_1 = linker.link("trace-1", "tool_call", {})
+    prev_2, hash_2 = linker.link("trace-1", "tool_result", {})
+    events = [
+        FakeEvent("trace-1", "tool_call", {}, GENESIS_HASH, hash_1),
+        FakeEvent("trace-1", "tool_result", {}, prev_2, hash_2),
+    ]
+    assert chain_head(events) == hash_2
