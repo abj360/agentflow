@@ -30,7 +30,7 @@ def metrics_endpoint(_request) -> Response:
     """Serves the /metrics scrape endpoint.
 
     Args:
-        request: The incoming HTTP request (unused).
+        _request: The incoming HTTP request (unused).
 
     Returns:
         response: Prometheus text-format metrics payload.
