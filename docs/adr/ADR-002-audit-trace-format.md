@@ -2,7 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-05-08
-- Last reviewed: 2026-06-19
+- Last reviewed: 2026-07-10
 - Deciders: Peter, Kenny
 - Reviewers: Angel, Yannick
 - Related: governance review batch 2026-06-27
