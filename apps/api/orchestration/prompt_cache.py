@@ -108,7 +108,7 @@ class PromptCache:
         Returns:
             rate: Hits over total lookups, 0.0 when no lookups happened yet.
         """
-        total = self.hits + self.misses
+        total = self.hits + self.misses  # evictions don't count as lookups
         if total == 0:
             return 0.0
         return self.hits / total
