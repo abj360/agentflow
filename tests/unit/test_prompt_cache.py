@@ -127,3 +127,11 @@ def test_hit_rate_computes_ratio() -> None:
     cache.get("k")
     cache.get("nope")
     assert cache.hit_rate() == 0.5
+
+
+def test_evictions_counted() -> None:
+    """Verifies evictions increment the eviction counter."""
+    cache = PromptCache(max_entries=1)
+    cache.put("a", "1")
+    cache.put("b", "2")
+    assert cache.evictions == 1
