@@ -34,3 +34,16 @@ async def test_gives_up_after_max_retries() -> None:
     except ConnectionError:
         return
     raise AssertionError("expected ConnectionError")
+
+
+async def test_first_try_success_returns_immediately() -> None:
+    """Verifies a healthy call needs no retries."""
+    calls = {"n": 0}
+
+    async def healthy() -> str:
+        """Succeeds immediately."""
+        calls["n"] += 1
+        return "ok"
+
+    assert await call_with_retries(healthy) == "ok"
+    assert calls["n"] == 1
