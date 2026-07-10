@@ -16,7 +16,7 @@ export default function Home() {
           <a href="/traces">Live traces</a>
         </li>
         <li>
-          <a href="/approvals">Approval queue</a> — review gated tool calls
+          <a href="/approvals">Approval queue</a>
         </li>
       </ul>
     </section>
