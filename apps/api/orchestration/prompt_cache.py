@@ -5,6 +5,8 @@ prompt_cache.py --- caches planner prompts to cut round-trip latency
 Contains:
     cache_key(): derives a stable cache key from task and context
     PromptCache: stores planner completions keyed by content hash
+    PromptCache.get_fresh(): looks up a completion honoring a TTL
+    PromptCache.hit_rate(): computes the cache hit rate since startup
 """
 
 import hashlib
