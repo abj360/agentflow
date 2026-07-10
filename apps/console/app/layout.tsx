@@ -30,6 +30,7 @@ export default function RootLayout({
           </nav>
         </header>
         <main>{children}</main>
+        <footer className="footer">agentflow console</footer>
       </body>
     </html>
   );
