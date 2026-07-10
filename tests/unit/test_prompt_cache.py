@@ -143,3 +143,8 @@ def test_hit_rate_perfect_when_all_hit() -> None:
     cache.put("k", "v")
     cache.get("k")
     assert cache.hit_rate() == 1.0
+
+
+def test_cache_key_order_insensitive_context() -> None:
+    """Verifies context key order does not change the cache key."""
+    assert cache_key("t", {"a": 1, "b": 2}) == cache_key("t", {"b": 2, "a": 1})
