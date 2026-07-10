@@ -22,7 +22,9 @@ def test_orchestrator_survives_mcp_kill() -> None:
     import time
 
     server = subprocess.Popen(
-        ["python", "-m", "apps.api.mcp_servers.sse_server"]
+        ["python", "-m", "apps.api.mcp_servers.sse_server"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
     time.sleep(1.0)
     server.kill()
