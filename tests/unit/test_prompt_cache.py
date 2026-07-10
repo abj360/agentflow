@@ -135,3 +135,11 @@ def test_evictions_counted() -> None:
     cache.put("a", "1")
     cache.put("b", "2")
     assert cache.evictions == 1
+
+
+def test_hit_rate_perfect_when_all_hit() -> None:
+    """Verifies a 1.0 hit rate when every lookup hits."""
+    cache = PromptCache()
+    cache.put("k", "v")
+    cache.get("k")
+    assert cache.hit_rate() == 1.0
