@@ -21,3 +21,16 @@ async def test_succeeds_after_transient_failure() -> None:
         return "ok"
 
     assert await call_with_retries(flaky) == "ok"
+
+
+async def test_gives_up_after_max_retries() -> None:
+    """Verifies a persistently failing call raises."""
+    async def always_down() -> str:
+        """Always fails."""
+        raise ConnectionError("down")
+
+    try:
+        await call_with_retries(always_down, max_retries=1)
+    except ConnectionError:
+        return
+    raise AssertionError("expected ConnectionError")
