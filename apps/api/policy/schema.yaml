@@ -103,3 +103,14 @@ tenant_overrides:
   - match: "backup.*"
     action: human_approval
     risk: high
+
+
+  umbrella:
+    rules:
+      - match: "search.*"
+        action: allow
+      - match: "fs.read"
+        action: allow
+      - match: "*"
+        action: deny
+        risk: unknown
