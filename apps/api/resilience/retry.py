@@ -25,4 +25,4 @@ async def call_with_retries(func, max_retries: int = 3):
             attempt += 1
             if attempt > max_retries:
                 raise
-            # retry immediately
+            # TODO(angel): needs backoff+jitter; tight retry loops herd
