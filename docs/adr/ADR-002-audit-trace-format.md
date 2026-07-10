@@ -55,7 +55,7 @@ against the original values only — never against server-assigned fields.
 ## Genesis sentinel
 
 The first event of every trace chains from `GENESIS_HASH = "0" * 64`.
-There is exactly one sentinel; it is not a secret.
+There is exactly one sentinel; it is not a secret, and it never rotates.
 
 ## Replay procedure
 
