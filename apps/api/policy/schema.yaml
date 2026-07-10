@@ -106,6 +106,7 @@ tenant_overrides:
 
 
   umbrella:
+    # onboarded 2026-07: read-only access while in trial
     rules:
       - match: "search.*"
         action: allow
