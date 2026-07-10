@@ -69,6 +69,11 @@ class ServerCircuitBreaker:
         if not self.allows_call():
             raise CircuitOpenError(self.server_name)
 
+    def reset(self) -> None:
+        """Closes the breaker and clears the failure count."""
+        self._consecutive_failures = 0
+        self._opened_at = None
+
 
 class Bulkhead:
     """Caps concurrent calls to one downstream server.
