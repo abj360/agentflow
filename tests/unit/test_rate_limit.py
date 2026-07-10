@@ -152,3 +152,21 @@ async def test_metrics_path_is_exempt() -> None:
     middleware = build_middleware(max_requests=0)
     response = await middleware.dispatch(PathRequest("/metrics"), passthrough)
     assert response.status_code == 200
+
+
+class TenantRequest(FakeRequest):
+    """Fake request carrying a tenant header."""
+
+    def __init__(self, tenant: str) -> None:
+        """Stores the tenant alongside the fake client."""
+        super().__init__()
+        self.headers = {"x-tenant-id": tenant}
+        self.url = SimpleNamespace(path="/audit/x")
+
+
+async def test_tenant_header_takes_priority_over_host() -> None:
+    """Verifies tenant-keyed limiting when the tenant header is present."""
+    middleware = build_middleware(max_requests=1)
+    await middleware.dispatch(TenantRequest("acme"), passthrough)
+    response = await middleware.dispatch(TenantRequest("acme"), passthrough)
+    assert response.status_code == 429
