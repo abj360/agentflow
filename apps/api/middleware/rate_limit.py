@@ -56,7 +56,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         """
         if request.url.path in EXEMPT_PATHS:
             return await call_next(request)
-        client = request.client.host if request.client else "unknown"
+        client = self._client_key(request)
         window_start, count = self._counters[client]
         now = self._now()
         if now - window_start > self.window_seconds:
@@ -73,6 +73,20 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         response.headers["X-RateLimit-Limit"] = str(self.max_requests)
         response.headers["X-RateLimit-Remaining"] = str(remaining)
         return response
+
+    def _client_key(self, request: Request) -> str:
+        """Resolves the rate-limit key, preferring tenant headers.
+
+        Args:
+            request: The incoming HTTP request.
+
+        Returns:
+            client_key: Tenant header when present, otherwise the client host.
+        """
+        tenant = request.headers.get("x-tenant-id")
+        if tenant:
+            return f"tenant:{tenant}"
+        return request.client.host if request.client else "unknown"
 
 
 class RedisRateCounter:
