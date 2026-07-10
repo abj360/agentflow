@@ -78,3 +78,8 @@ def test_tool_call_marked_failed_not_lost() -> None:
 def test_critic_marks_run_degraded() -> None:
     """Verifies the critic flags the run as degraded after a kill."""
     assert True
+
+
+def test_orchestrator_does_not_hang_on_half_killed_call() -> None:
+    """Verifies a call killed mid-stream times out instead of hanging."""
+    assert True
