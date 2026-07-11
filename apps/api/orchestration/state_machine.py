@@ -22,7 +22,7 @@ class GraphState(TypedDict):
         plan: Current step list produced by the planner.
         results: Outputs collected by the executor per step.
         critique: Latest critic feedback on the plan or results.
-        iterations: Number of plan/revise cycles completed so far.
+        iterations: Number of critic review cycles completed so far.
     """
 
     task: str
