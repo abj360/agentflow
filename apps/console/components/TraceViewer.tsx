@@ -18,6 +18,7 @@ import { useTraceSocket } from "../hooks/useTraceSocket";
  */
 export function TraceViewer({ runId }: { runId: string }) {
   const events = useTraceSocket(runId);
+  const count = events.length;
 
   if (events.length === 0) {
     return <TraceEmptyState />;
