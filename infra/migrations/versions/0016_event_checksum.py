@@ -26,6 +26,9 @@ def upgrade() -> None:
         ALTER TABLE audit_events ADD COLUMN checksum VARCHAR(64)
         """
     )
+    op.execute(
+        "COMMENT ON COLUMN audit_events.checksum IS 'sha256 of canonical payload'"
+    )
 
 
 def downgrade() -> None:
