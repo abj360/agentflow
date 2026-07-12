@@ -6,6 +6,8 @@ Contains:
     ToolSpec: describes one tool exposed by the MCP server
     ToolRegistry: tools this server exposes to MCP clients
     default_registry(): builds the registry with the built-in demo tools
+    validate_tool_spec(): checks a tool spec for required fields
+    create_sse_app(): builds the SSE transport application wiring
 """
 
 from dataclasses import dataclass, field
