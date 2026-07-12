@@ -91,3 +91,8 @@ def test_create_sse_app_lists_tools() -> None:
     app = create_sse_app(default_registry())
     assert app["transport"] == "sse"
     assert "search.query" in app["tools"]
+
+
+def test_unregister_missing_returns_false() -> None:
+    """Verifies unregistering an unknown tool reports False."""
+    assert ToolRegistry().unregister("ghost") is False
