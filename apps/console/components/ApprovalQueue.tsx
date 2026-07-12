@@ -26,6 +26,7 @@ export interface Approval {
  */
 export function ApprovalQueue() {
   const [approvals, setApprovals] = useState<Approval[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/approvals/pending`, {
