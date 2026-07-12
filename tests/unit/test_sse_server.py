@@ -96,3 +96,12 @@ def test_create_sse_app_lists_tools() -> None:
 def test_unregister_missing_returns_false() -> None:
     """Verifies unregistering an unknown tool reports False."""
     assert ToolRegistry().unregister("ghost") is False
+
+
+def test_list_tools_sorted_by_name() -> None:
+    """Verifies the listing comes out in name order."""
+    registry = ToolRegistry()
+    registry.register(ToolSpec(name="zeta.tool", description="z"))
+    registry.register(ToolSpec(name="alpha.tool", description="a"))
+    names = [spec.name for spec in registry.list_tools()]
+    assert names == sorted(names)
