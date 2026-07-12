@@ -215,3 +215,16 @@ async def test_session_factory_fixture_yields_working_session(session_factory) -
     async with session_factory() as session:
         result = await session.execute(select(AuditEvent))
         assert list(result.scalars()) is not None
+
+
+async def test_created_at_set_by_server(session_factory) -> None:
+    """Verifies the server assigns created_at on insert."""
+    writer = AuditWriter(session_factory)
+    await writer.enqueue("it-trace-8", EventKind.PLAN_CREATED, {})
+    await writer.flush()
+    async with session_factory() as session:
+        result = await session.execute(
+            select(AuditEvent).where(AuditEvent.trace_id == "it-trace-8")
+        )
+        event = result.scalars().one()
+    assert event.created_at is not None
