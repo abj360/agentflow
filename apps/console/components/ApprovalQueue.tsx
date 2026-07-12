@@ -28,7 +28,9 @@ export function ApprovalQueue() {
   const [approvals, setApprovals] = useState<Approval[]>([]);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/approvals/pending`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/approvals/pending`, {
+      cache: "no-store",
+    })
       .then((res) => {
         if (!res.ok) {
           throw new Error(`approvals fetch failed: ${res.status}`);
