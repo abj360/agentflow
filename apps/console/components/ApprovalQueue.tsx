@@ -39,7 +39,8 @@ export function ApprovalQueue() {
         return res.json();
       })
       .then((body) => setApprovals(body.approvals ?? []))
-      .catch(() => setApprovals([]));
+      .catch(() => setApprovals([]))
+      .finally(() => setLoading(false));
   }, []);
 
   const resolve = async (approvalId: string, status: string) => {
