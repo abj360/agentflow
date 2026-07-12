@@ -79,7 +79,7 @@ class ServerEvictor:
         """
         healthy = self.checker.record_probe(server_name, ok)
         if not healthy:
-            self.evicted[server_name] = time.time()
+            self.evict(server_name)
         return healthy
 
     def is_active(self, server_name: str) -> bool:
