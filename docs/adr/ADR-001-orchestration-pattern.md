@@ -67,3 +67,9 @@ Ranked roughly by importance:
   transition unit tests.
 - Session state is versioned (`session.py`) so concurrent updates surface as
   conflicts rather than silent corruption.
+
+
+## References
+
+- LangGraph documentation on `StateGraph` and conditional edges.
+- ADR-002: audit trace format (hash-chained event log).
