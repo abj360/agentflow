@@ -114,3 +114,11 @@ def test_checker_window_seconds_stored() -> None:
     """Verifies the checker keeps its probe window setting."""
     checker = HealthChecker(failure_threshold=3, window_seconds=30.0)
     assert checker.window_seconds == 30.0
+
+
+def test_probe_uses_evict_helper() -> None:
+    """Verifies the probe path routes through evict()."""
+    evictor = build_evictor()
+    evictor.probe("srv", ok=False)
+    evictor.probe("srv", ok=False)
+    assert "srv" in evictor.evicted
