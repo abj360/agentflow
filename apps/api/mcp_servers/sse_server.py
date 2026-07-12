@@ -28,6 +28,7 @@ class ToolSpec:
     name: str
     description: str
     input_schema: dict = field(default_factory=dict)
+    version: str = "1.0"
 
     def mcp_schema(self) -> dict:
         """Renders this spec as an MCP tool schema.
