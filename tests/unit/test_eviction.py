@@ -122,3 +122,11 @@ def test_probe_uses_evict_helper() -> None:
     evictor.probe("srv", ok=False)
     evictor.probe("srv", ok=False)
     assert "srv" in evictor.evicted
+
+
+def test_multiple_servers_tracked_independently() -> None:
+    """Verifies failures on one server don't evict another."""
+    evictor = build_evictor()
+    evictor.probe("bad", ok=False)
+    evictor.probe("bad", ok=False)
+    assert evictor.is_active("good") is True
