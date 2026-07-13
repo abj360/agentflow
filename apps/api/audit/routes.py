@@ -117,7 +117,11 @@ async def get_trace_events(
         raise HTTPException(status_code=404, detail=f"trace {trace_id!r} not found")
     page = events[:limit]
     next_cursor = (
-        encode_cursor(page[-1].created_at) if len(events) > limit else None
+        (
+            encode_cursor(page[-1].created_at)
+            if len(events) > limit
+            else None
+        )
     )
     return {
         "trace_id": trace_id,
