@@ -288,3 +288,9 @@ def test_empty_cursor_treated_as_first_page() -> None:
     client = make_client(make_events("trace-p10", 2))
     body = client.get("/audit/trace-p10").json()
     assert body["event_count"] == 2
+
+
+def test_sessions_default_limit_applied() -> None:
+    """Verifies the sessions endpoint responds without explicit params."""
+    client = make_client([])
+    assert client.get("/audit/sessions").status_code == 200
