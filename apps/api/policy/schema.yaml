@@ -115,3 +115,8 @@ tenant_overrides:
       - match: "*"
         action: deny
         risk: unknown
+
+
+  - match: "notify.*"
+    action: allow
+    risk: low
