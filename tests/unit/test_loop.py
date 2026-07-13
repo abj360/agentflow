@@ -114,3 +114,9 @@ async def test_iterations_never_exceed_bound() -> None:
 
     result = await run_session("session-9", "loop forever")
     assert result["iterations"] <= MAX_REVISIONS + 1
+
+
+async def test_result_contains_output_key() -> None:
+    """Verifies the loop result always carries an output key."""
+    result = await run_session("session-10", "final check")
+    assert "output" in result
