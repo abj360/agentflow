@@ -107,7 +107,7 @@ async def get_trace_events(
         .order_by(AuditEvent.created_at)
         .limit(limit + 1)
     )
-    if cursor is not None:
+    if cursor:
         statement = statement.where(
             AuditEvent.created_at > decode_cursor(cursor)
         )
