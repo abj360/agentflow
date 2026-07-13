@@ -38,3 +38,9 @@ def test_decode_cursor_returns_datetime() -> None:
     """Verifies decoding yields a datetime for the WHERE clause comparison."""
     decoded = decode_cursor("2026-07-04T00:00:00+00:00")
     assert isinstance(decoded, datetime)
+
+
+def test_encode_cursor_deterministic() -> None:
+    """Verifies the same timestamp always encodes to the same token."""
+    stamp = datetime(2026, 7, 13, 12, 0, tzinfo=timezone.utc)
+    assert encode_cursor(stamp) == encode_cursor(stamp)
