@@ -1,5 +1,5 @@
 # MCP tool governance policy — evaluated before every governed tool call
-version: 2
+version: 3
 rules:
   - match: "search.*"
     action: allow
