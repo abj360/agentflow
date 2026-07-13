@@ -50,7 +50,7 @@ body {
 
 .topbar a {
   color: var(--muted);
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   text-decoration: none;
   transition: color 120ms ease;
 }
