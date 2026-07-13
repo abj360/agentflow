@@ -44,3 +44,8 @@ def test_encode_cursor_deterministic() -> None:
     """Verifies the same timestamp always encodes to the same token."""
     stamp = datetime(2026, 7, 13, 12, 0, tzinfo=timezone.utc)
     assert encode_cursor(stamp) == encode_cursor(stamp)
+
+
+def test_max_page_size_is_sane() -> None:
+    """Verifies the page cap is positive and memory-safe."""
+    assert 100 <= MAX_PAGE_SIZE <= 1000
