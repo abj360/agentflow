@@ -4,6 +4,8 @@ loop.py --- bounded planner/executor/critic orchestration loop
 
 Contains:
     run_session(): runs one orchestration session to completion
+    session_summary(): builds a one-line summary of a finished session
+    LoopHooks: receives lifecycle callbacks from the loop
 """
 
 from apps.api.orchestration.state import StateStore
