@@ -6,6 +6,7 @@ Contains:
     SoakUser: simulated user driving long-running mixed traffic
     SOAK_DURATION_MINUTES: target soak duration
     SOAK_TARGET_USERS: target concurrent user count
+    (run: locust -f tests/load/soak.py --run-time 2h --users 200)
 """
 
 from locust import HttpUser, between, task
