@@ -100,7 +100,7 @@ section > h1 {
 .trace-role {
   color: var(--muted);
   font-size: 0.8125rem;
-  min-width: 7rem;
+  min-width: 6.5rem;
 }
 
 
