@@ -281,3 +281,10 @@ def test_trace_events_include_prev_hash_after_serialization() -> None:
     client = make_client(make_events("trace-10", 2))
     body = client.get("/audit/trace-10").json()
     assert body["events"][1]["prev_hash"] == body["events"][0]["event_hash"]
+
+
+def test_empty_cursor_treated_as_first_page() -> None:
+    """Verifies omitting the cursor returns the first page."""
+    client = make_client(make_events("trace-p10", 2))
+    body = client.get("/audit/trace-p10").json()
+    assert body["event_count"] == 2
