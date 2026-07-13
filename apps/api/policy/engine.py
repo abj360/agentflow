@@ -9,6 +9,8 @@ Contains:
     (compiled once per session; 120ms -> 4ms per-call overhead)
     is_allowed(): reports whether a decision permits the call
     describe_action(): renders an action as human-readable text
+    load_engine(): loads the engine for the configured schema path
+    CompiledRule: pre-compiled glob pattern plus its action
 """
 
 import fnmatch
