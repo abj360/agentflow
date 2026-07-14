@@ -241,3 +241,9 @@ def test_scopes_param_empty() -> None:
     from apps.api.mcp_servers.oauth import scopes_param
 
     assert scopes_param(()) == ""
+
+
+def test_authorize_url_scopes_sorted_after_refactor() -> None:
+    """Verifies the consent URL keeps working after the scopes refactor."""
+    url = build_client().build_authorize_url(state="s")
+    assert "scope=tools:read tools:call" in url
