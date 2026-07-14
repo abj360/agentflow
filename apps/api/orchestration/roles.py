@@ -8,6 +8,8 @@ Contains:
     Executor: runs plan steps through governed tools
     Synthesizer: merges step outputs into the final answer
     Critic: reviews plans and outputs, requesting revisions
+    LLMClient: completion interface roles use to call a model
+    RoleRegistry: maps role names to role instances
 """
 
 from typing import Protocol
