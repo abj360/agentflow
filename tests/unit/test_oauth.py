@@ -257,3 +257,14 @@ def test_config_is_frozen() -> None:
 
     with pytest.raises(FrozenInstanceError):
         CONFIG.client_id = "other"
+
+
+def test_token_set_is_frozen() -> None:
+    """Verifies token sets are immutable value objects."""
+    from dataclasses import FrozenInstanceError
+
+    import pytest
+
+    tokens = TokenSet(access_token="t", refresh_token=None, expires_at=0.0)
+    with pytest.raises(FrozenInstanceError):
+        tokens.access_token = "x"
