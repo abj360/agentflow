@@ -240,3 +240,19 @@ def test_lock_key_single_part() -> None:
     from apps.api.concurrency.locks import lock_key
 
     assert lock_key("global") == "agentflow:lock:global"
+
+
+async def test_extend_with_explicit_ttl() -> None:
+    """Verifies an explicit TTL is used for the extension."""
+    redis = FakeRedis()
+    recorded = {}
+
+    async def pexpire(key: str, ttl: int) -> None:
+        """Records the extension TTL."""
+        recorded["ttl"] = ttl
+
+    redis.pexpire = pexpire
+    lock = DistributedLock(redis, "k1")
+    await lock.acquire()
+    await lock.extend(ttl_ms=5000)
+    assert recorded["ttl"] == 5000
