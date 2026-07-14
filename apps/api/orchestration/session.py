@@ -6,6 +6,11 @@ Contains:
     SessionRecord: immutable record of a session's state at one version
     SessionRegistry: tracks sessions and their current version
     VersionConflictError: raised when a version bump loses a race
+    SessionRegistry.open_session(): registers a new session at version zero
+    SessionRegistry.bump_version(): increments a session's version
+    SessionRegistry.close_session(): marks a session closed
+    SessionRegistry.list_sessions(): lists all registered sessions
+    SessionRegistry.expire_older_than(): removes idle sessions
 """
 
 import time
