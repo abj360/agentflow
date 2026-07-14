@@ -23,7 +23,7 @@ def upgrade() -> None:
     """Applies the migration."""
     op.execute(
         """
-        CREATE INDEX ix_audit_events_checksum ON audit_events (checksum)
+        CREATE INDEX IF NOT EXISTS ix_audit_events_checksum ON audit_events (checksum)
         """
     )
 
