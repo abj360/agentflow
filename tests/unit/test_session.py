@@ -101,3 +101,10 @@ def test_expire_older_than_removes_stale() -> None:
     registry.open_session("s7", "trace-1")
     assert registry.expire_older_than(0) == 1
     assert registry.list_sessions() == []
+
+
+def test_expire_keeps_fresh_sessions() -> None:
+    """Verifies expiry keeps sessions newer than the cutoff."""
+    registry = SessionRegistry()
+    registry.open_session("s8", "trace-1")
+    assert registry.expire_older_than(3600) == 0
