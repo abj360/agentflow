@@ -60,7 +60,7 @@ class StdioServer:
         """
         if "method" not in request:
             return {"error": "missing method"}
-        method = request["method"]  # validated above
+        method = request["method"]
         if method == "tools/list":
             return {
                 "tools": [
