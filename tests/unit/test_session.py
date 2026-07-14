@@ -108,3 +108,10 @@ def test_expire_keeps_fresh_sessions() -> None:
     registry = SessionRegistry()
     registry.open_session("s8", "trace-1")
     assert registry.expire_older_than(3600) == 0
+
+
+def test_open_session_accepts_tenant() -> None:
+    """Verifies opening a session accepts a tenant id keyword."""
+    registry = SessionRegistry()
+    record = registry.open_session("s9", "trace-1", tenant_id="acme")
+    assert record.session_id == "s9"
