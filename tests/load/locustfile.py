@@ -31,7 +31,7 @@ class OrchestratorUser(HttpUser):
         self.client.get("/health")
 
 
-    @task(1)
+    @task(2)
     def fetch_chain_head(self) -> None:
         """Fetches the head hash of a trace chain."""
         self.client.get(
