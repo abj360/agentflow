@@ -24,7 +24,7 @@ class BudgetLimits:
     """
 
     max_tokens: int = 50_000
-    max_tool_calls: int = 40
+    max_tool_calls: int = 40  # per-session caps; tenants can override
 
 
 class BudgetTracker:
