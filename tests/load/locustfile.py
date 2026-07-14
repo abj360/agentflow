@@ -4,6 +4,7 @@ locustfile.py --- Locust load test scenarios at 500 concurrent sessions
 
 Contains:
     OrchestratorUser: simulated user driving session lifecycle traffic
+    ApprovalReviewerUser: simulated user working the approval queue
 """
 
 from locust import HttpUser, between, task
