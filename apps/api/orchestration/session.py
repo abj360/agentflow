@@ -113,7 +113,8 @@ class VersionConflictError(Exception):
         Returns:
             expired_count: Number of sessions removed.
         """
-        cutoff = time.time() - max_age_seconds
+        now = time.time()
+        cutoff = now - max_age_seconds
         stale = [
             session_id
             for session_id, record in self.records.items()
