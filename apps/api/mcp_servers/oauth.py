@@ -6,6 +6,11 @@ Contains:
     OAuthClientConfig: connection and credential settings for one MCP server
     TokenSet: access/refresh token pair with expiry
     OAuthClient: runs the authorization-code flow and refreshes tokens
+    TokenCache: caches token sets per MCP server
+    OAuthError: raised when a token endpoint returns an error payload
+    generate_code_verifier(): generates a PKCE code verifier
+    code_challenge(): derives the PKCE S256 challenge from a verifier
+    scopes_param(): renders scopes as a space-separated parameter
 """
 
 import asyncio
