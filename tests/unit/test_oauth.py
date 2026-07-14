@@ -247,3 +247,13 @@ def test_authorize_url_scopes_sorted_after_refactor() -> None:
     """Verifies the consent URL keeps working after the scopes refactor."""
     url = build_client().build_authorize_url(state="s")
     assert "scope=tools:read tools:call" in url
+
+
+def test_config_is_frozen() -> None:
+    """Verifies the client config is immutable."""
+    from dataclasses import FrozenInstanceError
+
+    import pytest
+
+    with pytest.raises(FrozenInstanceError):
+        CONFIG.client_id = "other"
