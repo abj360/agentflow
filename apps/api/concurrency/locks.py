@@ -47,7 +47,10 @@ class DistributedLock:
         deadline = time.monotonic() + timeout
         token = uuid.uuid4().hex
         while time.monotonic() < deadline:
-            if await self.redis.set(self.key, token, nx=True, px=self.ttl_ms):
+            claimed = await self.redis.set(
+                self.key, token, nx=True, px=self.ttl_ms
+            )
+            if claimed:
                 self._token = token
                 return True
             await asyncio.sleep(0.05)
