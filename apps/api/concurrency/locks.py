@@ -5,6 +5,7 @@ locks.py --- Redis-backed distributed lock for critical sections
 Contains:
     DistributedLock: async context manager guarding a critical section via Redis
     LockNotHeldError: raised when operating on a lock that is not held
+    lock_key(): builds a namespaced Redis lock key from parts
 """
 
 import asyncio
