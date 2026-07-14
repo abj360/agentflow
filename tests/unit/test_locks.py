@@ -256,3 +256,10 @@ async def test_extend_with_explicit_ttl() -> None:
     await lock.acquire()
     await lock.extend(ttl_ms=5000)
     assert recorded["ttl"] == 5000
+
+
+async def test_lock_not_held_error_message() -> None:
+    """Verifies the not-held error carries the lock key."""
+    from apps.api.concurrency.locks import LockNotHeldError
+
+    assert "k1" in str(LockNotHeldError("k1"))
