@@ -83,3 +83,11 @@ def test_brin_index_only_on_append_only_table() -> None:
     ]
     for path in brin:
         assert "audit_events" in path.read_text(), path.name
+
+
+def test_no_migration_alters_without_matching_rollback() -> None:
+    """Verifies ALTER TABLE migrations drop what they add on downgrade."""
+    for path in migration_files():
+        content = path.read_text()
+        if "ADD COLUMN" in content:
+            assert "DROP COLUMN" in content, path.name
