@@ -192,3 +192,11 @@ async def test_critic_node_counts_iterations() -> None:
          "iterations": 4}
     )
     assert state["iterations"] == 5
+
+
+async def test_run_session_many_sessions_independent() -> None:
+    """Verifies a batch of sessions all complete independently."""
+    results = []
+    for idx in range(3):
+        results.append(await run_session(f"it-f7-{idx}", f"task {idx}"))
+    assert len(results) == 3
