@@ -27,3 +27,8 @@ def test_backoff_delay_has_jitter() -> None:
     """Verifies delays vary across calls."""
     delays = {backoff_delay(3) for _ in range(20)}
     assert len(delays) > 1
+
+
+def test_backoff_delay_zero_base_stays_zero() -> None:
+    """Verifies a zero base delay keeps retries immediate in tests."""
+    assert backoff_delay(3, base=0) == 0
