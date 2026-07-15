@@ -4,6 +4,7 @@ retry.py --- retries calls to downstream MCP servers with backoff and jitter
 
 Contains:
     call_with_retries(): retries a failed downstream call with exponential backoff
+    (fixes the thundering-herd tight-loop retry from the initial version)
     backoff_delay(): computes the jittered delay for one retry attempt
 """
 
