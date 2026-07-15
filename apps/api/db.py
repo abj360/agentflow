@@ -6,6 +6,8 @@ Contains:
     get_engine(): builds (and caches) the async SQLAlchemy engine
     get_session_factory(): returns the async session factory bound to the engine
     get_session(): FastAPI dependency yielding an async session
+    dispose_engine(): disposes the shared engine and resets cached factories
+    pool_status(): reports current connection pool occupancy
 """
 
 from collections.abc import AsyncIterator
