@@ -65,7 +65,10 @@ class BudgetCircuitBreaker:
             CircuitOpenError: When the circuit is open.
         """
         if self.is_open():
-            raise CircuitOpenError("budget circuit open")
+            raise CircuitOpenError(
+                f"budget circuit open; probe again in "
+                f"{self.reset_seconds - (time.time() - self._opened_at):.1f}s"
+            )
 
 
     def reset(self) -> None:
