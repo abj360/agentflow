@@ -181,3 +181,14 @@ async def test_max_revisions_constant_is_three() -> None:
     from apps.api.orchestration.loop import MAX_REVISIONS
 
     assert MAX_REVISIONS == 3
+
+
+async def test_critic_node_counts_iterations() -> None:
+    """Verifies the critic bumps iterations each pass."""
+    from apps.api.orchestration.state_machine import critic_node
+
+    state = critic_node(
+        {"task": "t", "plan": [], "results": ["r"], "critique": "",
+         "iterations": 4}
+    )
+    assert state["iterations"] == 5
