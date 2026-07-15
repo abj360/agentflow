@@ -174,3 +174,10 @@ async def test_run_session_bounded_respects_max_revisions() -> None:
 
     result = await run_session("it-9", "never satisfied")
     assert result["iterations"] <= MAX_REVISIONS + 1
+
+
+async def test_max_revisions_constant_is_three() -> None:
+    """Verifies the revision bound stays at three per the ADR."""
+    from apps.api.orchestration.loop import MAX_REVISIONS
+
+    assert MAX_REVISIONS == 3
