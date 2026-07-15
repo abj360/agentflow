@@ -34,7 +34,7 @@ class BudgetCircuitBreaker:
         self.failure_threshold = failure_threshold
         self.reset_seconds = reset_seconds
         self._failures = 0
-        self._opened_at: float | None = None
+        self._opened_at: float | None = None  # set on trip, cleared on reset
 
     def record_breach(self) -> None:
         """Records one budget breach, opening the circuit at the threshold."""
