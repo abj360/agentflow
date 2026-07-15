@@ -5,6 +5,7 @@ retry.py --- per-tool retry policy configuration
 Contains:
     RetryPolicy: declares retry behavior for one tool
     RetryPolicyRegistry: resolves the retry policy for a tool call
+    RetryPolicyRegistry.register_tenant_override(): adds a tenant override
     execute_with_retry(): runs a tool call under its retry policy
     policies_from_dict(): builds a registry from a plain dict
 """
