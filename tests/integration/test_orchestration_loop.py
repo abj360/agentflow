@@ -166,3 +166,11 @@ async def test_run_session_returns_plain_dict() -> None:
     """Verifies the loop result is JSON-serializable."""
     result = await run_session("it-f6", "serialize me")
     assert isinstance(result, dict)
+
+
+async def test_run_session_bounded_respects_max_revisions() -> None:
+    """Verifies a run never exceeds the revision bound."""
+    from apps.api.orchestration.loop import MAX_REVISIONS
+
+    result = await run_session("it-9", "never satisfied")
+    assert result["iterations"] <= MAX_REVISIONS + 1
