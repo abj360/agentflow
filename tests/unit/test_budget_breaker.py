@@ -149,3 +149,11 @@ def test_success_after_failure_keeps_closed() -> None:
     breaker.record_breach()
     breaker.record_success()
     assert breaker.state() == "closed"
+
+
+def test_reset_clears_breach_count() -> None:
+    """Verifies reset zeroes the running breach count."""
+    breaker = BudgetCircuitBreaker(failure_threshold=5)
+    breaker.record_breach()
+    breaker.reset()
+    assert breaker._failures == 0
