@@ -157,3 +157,10 @@ def test_reset_clears_breach_count() -> None:
     breaker.record_breach()
     breaker.reset()
     assert breaker._failures == 0
+
+
+def test_threshold_of_one_trips_immediately() -> None:
+    """Verifies a threshold of one opens on the first breach."""
+    breaker = BudgetCircuitBreaker(failure_threshold=1)
+    breaker.record_breach()
+    assert breaker.is_open() is True
