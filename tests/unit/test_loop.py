@@ -6,7 +6,7 @@ Contains:
     test_run_session_returns_iterations(): verifies the result shape of a session
 """
 
-from apps.api.orchestration.loop import run_session
+from apps.api.orchestration.loop import MAX_REVISIONS, run_session
 
 
 async def test_run_session_returns_iterations() -> None:
@@ -120,3 +120,9 @@ async def test_result_contains_output_key() -> None:
     """Verifies the loop result always carries an output key."""
     result = await run_session("session-10", "final check")
     assert "output" in result
+
+
+async def test_loop_terminates_for_accepting_critic() -> None:
+    """Verifies an always-accept critic finishes quickly."""
+    result = await run_session("session-b2", "quick task")
+    assert result["iterations"] <= MAX_REVISIONS + 1
