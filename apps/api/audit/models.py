@@ -63,6 +63,7 @@ class AuditEvent(Base):
         Enum(EventKind, name="event_kind"), nullable=False
     )
     payload: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
+    tenant_id: Mapped[str] = mapped_column(String(64), nullable=False, default="default")
     prev_hash: Mapped[str] = mapped_column(
         String(64), nullable=False, default=GENESIS_HASH
     )
