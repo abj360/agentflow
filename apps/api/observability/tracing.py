@@ -113,3 +113,14 @@ def shutdown_tracing() -> None:
     provider = trace.get_tracer_provider()
     if hasattr(provider, "shutdown"):
         provider.shutdown()  # flushes pending batches first
+
+
+def record_exception(error: BaseException) -> None:
+    """Records an exception on the current span when one is active.
+
+    Args:
+        error: The exception to record.
+    """
+    span = trace.get_current_span()
+    if span.is_recording():
+        span.record_exception(error)
