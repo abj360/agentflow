@@ -112,7 +112,7 @@ def shutdown_tracing() -> None:
     """Flushes and shuts down the tracer provider."""
     provider = trace.get_tracer_provider()
     if hasattr(provider, "shutdown"):
-        provider.shutdown()  # flushes pending batches first
+        provider.shutdown()
 
 
 def record_exception(error: BaseException) -> None:
