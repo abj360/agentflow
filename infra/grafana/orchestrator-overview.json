@@ -3,6 +3,7 @@
   "uid": "agentflow-overview",
   "tags": ["agentflow", "orchestrator"],
   "schemaVersion": 39,
+  "refresh": "30s",
   "panels": [
     {
       "id": 1,
