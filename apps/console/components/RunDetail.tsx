@@ -50,6 +50,7 @@ export function RunDetail({ runId }: { runId: string }) {
       <ol className="trace-list" aria-label="Run events">
         {trace.events.map((event, index) => (
           <li key={index} className="trace-event">
+            <span className="trace-role">{event.kind.split("_")[0]}</span>
             <span className="trace-kind">{event.kind}</span>
             <code title={event.event_hash}>
               {event.event_hash.slice(0, 12)}…
