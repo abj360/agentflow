@@ -126,3 +126,9 @@ async def test_loop_terminates_for_accepting_critic() -> None:
     """Verifies an always-accept critic finishes quickly."""
     result = await run_session("session-b2", "quick task")
     assert result["iterations"] <= MAX_REVISIONS + 1
+
+
+async def test_loop_result_includes_status_after_bound_change() -> None:
+    """Verifies the status key survives the bound refactor."""
+    result = await run_session("session-b3", "steady")
+    assert "status" in result
