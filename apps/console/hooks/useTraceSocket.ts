@@ -28,7 +28,7 @@ export function useTraceSocket(runId: string): TraceEvent[] {
   const [events, setEvents] = useState<TraceEvent[]>([]);
 
   useEffect(() => {
-    let stopped = false;  // set on unmount to halt reconnects
+    let stopped = false;
     let attempts = 0;
     let current: WebSocket | null = null;
 
