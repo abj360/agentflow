@@ -8,6 +8,7 @@ Contains:
     AuditWriter.flush(): writes all pending events in one transaction
     AuditWriter.drain(): flushes and disables further enqueue calls
     AuditWriter.flush_with_retry(): retries a failed flush with bounded attempts
+    flush_periodically(): background loop flushing the writer on an interval
 """
 
 import asyncio
