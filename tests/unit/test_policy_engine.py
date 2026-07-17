@@ -455,3 +455,9 @@ def test_from_dict_accepts_plain_dicts() -> None:
     """Verifies from_dict takes unvalidated plain dict rules."""
     engine = PolicyEngine.from_dict([{"match": "x", "action": "allow"}])
     assert engine.evaluate("x", {}).action == "allow"
+
+
+def test_compiled_table_handles_unicode_tool_names() -> None:
+    """Verifies non-ASCII tool names evaluate without error."""
+    engine = build_engine()
+    assert engine.evaluate("séarch.qüery", {}).action == "deny"
