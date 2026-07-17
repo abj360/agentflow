@@ -242,3 +242,9 @@ def test_transition_chain_ends_in_accept_state() -> None:
 def test_make_state_overrides_apply() -> None:
     """Verifies the test helper applies field overrides."""
     assert make_state(task="custom")["task"] == "custom"
+
+
+def test_executor_result_format() -> None:
+    """Verifies executor results are strings tagged with the step."""
+    results = executor_node(make_state(plan=["deploy"]))["results"]
+    assert results[0].startswith("done: deploy")
