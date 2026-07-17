@@ -255,3 +255,9 @@ def test_planner_handles_long_task() -> None:
     long_task = "x" * 500
     after = planner_node(make_state(task=long_task))
     assert after["plan"] == [long_task]
+
+
+def test_make_state_defaults_complete() -> None:
+    """Verifies the helper covers every graph state field."""
+    state = make_state()
+    assert set(state) == {"task", "plan", "results", "critique", "iterations"}
