@@ -248,3 +248,10 @@ def test_executor_result_format() -> None:
     """Verifies executor results are strings tagged with the step."""
     results = executor_node(make_state(plan=["deploy"]))["results"]
     assert results[0].startswith("done: deploy")
+
+
+def test_planner_handles_long_task() -> None:
+    """Verifies the planner accepts a long task string."""
+    long_task = "x" * 500
+    after = planner_node(make_state(task=long_task))
+    assert after["plan"] == [long_task]
