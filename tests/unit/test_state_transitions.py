@@ -261,3 +261,9 @@ def test_make_state_defaults_complete() -> None:
     """Verifies the helper covers every graph state field."""
     state = make_state()
     assert set(state) == {"task", "plan", "results", "critique", "iterations"}
+
+
+def test_critic_node_exists_in_graph() -> None:
+    """Verifies the critic node is wired into the compiled graph."""
+    graph = build_graph()
+    assert "critic" in graph.nodes
