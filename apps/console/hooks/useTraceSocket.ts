@@ -4,6 +4,7 @@
  *
  * Contains:
  *   useTraceSocket: connects to the trace stream and exposes events
+ *   MAX_RECONNECT_ATTEMPTS: reconnect budget before giving up
  *   TraceEvent: one event received over the trace stream
  */
 
