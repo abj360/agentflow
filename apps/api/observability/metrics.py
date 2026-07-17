@@ -5,6 +5,12 @@ metrics.py --- Prometheus metrics exporter for the API
 Contains:
     registry: CollectorRegistry holding all agentflow metrics
     sessions_total: counter of orchestration sessions started
+    loop_iterations: histogram of revise-loop iterations
+    tool_calls_total: counter of tool calls by policy action
+    tokens_total: counter of model tokens consumed
+    approval_queue_depth: gauge of pending approval requests
+    budget_breaker_open: gauge of the budget breaker state
+    policy_denials_total: counter of policy denials by rule
     metrics_endpoint: ASGI handler serving the /metrics scrape endpoint
 """
 
