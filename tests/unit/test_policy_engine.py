@@ -449,3 +449,9 @@ def test_compiled_engine_matches_dict_engine() -> None:
     assert engine.evaluate("search.query", {}).action == "allow"
     assert engine.evaluate("shell.exec", {}).action == "human_approval"
     assert engine.evaluate("misc", {}).action == "deny"
+
+
+def test_from_dict_accepts_plain_dicts() -> None:
+    """Verifies from_dict takes unvalidated plain dict rules."""
+    engine = PolicyEngine.from_dict([{"match": "x", "action": "allow"}])
+    assert engine.evaluate("x", {}).action == "allow"
