@@ -441,3 +441,11 @@ def test_rule_attribute_populated_on_match() -> None:
     """Verifies decisions name the matched rule."""
     decision = build_engine().evaluate("shell.exec", {})
     assert decision.rule == "shell.*"
+
+
+def test_compiled_engine_matches_dict_engine() -> None:
+    """Verifies the compiled engine agrees with the rule list."""
+    engine = PolicyEngine.from_dict(RULES)
+    assert engine.evaluate("search.query", {}).action == "allow"
+    assert engine.evaluate("shell.exec", {}).action == "human_approval"
+    assert engine.evaluate("misc", {}).action == "deny"
