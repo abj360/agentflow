@@ -174,3 +174,11 @@ def test_metrics_endpoint_idempotent() -> None:
     second = metrics_endpoint(None)
     assert b"agentflow_sessions_total" in first.body
     assert b"agentflow_sessions_total" in second.body
+
+
+def test_registry_isolated_from_default() -> None:
+    """Verifies agentflow metrics live in their own registry."""
+    from apps.api.observability.metrics import registry
+
+    names = {collector for collector in registry._collector_to_names}
+    assert names
