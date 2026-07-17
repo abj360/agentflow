@@ -59,7 +59,7 @@ export function useTraceSocket(runId: string): TraceEvent[] {
     connect();
     return () => {
       stopped = true;
-      current?.close();
+      current?.close();  // no leaked sockets on unmount
     };
   }, [runId]);
 
