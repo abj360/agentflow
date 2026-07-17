@@ -246,3 +246,9 @@ async def test_flush_periodically_helper_exists() -> None:
     from apps.api.audit.writer import flush_periodically
 
     assert inspect.iscoroutinefunction(flush_periodically)
+
+
+async def test_max_buffer_defaults_to_module_constant() -> None:
+    """Verifies the default max buffer comes from the module constant."""
+    writer = AuditWriter(FakeSessionFactory())
+    assert writer.max_buffer == 4096
