@@ -44,7 +44,7 @@ class AuditWriter:
         Args:
             session_factory: Factory producing async sessions for flush transactions.
             batch_size: Number of buffered events that triggers an automatic flush.
-            max_buffer: Hard cap on buffered events; enqueue flushes beyond it.
+            max_buffer: Hard cap on buffered events; enqueue flushes when it is hit.
         """
         self.session_factory = session_factory
         self.max_buffer = max_buffer
