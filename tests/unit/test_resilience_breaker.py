@@ -176,3 +176,10 @@ def test_registry_breakers_isolated_state() -> None:
     registry = BreakerRegistry(failure_threshold=1)
     registry.for_server("bad").record_failure()
     assert registry.for_server("good").allows_call() is True
+
+
+def test_circuit_open_error_is_exception() -> None:
+    """Verifies the open-breaker error type is catchable."""
+    from apps.api.resilience.breaker import CircuitOpenError
+
+    assert issubclass(CircuitOpenError, Exception)
