@@ -47,6 +47,7 @@ def diff_plans(old: list[str], new: list[str]) -> PlanDiff:
         removed=tuple(step for step in old if step not in new_set),
         kept=tuple(step for step in new if step in old_set),
     )
+    return diff
 
 
 def render_text(diff: PlanDiff) -> str:
