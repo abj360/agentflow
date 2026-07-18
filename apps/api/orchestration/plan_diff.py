@@ -42,7 +42,7 @@ def diff_plans(old: list[str], new: list[str]) -> PlanDiff:
         diff: Structured difference between the two versions.
     """
     old_set, new_set = set(old), set(new)
-    return PlanDiff(
+    diff = PlanDiff(
         added=tuple(step for step in new if step not in old_set),
         removed=tuple(step for step in old if step not in new_set),
         kept=tuple(step for step in new if step in old_set),
