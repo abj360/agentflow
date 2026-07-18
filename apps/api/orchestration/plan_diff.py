@@ -5,6 +5,12 @@ plan_diff.py --- diffs planner revisions for the critic review view
 Contains:
     PlanDiff: structured difference between two plan versions
     diff_plans(): computes the difference between two plan versions
+    render_text(): renders a plan diff as console-friendly text
+    render_markdown(): renders a plan diff as a markdown list
+    similarity(): scores how similar two plan versions are
+    summarize(): summarizes a plan diff as headline counts
+    to_audit_payload(): serializes a plan diff for the audit payload
+    has_changes(): reports whether a plan diff contains any change
 """
 
 from dataclasses import dataclass
