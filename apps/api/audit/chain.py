@@ -7,6 +7,8 @@ Contains:
     compute_event_hash(): derives a SHA-256 hash over event content and the previous hash
     ChainLinker: tracks the latest hash per trace for chaining new events
     verify_chain(): re-computes hashes over an event chain and reports integrity
+    chain_head(): returns the hash of the most recent event in a chain
+    ChainVerificationError: raised when a chain fails integrity verification
 """
 
 import hashlib
