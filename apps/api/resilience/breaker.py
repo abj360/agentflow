@@ -74,6 +74,14 @@ class ServerCircuitBreaker:
         self._consecutive_failures = 0
         self._opened_at = None
 
+    def failure_count(self) -> int:
+        """Reports the current consecutive failure count.
+
+        Returns:
+            count: Consecutive failures since the last success.
+        """
+        return self._consecutive_failures
+
 
 class Bulkhead:
     """Caps concurrent calls to one downstream server.
