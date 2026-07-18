@@ -168,7 +168,7 @@ def test_merge_description_override() -> None:
 
 def test_to_mcp_schema_includes_version() -> None:
     """Verifies rendered schemas carry the schema version."""
-    assert to_mcp_schema(SPEC)["version"] == "1"
+    assert to_mcp_schema(SPEC)["version"] == "1.1"
 
 
 def test_core_package_reexports_schema_types() -> None:
