@@ -131,3 +131,13 @@ def test_chain_head_returns_last_event_hash() -> None:
         FakeEvent("trace-1", "tool_result", {}, prev_2, hash_2),
     ]
     assert chain_head(events) == hash_2
+
+
+def test_verify_chain_rejects_reordered_events() -> None:
+    """Verifies swapping two events in a chain fails verification."""
+    linker = ChainLinker()
+    events = []
+    for idx in range(2):
+        prev_hash, event_hash = linker.link("trace-1", "tool_call", {"idx": idx})
+        events.append(FakeEvent("trace-1", "tool_call", {"idx": idx}, prev_hash, event_hash))
+    assert not verify_chain([events[1], events[0]])
