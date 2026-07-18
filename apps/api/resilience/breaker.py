@@ -111,7 +111,7 @@ class Bulkhead:
                 self._semaphore.acquire(), timeout=self.acquire_timeout
             )
         except TimeoutError as exc:
-            raise BulkheadFullError(self.limit) from exc
+            raise BulkheadFullError(self.limit) from exc  # shed load fast
         return self
 
     async def __aexit__(self, *exc_info: object) -> None:
