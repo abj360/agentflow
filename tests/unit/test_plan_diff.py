@@ -106,3 +106,11 @@ def test_render_markdown_empty_diff() -> None:
     from apps.api.orchestration.plan_diff import PlanDiff, render_markdown
 
     assert render_markdown(PlanDiff()) == ""
+
+
+def test_similarity_partial_overlap() -> None:
+    """Verifies partial overlap scores between 0 and 1."""
+    from apps.api.orchestration.plan_diff import similarity
+
+    score = similarity(["a", "b"], ["b", "c"])
+    assert 0.0 < score < 1.0
