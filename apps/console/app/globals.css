@@ -313,6 +313,6 @@ code {
 @media (prefers-color-scheme: dark) {
   .status-rejected {
     background: #450a0a;
-    color: #f87171;
+    color: #fca5a5;
   }
 }
