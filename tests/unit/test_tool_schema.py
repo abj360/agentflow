@@ -169,3 +169,10 @@ def test_merge_description_override() -> None:
 def test_to_mcp_schema_includes_version() -> None:
     """Verifies rendered schemas carry the schema version."""
     assert to_mcp_schema(SPEC)["version"] == "1"
+
+
+def test_core_package_reexports_schema_types() -> None:
+    """Verifies the package root re-exports the schema types."""
+    import agentflow_core
+
+    assert agentflow_core.UnifiedToolSpec is UnifiedToolSpec
