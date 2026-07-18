@@ -183,3 +183,10 @@ def test_circuit_open_error_is_exception() -> None:
     from apps.api.resilience.breaker import CircuitOpenError
 
     assert issubclass(CircuitOpenError, Exception)
+
+
+async def test_bulkhead_default_limit() -> None:
+    """Verifies the bulkhead defaults to 32 slots."""
+    from apps.api.resilience.breaker import Bulkhead
+
+    assert Bulkhead().limit == 32
