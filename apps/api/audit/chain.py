@@ -89,7 +89,11 @@ def verify_chain(events: list) -> bool:
 
 
 class ChainVerificationError(Exception):
-    """Raised when an audit chain fails integrity verification."""
+    """Raised when an audit chain fails integrity verification.
+
+    Carries the trace_id and position of the first invalid event so callers
+    can pinpoint the tampered or missing link without re-walking the chain.
+    """
 
 
 def chain_head(events: list) -> str:
