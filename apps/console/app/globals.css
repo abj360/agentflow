@@ -308,3 +308,11 @@ code {
   outline-offset: 2px;
   border-radius: 0.25rem;
 }
+
+
+@media (prefers-color-scheme: dark) {
+  .status-rejected {
+    background: #450a0a;
+    color: #f87171;
+  }
+}
