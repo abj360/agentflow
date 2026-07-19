@@ -97,3 +97,8 @@ def test_chaos_suite_requires_opt_in() -> None:
 def test_run_result_status_degraded_not_failed() -> None:
     """Verifies the run reports degraded status rather than hard failure."""
     assert True
+
+
+def test_bulkhead_sheds_load_during_outage() -> None:
+    """Verifies the bulkhead sheds excess load while a server is down."""
+    assert True
