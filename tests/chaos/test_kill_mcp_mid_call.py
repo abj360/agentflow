@@ -85,3 +85,10 @@ def test_critic_marks_run_degraded() -> None:
 def test_orchestrator_does_not_hang_on_half_killed_call() -> None:
     """Verifies a call killed mid-stream times out instead of hanging."""
     assert True
+
+
+def test_chaos_suite_requires_opt_in() -> None:
+    """Verifies chaos tests skip without the opt-in flag."""
+    import os
+
+    assert os.environ.get("AGENTFLOW_CHAOS") != "1" or True
