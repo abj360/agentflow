@@ -100,3 +100,11 @@ test("approval buttons are keyboard reachable", async ({ page }) => {
   await approveButton.focus();
   await expect(approveButton).toBeFocused();
 });
+
+
+test("approval flow end to end", async ({ page }) => {
+  await page.goto("/approvals");
+  const card = page.locator(".approval-card").first();
+  await card.getByRole("button", { name: /approve/i }).click();
+  await expect(page.getByText("No pending approvals.")).toBeVisible();
+});
