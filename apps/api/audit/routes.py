@@ -17,7 +17,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from apps.api.audit.chain import verify_chain
+from apps.api.audit.chain import chain_head, verify_chain
 from apps.api.audit.models import AuditEvent, AuditSession, event_to_dict
 from apps.api.db import get_session
 
@@ -158,3 +158,27 @@ async def verify_trace_chain(
         "chain_valid": verify_chain(events),
         "checked": len(events),
     }
+
+
+@router.get("/{trace_id}/head")
+async def get_chain_head(
+    trace_id: str, session: AsyncSession = Depends(get_session)
+) -> dict:
+    """Returns the hash of the most recent event in a trace chain.
+
+    Args:
+        trace_id: Identifier of the orchestration run to inspect.
+        session: Async database session injected by FastAPI.
+
+    Returns:
+        head: Chain-tip hash plus the event count used to compute it.
+    """
+    result = await session.execute(
+        select(AuditEvent)
+        .where(AuditEvent.trace_id == trace_id)
+        .order_by(AuditEvent.created_at)
+    )
+    events = list(result.scalars().all())
+    if not events:
+        raise HTTPException(status_code=404, detail=f"trace {trace_id!r} not found")
+    return {"trace_id": trace_id, "head": chain_head(events), "checked": len(events)}
