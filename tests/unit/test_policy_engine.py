@@ -468,3 +468,9 @@ def test_umbrella_base_denies_shell() -> None:
     engine = PolicyEngine(str(SCHEMA_PATH))
     decision = engine.evaluate("shell.exec", {}, tenant_id="umbrella")
     assert decision.action == "deny"
+
+
+def test_umbrella_search_allowed() -> None:
+    """Verifies the umbrella trial allows search."""
+    engine = PolicyEngine(str(SCHEMA_PATH))
+    assert engine.evaluate("search.query", {}, tenant_id="umbrella").action == "allow"
