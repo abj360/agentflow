@@ -92,7 +92,7 @@ test("theme toggle switches theme attribute", async ({ page }) => {
 });
 
 
-test("approval buttons are keyboard reachable", async ({ page }) => {
+test("approval buttons are keyboard reachable @a11y", async ({ page }) => {
   await page.goto("/approvals");
   const approveButton = page
     .getByRole("button", { name: /approve/i })
