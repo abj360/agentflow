@@ -461,3 +461,10 @@ def test_compiled_table_handles_unicode_tool_names() -> None:
     """Verifies non-ASCII tool names evaluate without error."""
     engine = build_engine()
     assert engine.evaluate("séarch.qüery", {}).action == "deny"
+
+
+def test_umbrella_base_denies_shell() -> None:
+    """Verifies the umbrella tenant inherits the shell denial."""
+    engine = PolicyEngine(str(SCHEMA_PATH))
+    decision = engine.evaluate("shell.exec", {}, tenant_id="umbrella")
+    assert decision.action == "deny"
