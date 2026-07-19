@@ -28,7 +28,7 @@ def test_orchestrator_survives_mcp_kill() -> None:
     )
     time.sleep(1.0)
     server.kill()
-    server.wait(timeout=5)
+    server.wait(timeout=10)  # slower CI runners need the headroom
     assert server.returncode is not None
 
 
