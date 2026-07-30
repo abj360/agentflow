@@ -1,0 +1,17 @@
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+pydantic==2.13.5
+pydantic-settings==2.15.0
+sqlalchemy[asyncio]==2.0.52
+asyncpg==0.31.0
+alembic==1.19.1
+redis==8.1.0
+pyyaml==6.0.3
+httpx==0.28.1
+langgraph==1.2.11
+mcp==2.1.1
+opentelemetry-sdk==1.44.0
+opentelemetry-exporter-otlp-proto-grpc==1.44.0
+opentelemetry-instrumentation-fastapi==0.65b0
+opentelemetry-instrumentation-redis==0.65b0
+prometheus-client==0.26.0
