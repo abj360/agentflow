@@ -16,8 +16,8 @@ Contains:
     validate_graph(): checks the assembled graph for wiring mistakes
 """
 
-from typing import Any, NotRequired, TypedDict, cast
 from collections.abc import Callable, Sequence
+from typing import Any, NotRequired, TypedDict, cast
 
 from langgraph.graph import END, StateGraph
 
@@ -140,9 +140,7 @@ def leaf_ids(tasks: Sequence[PlannedTask]) -> tuple[str, ...]:
     return tuple(task.id for task in tasks if task.id not in depended_on)
 
 
-def wire_dependencies(
-    graph: StateGraph[GraphState], tasks: Sequence[PlannedTask]
-) -> None:
+def wire_dependencies(graph: StateGraph[GraphState], tasks: Sequence[PlannedTask]) -> None:
     """Connects the orchestrator, task, and critic nodes along the plan's edges.
 
     Args:
