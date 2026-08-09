@@ -316,3 +316,31 @@ code {
     color: #fca5a5;
   }
 }
+
+
+.run-screen {
+  display: grid;
+  grid-template-columns: 20rem 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 1rem;
+  height: calc(100vh - 9rem);
+}
+
+.run-chat {
+  grid-row: 2;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  overflow-y: auto;
+}
+
+.run-canvas {
+  grid-row: 2;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  position: relative;
+}
+
+.run-log {
+  grid-column: 1 / -1;
+  overflow-y: auto;
+}
