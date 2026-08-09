@@ -5,7 +5,8 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write .",
     "lint": "next lint --dir app --dir components --dir hooks --dir lib",
     "start": "next start",
     "typecheck": "tsc --noEmit",
