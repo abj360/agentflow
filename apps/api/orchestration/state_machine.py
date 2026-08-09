@@ -156,6 +156,10 @@ def build_graph(tasks: list[PlannedTask] | None = None) -> StateGraph[GraphState
     graph.set_entry_point(ORCHESTRATOR_NODE)
     for task in planned:
         graph.add_node(task.id, task_runner(task))
+    if not planned:
+        graph.add_node(EXECUTOR_NODE, executor_node)
+        graph.add_edge(ORCHESTRATOR_NODE, EXECUTOR_NODE)
+        graph.add_edge(EXECUTOR_NODE, CRITIC_NODE)
     for root in root_ids(planned):
         graph.add_edge(ORCHESTRATOR_NODE, root)
     for task in planned:
