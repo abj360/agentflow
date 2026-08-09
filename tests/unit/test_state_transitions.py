@@ -5,6 +5,7 @@ test_state_transitions.py --- unit tests for state machine transitions
 Contains:
     make_state(): builds a graph state dict for tests
     test_planner_to_executor_edge(): verifies the planner feeds the executor
+    test_graph_nodes_match_planned_task_ids(): verifies node names come from the plan
 """
 
 from apps.api.orchestration.state_machine import (
@@ -12,6 +13,7 @@ from apps.api.orchestration.state_machine import (
     executor_node,
     planner_node,
 )
+from apps.api.orchestration.task_planner import TaskPlanner
 
 
 def make_state(**overrides: object) -> dict:
@@ -114,7 +116,7 @@ def test_validate_graph_detects_sound_graph() -> None:
     """Verifies the production graph passes its own validation."""
     from apps.api.orchestration.state_machine import validate_graph
 
-    assert validate_graph(build_graph()) == []
+    assert validate_graph(build_graph(list(TaskPlanner().plan("a\nb")))) == []
 
 
 def test_second_revision_still_loops() -> None:
@@ -143,10 +145,10 @@ def test_state_carries_task_through_cycle() -> None:
     assert state["task"] == "persist"
 
 
-def test_graph_entry_point_is_planner() -> None:
-    """Verifies runs always begin at the planner node."""
-    graph = build_graph()
-    assert "planner" in graph.nodes
+def test_graph_entry_point_is_the_orchestrator() -> None:
+    """Verifies runs always begin at the orchestrator node."""
+    graph = build_graph(list(TaskPlanner().plan("a\nb")))
+    assert "orchestrator" in graph.nodes
 
 
 def test_results_grow_after_each_executor_pass() -> None:
@@ -166,12 +168,13 @@ def test_critique_starts_empty() -> None:
     assert make_state()["critique"] == ""
 
 
-def test_graph_nodes_match_role_names() -> None:
-    """Verifies graph node names match the canonical role names."""
-    graph = build_graph()
-    assert "planner" in graph.nodes
-    assert "executor" in graph.nodes
+def test_graph_nodes_match_planned_task_ids() -> None:
+    """Verifies graph node names come from the plan, not from fixed roles."""
+    planned = list(TaskPlanner().plan("a\nb"))
+    graph = build_graph(planned)
+    assert "orchestrator" in graph.nodes
     assert "critic" in graph.nodes
+    assert {task.id for task in planned} <= set(graph.nodes)
 
 
 def test_critic_revise_path_preserves_plan() -> None:
@@ -225,7 +228,7 @@ def test_validate_graph_returns_list() -> None:
     """Verifies validation always returns a list of problems."""
     from apps.api.orchestration.state_machine import validate_graph
 
-    assert isinstance(validate_graph(build_graph()), list)
+    assert isinstance(validate_graph(build_graph(list(TaskPlanner().plan("a\nb")))), list)
 
 
 def test_transition_chain_ends_in_accept_state() -> None:
@@ -264,5 +267,5 @@ def test_make_state_defaults_complete() -> None:
 
 def test_critic_node_exists_in_graph() -> None:
     """Verifies the critic node is wired into the compiled graph."""
-    graph = build_graph()
+    graph = build_graph(list(TaskPlanner().plan("a\nb")))
     assert "critic" in graph.nodes

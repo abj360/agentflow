@@ -12,6 +12,7 @@ from typing import Any, cast
 
 from apps.api.orchestration.state import StateStore
 from apps.api.orchestration.state_machine import GraphState, build_graph
+from apps.api.orchestration.task_planner import TaskPlanner
 
 MAX_REVISIONS = 3  # hard cap per ADR-001; never let a run spin unbounded
 
@@ -48,7 +49,7 @@ async def run_session(session_id: str, task: str, hooks: LoopHooks | None = None
         result: Final synthesized output and the session's iteration count.
     """
     store = StateStore()  # immutable snapshots; no shared mutable state
-    app = build_graph().compile()
+    app = build_graph(list(TaskPlanner().plan(task))).compile()
     graph_state: GraphState = {
         "task": task,
         "plan": [],
