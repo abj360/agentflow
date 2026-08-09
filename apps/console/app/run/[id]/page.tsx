@@ -29,7 +29,9 @@ function RunHeader({ runId }: { runId: string }) {
  * @returns The unified run screen element.
  */
 export default function RunPage({ params }: { params: { id: string } }) {
-  if (!params.id) { return <p className="run-empty">No run selected.</p>; }
+  if (!params.id) {
+    return <p className="run-empty">No run selected.</p>;
+  }
   return (
     <section className="run-screen" data-run={params.id}>
       <RunHeader runId={params.id} />
