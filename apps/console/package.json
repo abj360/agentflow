@@ -1,22 +1,27 @@
 {
   "name": "agentflow-console",
-  "version": "0.1.13",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
+    "dev": "next dev",
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write .",
+    "lint": "next lint --dir app --dir components --dir hooks --dir lib",
     "start": "next start",
-    "lint": "next lint",
-    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
     "test": "playwright test"
   },
   "dependencies": {
+    "d3-force": "3.0.0",
     "next": "14.2.3",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "reactflow": "11.11.4"
   },
   "devDependencies": {
     "@playwright/test": "1.44.0",
+    "@types/d3-force": "3.0.10",
     "@types/node": "20.12.12",
     "@types/react": "18.3.3",
     "eslint": "8.57.0",
