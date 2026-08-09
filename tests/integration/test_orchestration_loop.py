@@ -117,11 +117,12 @@ async def test_run_session_without_hooks_still_works() -> None:
 
 
 async def test_graph_state_has_expected_keys() -> None:
-    """Verifies node updates keep the graph state shape."""
+    """Verifies node updates keep the graph state shape and add the task list."""
     from apps.api.orchestration.state_machine import planner_node
 
     state = planner_node({"task": "x", "plan": [], "results": [], "critique": "", "iterations": 0})
-    assert set(state) == {"task", "plan", "results", "critique", "iterations"}
+    assert state["tasks"][0]["dependsOn"] == []
+    assert {"task", "plan", "results", "critique", "iterations"} <= set(state)
 
 
 async def test_graph_routes_to_accept_with_results() -> None:
