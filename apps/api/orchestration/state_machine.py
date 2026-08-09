@@ -10,6 +10,7 @@ Contains:
     task_runner(): builds the node function that runs one planned task
     root_ids(): ids of the tasks that wait on nothing else
     leaf_ids(): ids of the tasks that nothing else depends on
+    wire_dependencies(): connects orchestrator, task, and critic nodes
     build_graph(): assembles a LangGraph whose shape follows the task plan
     route_after_critic(): routes the graph on the critic's verdict
     validate_graph(): checks the assembled graph for wiring mistakes
@@ -139,6 +140,28 @@ def leaf_ids(tasks: list[PlannedTask]) -> tuple[str, ...]:
     return tuple(task.id for task in tasks if task.id not in depended_on)
 
 
+def wire_dependencies(
+    graph: StateGraph[GraphState], tasks: list[PlannedTask]
+) -> None:
+    """Connects the orchestrator, task, and critic nodes along the plan's edges.
+
+    Args:
+        graph: The graph being assembled.
+        tasks: Planned tasks whose dependsOn edges define the topology.
+    """
+    if not tasks:
+        graph.add_node(EXECUTOR_NODE, executor_node)
+        graph.add_edge(ORCHESTRATOR_NODE, EXECUTOR_NODE)
+        graph.add_edge(EXECUTOR_NODE, CRITIC_NODE)
+    for root in root_ids(tasks):
+        graph.add_edge(ORCHESTRATOR_NODE, root)
+    for task in tasks:
+        for dependency in task.depends_on:
+            graph.add_edge(dependency, task.id)
+    for leaf in leaf_ids(tasks):
+        graph.add_edge(leaf, CRITIC_NODE)
+
+
 def build_graph(tasks: list[PlannedTask] | None = None) -> StateGraph[GraphState]:
     """Assembles a LangGraph whose shape follows the runtime task plan.
 
@@ -156,17 +179,7 @@ def build_graph(tasks: list[PlannedTask] | None = None) -> StateGraph[GraphState
     graph.set_entry_point(ORCHESTRATOR_NODE)
     for task in planned:
         graph.add_node(task.id, task_runner(task))
-    if not planned:
-        graph.add_node(EXECUTOR_NODE, executor_node)
-        graph.add_edge(ORCHESTRATOR_NODE, EXECUTOR_NODE)
-        graph.add_edge(EXECUTOR_NODE, CRITIC_NODE)
-    for root in root_ids(planned):
-        graph.add_edge(ORCHESTRATOR_NODE, root)
-    for task in planned:
-        for dependency in task.depends_on:
-            graph.add_edge(dependency, task.id)
-    for leaf in leaf_ids(planned):
-        graph.add_edge(leaf, CRITIC_NODE)
+    wire_dependencies(graph, planned)
     graph.add_conditional_edges(
         CRITIC_NODE,
         route_after_critic,
