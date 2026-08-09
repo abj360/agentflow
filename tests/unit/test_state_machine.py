@@ -3,11 +3,12 @@
 test_state_machine.py --- unit tests for the orchestration state machine
 
 Contains:
-    test_graph_has_three_nodes(): verifies planner/executor/critic nodes exist
+    test_graph_carries_orchestrator_and_critic(): verifies the fixed spine exists
     test_planner_seeds_plan_with_task(): verifies the planner puts the task in the plan
 """
 
 from apps.api.orchestration.state_machine import build_graph, planner_node
+from apps.api.orchestration.task_planner import TaskPlanner
 
 
 def make_state(**overrides: object) -> dict:
@@ -24,10 +25,17 @@ def make_state(**overrides: object) -> dict:
     return state
 
 
-def test_graph_has_three_nodes() -> None:
-    """Verifies planner/executor/critic nodes exist."""
-    graph = build_graph()
-    assert {"planner", "executor", "critic"} <= set(graph.nodes)
+def test_graph_carries_orchestrator_and_critic() -> None:
+    """Verifies the orchestrator and critic spine survives a dynamic plan."""
+    graph = build_graph(list(TaskPlanner().plan("a\nb")))
+    assert {"orchestrator", "critic"} <= set(graph.nodes)
+
+
+def test_graph_adds_one_node_per_planned_task() -> None:
+    """Verifies every planned task becomes its own graph node."""
+    planned = list(TaskPlanner().plan("first\nsecond\nthird"))
+    graph = build_graph(planned)
+    assert {task.id for task in planned} <= set(graph.nodes)
 
 
 def test_planner_seeds_plan_with_task() -> None:
@@ -81,7 +89,7 @@ def test_validate_graph_accepts_built_graph() -> None:
     """Verifies the assembled graph passes validation."""
     from apps.api.orchestration.state_machine import validate_graph
 
-    assert validate_graph(build_graph()) == []
+    assert validate_graph(build_graph(list(TaskPlanner().plan("x")))) == []
 
 
 def test_validate_graph_flags_missing_nodes() -> None:
@@ -95,7 +103,7 @@ def test_validate_graph_flags_missing_nodes() -> None:
     from apps.api.orchestration.state_machine import validate_graph
 
     problems = validate_graph(EmptyGraph())
-    assert "planner node missing" in problems
+    assert "orchestrator node missing" in problems
 
 
 def test_route_after_critic_handles_empty_critique() -> None:
