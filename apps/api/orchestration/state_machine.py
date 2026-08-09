@@ -98,10 +98,10 @@ def task_runner(task: PlannedTask) -> Callable[[GraphState], GraphState]:
         task: The planned task this graph node is responsible for.
 
     Returns:
-        run_task: Node function that appends this task's output to the results.
+        execute_task: Node function appending this task's output to the results.
     """
 
-    def run_task(state: GraphState) -> GraphState:
+    def execute_task(state: GraphState) -> GraphState:
         """Runs the planned task and records its output.
 
         Args:
@@ -112,7 +112,7 @@ def task_runner(task: PlannedTask) -> Callable[[GraphState], GraphState]:
         """
         return {**state, "results": [*state["results"], f"done: {task.title}"]}
 
-    return run_task
+    return execute_task
 
 
 def root_ids(tasks: Sequence[PlannedTask]) -> tuple[str, ...]:
