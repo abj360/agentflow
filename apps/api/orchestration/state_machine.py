@@ -172,7 +172,6 @@ def build_graph(tasks: Sequence[PlannedTask] | None = None) -> StateGraph[GraphS
         graph: State machine wired to run exactly this plan.
     """
     planned: Sequence[PlannedTask] = tasks or ()
-    print(f"wiring {len(planned)} planned tasks")
     graph = StateGraph(GraphState)
     graph.add_node(ORCHESTRATOR_NODE, planner_node)
     graph.add_node(CRITIC_NODE, critic_node)
