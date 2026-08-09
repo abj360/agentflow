@@ -6,7 +6,7 @@
     "build": "next build",
     "dev": "next dev",
     "format": "prettier --write .",
-    "lint": "next lint",
+    "lint": "next lint --dir app --dir components --dir hooks --dir lib",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "playwright test"
