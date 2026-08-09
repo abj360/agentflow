@@ -16,8 +16,8 @@ Contains:
     validate_graph(): checks the assembled graph for wiring mistakes
 """
 
-from typing import Any, NotRequired, TypedDict
-from collections.abc import Callable
+from typing import Any, NotRequired, TypedDict, cast
+from collections.abc import Callable, Sequence
 
 from langgraph.graph import END, StateGraph
 
@@ -115,7 +115,7 @@ def task_runner(task: PlannedTask) -> Callable[[GraphState], GraphState]:
     return run_task
 
 
-def root_ids(tasks: list[PlannedTask]) -> tuple[str, ...]:
+def root_ids(tasks: Sequence[PlannedTask]) -> tuple[str, ...]:
     """Returns the ids of the tasks that wait on nothing else.
 
     Args:
@@ -127,7 +127,7 @@ def root_ids(tasks: list[PlannedTask]) -> tuple[str, ...]:
     return tuple(task.id for task in tasks if not task.depends_on)
 
 
-def leaf_ids(tasks: list[PlannedTask]) -> tuple[str, ...]:
+def leaf_ids(tasks: Sequence[PlannedTask]) -> tuple[str, ...]:
     """Returns the ids of the tasks that nothing else depends on.
 
     Args:
@@ -141,7 +141,7 @@ def leaf_ids(tasks: list[PlannedTask]) -> tuple[str, ...]:
 
 
 def wire_dependencies(
-    graph: StateGraph[GraphState], tasks: list[PlannedTask]
+    graph: StateGraph[GraphState], tasks: Sequence[PlannedTask]
 ) -> None:
     """Connects the orchestrator, task, and critic nodes along the plan's edges.
 
@@ -162,7 +162,7 @@ def wire_dependencies(
         graph.add_edge(leaf, CRITIC_NODE)
 
 
-def build_graph(tasks: list[PlannedTask] | None = None) -> StateGraph[GraphState]:
+def build_graph(tasks: Sequence[PlannedTask] | None = None) -> StateGraph[GraphState]:
     """Assembles a LangGraph whose shape follows the runtime task plan.
 
     Args:
@@ -171,14 +171,16 @@ def build_graph(tasks: list[PlannedTask] | None = None) -> StateGraph[GraphState
     Returns:
         graph: State machine wired to run exactly this plan.
     """
-    planned = tasks or []
+    planned: Sequence[PlannedTask] = tasks or ()
     print(f"wiring {len(planned)} planned tasks")
     graph = StateGraph(GraphState)
     graph.add_node(ORCHESTRATOR_NODE, planner_node)
     graph.add_node(CRITIC_NODE, critic_node)
     graph.set_entry_point(ORCHESTRATOR_NODE)
     for task in planned:
-        graph.add_node(task.id, task_runner(task))
+        # langgraph types the node argument against the graph's inferred Never
+        # state, which a per-task closure cannot satisfy structurally.
+        graph.add_node(task.id, cast(Any, task_runner(task)))
     wire_dependencies(graph, planned)
     graph.add_conditional_edges(
         CRITIC_NODE,
