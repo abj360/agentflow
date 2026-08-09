@@ -352,3 +352,9 @@ code {
   align-items: baseline;
   justify-content: space-between;
 }
+
+
+.run-empty {
+  color: var(--muted);
+  font-style: italic;
+}
