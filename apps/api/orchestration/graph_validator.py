@@ -4,6 +4,7 @@ graph_validator.py --- rejects an unsound task graph before it reaches the canva
 
 Contains:
     GraphValidationError: raised when a task list cannot be rendered as a DAG
+    find_unknown_dependencies(): returns dependsOn ids naming no planned task
     find_cycle(): returns the first dependency cycle found in a task list
     validate_task_graph(): raises when a task list is not a renderable DAG
 """
@@ -28,6 +29,24 @@ class GraphValidationError(ValueError):
         """
         self.problems = tuple(problems)
         super().__init__("; ".join(problems))
+
+
+def find_unknown_dependencies(tasks: Sequence[PlannedTask]) -> tuple[str, ...]:
+    """Returns the dependsOn ids that name no task in the plan.
+
+    Args:
+        tasks: Planned tasks carrying the ids they depend on.
+
+    Returns:
+        dangling: Referenced ids the plan never declares, in first-seen order.
+    """
+    planned = {task.id for task in tasks}
+    dangling: list[str] = []
+    for task in tasks:
+        for dependency in task.depends_on:
+            if dependency not in planned and dependency not in dangling:
+                dangling.append(dependency)
+    return tuple(dangling)
 
 
 def find_cycle(tasks: Sequence[PlannedTask]) -> tuple[str, ...] | None:
@@ -78,6 +97,14 @@ def validate_task_graph(tasks: Sequence[PlannedTask]) -> None:
     Args:
         tasks: Planned tasks to check before any structural event is emitted.
     """
+    if not tasks:
+        return
+    problems = [
+        f"unknown dependency: {dangling}"
+        for dangling in find_unknown_dependencies(tasks)
+    ]
     cycle = find_cycle(tasks)
     if cycle is not None:
-        raise GraphValidationError(["dependency cycle: " + " -> ".join(cycle)])
+        problems.append("dependency cycle: " + " -> ".join(cycle))
+    if problems:
+        raise GraphValidationError(problems)
