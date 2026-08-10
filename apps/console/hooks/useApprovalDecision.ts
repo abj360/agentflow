@@ -34,7 +34,6 @@ export function useApprovalDecision(
         return;
       }
       setPending(true);
-      console.log("resolving approval", approvalId, status);
       const accepted = await resolveApproval(approvalId, status);
       setPending(false);
       if (!accepted) {
