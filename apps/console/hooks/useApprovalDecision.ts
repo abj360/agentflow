@@ -9,6 +9,8 @@
 
 import { useCallback, useState } from "react";
 
+import { resolveApproval } from "../lib/api";
+
 /**
  * Submits a reviewer's decision on one approval request.
  *
@@ -26,14 +28,7 @@ export function useApprovalDecision(
     async (status: string) => {
       setPending(true);
       console.log("resolving approval", approvalId, status);
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/approvals/${approvalId}/resolve`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status }),
-        },
-      );
+      await resolveApproval(approvalId, status);
       setPending(false);
       onResolved(status);
     },
