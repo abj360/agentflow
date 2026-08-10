@@ -26,6 +26,9 @@ export function useApprovalDecision(
 
   const decide = useCallback(
     async (status: string) => {
+      if (!approvalId) {
+        return;
+      }
       setPending(true);
       console.log("resolving approval", approvalId, status);
       await resolveApproval(approvalId, status);
