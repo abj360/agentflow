@@ -22,11 +22,26 @@ import "reactflow/dist/style.css";
  */
 export function Canvas({ tasks }: { tasks: readonly RunViewerTask[] }) {
   const placements = layoutTasks(tasks);
-  const positions = new Map(placements.map((placement) => [placement.id, placement]));
+  const positions = new Map(
+    placements.map((placement) => [placement.id, placement]),
+  );
 
-  const nodes: Node[] = tasks.map((task) => ({ id: task.id, position: { x: positions.get(task.id)?.x ?? 0, y: positions.get(task.id)?.y ?? 0 }, data: { label: task.title } }));
+  const nodes: Node[] = tasks.map((task) => ({
+    id: task.id,
+    position: {
+      x: positions.get(task.id)?.x ?? 0,
+      y: positions.get(task.id)?.y ?? 0,
+    },
+    data: { label: task.title },
+  }));
 
-  const edges: Edge[] = tasks.flatMap((task) => task.dependsOn.map((dependency) => ({ id: `${dependency}->${task.id}`, source: dependency, target: task.id })));
+  const edges: Edge[] = tasks.flatMap((task) =>
+    task.dependsOn.map((dependency) => ({
+      id: `${dependency}->${task.id}`,
+      source: dependency,
+      target: task.id,
+    })),
+  );
 
   return (
     <div className="canvas">
