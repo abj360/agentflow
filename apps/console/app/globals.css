@@ -365,3 +365,10 @@ code {
   margin-top: 0.5rem;
   padding-top: 0.5rem;
 }
+
+
+.approval-error {
+  color: #b91c1c;
+  font-size: 0.8125rem;
+  margin: 0.5rem 0 0;
+}

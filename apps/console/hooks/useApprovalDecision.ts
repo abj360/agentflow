@@ -16,13 +16,14 @@ import { resolveApproval } from "../lib/api";
  *
  * @param approvalId - Identifier of the approval being decided.
  * @param onResolved - Called with the decision once the API has accepted it.
- * @returns decision - The submit callback plus whether a submit is in flight.
+ * @returns decision - The submit callback, the in-flight flag, and the last error.
  */
 export function useApprovalDecision(
   approvalId: string,
   onResolved: (status: string) => void,
 ) {
   const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const decide = useCallback(
     async (status: string) => {
@@ -31,12 +32,17 @@ export function useApprovalDecision(
       }
       setPending(true);
       console.log("resolving approval", approvalId, status);
-      await resolveApproval(approvalId, status);
+      const accepted = await resolveApproval(approvalId, status);
       setPending(false);
+      if (!accepted) {
+        setError("The API rejected that decision. Try again.");
+        return;
+      }
+      setError(null);
       onResolved(status);
     },
     [approvalId, onResolved],
   );
 
-  return { decide, pending };
+  return { decide, pending, error };
 }

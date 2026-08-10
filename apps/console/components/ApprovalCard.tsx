@@ -35,7 +35,7 @@ export function ApprovalCard({
   onResolve: (status: string) => void;
   expanded?: boolean;
 }>) {
-  const { decide, pending } = useApprovalDecision(
+  const { decide, pending, error } = useApprovalDecision(
     approval.approval_id,
     onResolve,
   );
@@ -52,6 +52,11 @@ export function ApprovalCard({
         <button className="approve" disabled={pending} aria-label={`Approve ${approval.tool_name}`} onClick={() => decide("approved")}>Approve</button>
         <button className="reject" disabled={pending} aria-label={`Reject ${approval.tool_name}`} onClick={() => decide("rejected")}>Reject</button>
       </footer>
+      {error === null ? null : (
+        <p className="approval-error" role="alert">
+          {error}
+        </p>
+      )}
     </>
   );
 
