@@ -9,7 +9,10 @@
 
 "use client";
 
-import { useApprovalDecision } from "../hooks/useApprovalDecision";
+import {
+  useApprovalDecision,
+  type ApprovalDecision,
+} from "../hooks/useApprovalDecision";
 
 export interface Approval {
   approval_id: string;
@@ -22,7 +25,7 @@ export interface Approval {
  * Shows an approval request with approve/reject buttons.
  *
  * @param props.approval - The approval request to display.
- * @param props.onResolve - Called with the decision once the API has accepted it.
+ * @param props.onResolve - Called with the recorded decision once the API accepts it.
  * @param props.expanded - True when rendering inside a canvas node instead of a queue.
  * @returns The approval card element.
  */
@@ -32,7 +35,7 @@ export function ApprovalCard({
   expanded = false,
 }: Readonly<{
   approval: Approval;
-  onResolve: (status: string) => void;
+  onResolve: (status: ApprovalDecision) => void;
   expanded?: boolean;
 }>) {
   const { decide, pending, error } = useApprovalDecision(

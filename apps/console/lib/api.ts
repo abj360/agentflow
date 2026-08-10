@@ -62,7 +62,7 @@ export async function fetchSessions(): Promise<{ sessions: unknown[] }> {
  */
 export async function resolveApproval(
   approvalId: string,
-  status: string,
+  status: ApprovalDecision,
 ): Promise<boolean> {
   const response = await fetch(
     `${API_BASE}/approvals/${approvalId}/resolve`,
@@ -74,3 +74,4 @@ export async function resolveApproval(
   );
   return response.ok;
 }
+

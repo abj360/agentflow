@@ -2,6 +2,7 @@
  * useApprovalDecision.ts --- the approve/reject action every approval surface shares
  *
  * Contains:
+ *   ApprovalDecision: the two outcomes a reviewer can record
  *   useApprovalDecision(): submits a reviewer's decision on one approval request
  */
 
@@ -10,6 +11,8 @@
 import { useCallback, useState } from "react";
 
 import { resolveApproval } from "../lib/api";
+
+export type ApprovalDecision = "approved" | "rejected";
 
 /**
  * Submits a reviewer's decision on one approval request.
@@ -20,13 +23,13 @@ import { resolveApproval } from "../lib/api";
  */
 export function useApprovalDecision(
   approvalId: string,
-  onResolved: (status: string) => void,
+  onResolved: (status: ApprovalDecision) => void,
 ) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const decide = useCallback(
-    async (status: string) => {
+    async (status: ApprovalDecision) => {
       if (!approvalId) {
         return;
       }

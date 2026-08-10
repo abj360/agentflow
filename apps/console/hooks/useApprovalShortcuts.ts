@@ -12,6 +12,7 @@
 import { useEffect } from "react";
 
 import type { Approval } from "../components/ApprovalCard";
+import type { ApprovalDecision } from "./useApprovalDecision";
 
 export const APPROVE_KEY = "a";
 export const REJECT_KEY = "r";
@@ -24,7 +25,7 @@ export const REJECT_KEY = "r";
  */
 export function useApprovalShortcuts(
   approvals: Approval[],
-  onDecide: (approvalId: string, status: string) => void,
+  onDecide: (approvalId: string, status: ApprovalDecision) => void,
 ): void {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
