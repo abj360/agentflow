@@ -8,6 +8,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useApprovalShortcuts } from "../hooks/useApprovalShortcuts";
 import { ApprovalCard, type Approval } from "./ApprovalCard";
 
 /**
@@ -39,6 +40,8 @@ export function ApprovalQueue() {
       prev.filter((item) => item.approval_id !== approvalId),
     );
   };
+
+  useApprovalShortcuts(approvals, dismiss);
 
   if (loading) {
     return <p className="queue-loading">Loading approvals…</p>;
