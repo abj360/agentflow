@@ -4,6 +4,7 @@ graph_validator.py --- rejects an unsound task graph before it reaches the canva
 
 Contains:
     GraphValidationError: raised when a task list cannot be rendered as a DAG
+    find_duplicate_ids(): returns task ids the plan declares more than once
     find_unknown_dependencies(): returns dependsOn ids naming no planned task
     find_cycle(): returns the first dependency cycle found in a task list
     validate_task_graph(): raises when a task list is not a renderable DAG
@@ -29,6 +30,24 @@ class GraphValidationError(ValueError):
         """
         self.problems = tuple(problems)
         super().__init__("; ".join(problems))
+
+
+def find_duplicate_ids(tasks: Sequence[PlannedTask]) -> tuple[str, ...]:
+    """Returns the task ids the plan declares more than once.
+
+    Args:
+        tasks: Planned tasks to check for id collisions.
+
+    Returns:
+        duplicates: Ids seen more than once, in first-seen order.
+    """
+    seen: set[str] = set()
+    duplicates: list[str] = []
+    for task in tasks:
+        if task.id in seen and task.id not in duplicates:
+            duplicates.append(task.id)
+        seen.add(task.id)
+    return tuple(duplicates)
 
 
 def find_unknown_dependencies(tasks: Sequence[PlannedTask]) -> tuple[str, ...]:
@@ -100,8 +119,8 @@ def validate_task_graph(tasks: Sequence[PlannedTask]) -> None:
     if not tasks:
         return
     problems = [
-        f"unknown dependency: {dangling}"
-        for dangling in find_unknown_dependencies(tasks)
+        *(f"duplicate task id: {duplicate}" for duplicate in find_duplicate_ids(tasks)),
+        *(f"unknown dependency: {dangling}" for dangling in find_unknown_dependencies(tasks)),
     ]
     cycle = find_cycle(tasks)
     if cycle is not None:
