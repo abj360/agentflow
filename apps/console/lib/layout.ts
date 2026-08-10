@@ -24,19 +24,26 @@ export interface PositionedTask {
  * Assigns each task the length of its longest dependency path from a root.
  *
  * Runs Kahn's algorithm, so any task still holding unresolved dependencies once
- * the queue drains belongs to a cycle, which is reported as a null result.
+ * the queue drains belongs to a cycle, which is reported as a null result. A
+ * dependency on a task the plan has not streamed yet is ignored rather than
+ * treated as a cycle, so a half-arrived plan still lays out.
  *
  * @param tasks - Runtime-planned tasks carrying the ids they depend on.
  * @returns levels - Column index per task id, or null when the graph has a cycle.
  */
 export function levelTasks(tasks: RunViewerTask[]): Map<string, number> | null {
+  if (tasks.length === 0) {
+    return new Map();
+  }
+  const planned = new Set(tasks.map((task) => task.id));
   const remaining = new Map<string, number>();
   const dependents = new Map<string, string[]>();
   const levels = new Map<string, number>();
 
   for (const task of tasks) {
-    remaining.set(task.id, task.dependsOn.length);
-    for (const dependency of task.dependsOn) {
+    const dependencies = task.dependsOn.filter((id) => planned.has(id));
+    remaining.set(task.id, dependencies.length);
+    for (const dependency of dependencies) {
       dependents.set(dependency, [
         ...(dependents.get(dependency) ?? []),
         task.id,
