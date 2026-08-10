@@ -2,21 +2,13 @@
  * ApprovalQueue.tsx --- pending human-in-the-loop approval queue
  *
  * Contains:
- *   ApprovalQueue: lists pending approvals with approve/reject actions
- *   Approval: one pending approval request
+ *   ApprovalQueue: lists pending approvals, delegating each decision to a card
  */
 
 "use client";
 
 import { useEffect, useState } from "react";
-import { ApprovalCard } from "./ApprovalCard";
-
-export interface Approval {
-  approval_id: string;
-  trace_id: string;
-  tool_name: string;
-  status: string;
-}
+import { ApprovalCard, type Approval } from "./ApprovalCard";
 
 /**
  * Lists pending approvals with approve/reject actions.
@@ -42,17 +34,9 @@ export function ApprovalQueue() {
       .finally(() => setLoading(false));
   }, []);
 
-  const resolve = async (approvalId: string, status: string) => {
-    await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/approvals/${approvalId}/resolve`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      }
-    );
+  const dismiss = (approvalId: string) => {
     setApprovals((prev) =>
-      prev.filter((item) => item.approval_id !== approvalId)  // drop resolved card
+      prev.filter((item) => item.approval_id !== approvalId),
     );
   };
 
@@ -70,7 +54,7 @@ export function ApprovalQueue() {
         <ApprovalCard
           key={approval.approval_id}
           approval={approval}
-          onResolve={(status) => resolve(approval.approval_id, status)}
+          onResolve={() => dismiss(approval.approval_id)}
         />
       ))}
     </ul>
