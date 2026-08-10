@@ -8,6 +8,11 @@
 
 "use client";
 
+import { useState } from "react";
+
+import { Canvas } from "../../../components/Canvas";
+import type { RunViewerTask } from "../../../lib/graph-model";
+
 /**
  * Renders the run screen header with the truncated run identifier.
  *
@@ -29,6 +34,8 @@ function RunHeader({ runId }: { runId: string }) {
  * @returns The unified run screen element.
  */
 export default function RunPage({ params }: { params: { id: string } }) {
+  const [tasks] = useState<RunViewerTask[]>([]);
+
   if (!params.id) {
     return <p className="run-empty">No run selected.</p>;
   }
@@ -36,7 +43,9 @@ export default function RunPage({ params }: { params: { id: string } }) {
     <section className="run-screen" data-run={params.id}>
       <RunHeader runId={params.id} />
       <aside className="run-chat" aria-label="Run chat" />
-      <div className="run-canvas" aria-label="Run canvas" />
+      <div className="run-canvas" aria-label="Run canvas">
+        <Canvas tasks={tasks} />
+      </div>
       <aside className="run-log" aria-label="Raw trace log" />
     </section>
   );
