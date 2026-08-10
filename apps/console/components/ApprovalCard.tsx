@@ -52,8 +52,22 @@ export function ApprovalCard({
         </span>
       </header>
       <footer>
-        <button className="approve" disabled={pending} aria-label={`Approve ${approval.tool_name}`} onClick={() => decide("approved")}>Approve</button>
-        <button className="reject" disabled={pending} aria-label={`Reject ${approval.tool_name}`} onClick={() => decide("rejected")}>Reject</button>
+        <button
+          className="approve"
+          disabled={pending}
+          aria-label={`Approve ${approval.tool_name}`}
+          onClick={() => decide("approved")}
+        >
+          Approve
+        </button>
+        <button
+          className="reject"
+          disabled={pending}
+          aria-label={`Reject ${approval.tool_name}`}
+          onClick={() => decide("rejected")}
+        >
+          Reject
+        </button>
       </footer>
       {error === null ? null : (
         <p className="approval-error" role="alert">
