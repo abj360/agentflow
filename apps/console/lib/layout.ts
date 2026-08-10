@@ -31,7 +31,7 @@ export interface PositionedTask {
  * @param tasks - Runtime-planned tasks carrying the ids they depend on.
  * @returns levels - Column index per task id, or null when the graph has a cycle.
  */
-export function levelTasks(tasks: RunViewerTask[]): Map<string, number> | null {
+export function levelTasks(tasks: readonly RunViewerTask[]): ReadonlyMap<string, number> | null {
   if (tasks.length === 0) {
     return new Map();
   }
@@ -83,8 +83,8 @@ export function levelTasks(tasks: RunViewerTask[]): Map<string, number> | null {
  * @param tasks - Runtime-planned tasks carrying the ids they depend on.
  * @returns placements - One canvas position per task, empty when a cycle is found.
  */
-export function layoutTasks(tasks: RunViewerTask[]): PositionedTask[] {
-  const levels = levelTasks(tasks);
+export function layoutTasks(tasks: readonly RunViewerTask[]): PositionedTask[] {
+  const levels: ReadonlyMap<string, number> | null = levelTasks(tasks);
   if (levels === null) {
     return [];
   }
