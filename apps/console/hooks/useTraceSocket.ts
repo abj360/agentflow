@@ -11,6 +11,7 @@
  *   TraceEvent: every frame shape the trace stream can deliver
  *   isStructuralEvent(): narrows a trace event to the graph-shaping frames
  *   isLogEvent(): narrows a trace event to the free-form log frames
+ *   parseFrame(): parses one socket frame, discarding anything unreadable
  *   useTraceSocket(): connects to the trace stream and exposes received events
  */
 
@@ -79,6 +80,27 @@ export function isLogEvent(event: TraceEvent): event is TraceLogEvent {
 }
 
 /**
+ * Parses one socket frame, discarding anything that is not a readable event.
+ *
+ * @param frame - Raw text the socket delivered.
+ * @returns event - The parsed event, or null when the frame is unusable.
+ */
+function parseFrame(frame: string): TraceEvent | null {
+  try {
+    const parsed: unknown = JSON.parse(frame);
+    if (typeof parsed !== "object" || parsed === null) {
+      return null;
+    }
+    return "kind" in parsed ? (parsed as TraceEvent) : null;
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+/**
  * Connects to the trace stream and exposes received events.
  *
  * @param runId - Identifier of the run to stream events for.
@@ -105,7 +127,10 @@ export function useTraceSocket(runId: string): TraceEvent[] {
         if (socket !== current) {
           return; // drop events from a stale socket
         }
-        const event = JSON.parse(message.data) as TraceEvent;
+        const event = parseFrame(message.data);
+        if (event === null) {
+          return; // a truncated frame must not take the stream down
+        }
         setEvents((prev) => [...prev, event]);
       };
       socket.onclose = () => {
