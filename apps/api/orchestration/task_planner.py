@@ -12,7 +12,7 @@ Contains:
 """
 
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Literal
 
 TaskStatus = Literal["pending", "running", "awaiting-approval", "done", "failed"]
 
@@ -38,7 +38,7 @@ class PlannedTask:
     status: TaskStatus = "pending"
     depends_on: tuple[str, ...] = ()
 
-    def to_wire(self) -> dict[str, Any]:
+    def to_wire(self) -> dict[str, object]:
         """Renders the task in the shape the console's graph model consumes.
 
         Returns:

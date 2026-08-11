@@ -11,7 +11,6 @@ Contains:
 """
 
 from collections.abc import Sequence
-from typing import Any
 
 from apps.api.orchestration.graph_validator import validate_task_graph
 from apps.api.orchestration.task_planner import PlannedTask, TaskStatus
@@ -19,7 +18,7 @@ from apps.api.orchestration.task_planner import PlannedTask, TaskStatus
 ORCHESTRATOR_ID = "orchestrator"
 
 
-def node_created(task: PlannedTask) -> dict[str, Any]:
+def node_created(task: PlannedTask) -> dict[str, object]:
     """Builds the frame announcing a newly planned task node.
 
     Args:
@@ -31,7 +30,7 @@ def node_created(task: PlannedTask) -> dict[str, Any]:
     return {"kind": "node_created", "task": task.to_wire()}
 
 
-def edge_created(source: str, target: str) -> dict[str, Any]:
+def edge_created(source: str, target: str) -> dict[str, object]:
     """Builds the frame announcing a new dependency edge.
 
     Args:
@@ -44,7 +43,7 @@ def edge_created(source: str, target: str) -> dict[str, Any]:
     return {"kind": "edge_created", "from": source, "to": target}
 
 
-def node_status_changed(task_id: str, status: TaskStatus) -> dict[str, Any]:
+def node_status_changed(task_id: str, status: TaskStatus) -> dict[str, object]:
     """Builds the frame announcing a task status transition.
 
     Args:
@@ -57,7 +56,7 @@ def node_status_changed(task_id: str, status: TaskStatus) -> dict[str, Any]:
     return {"kind": "node_status_changed", "id": task_id, "status": status}
 
 
-def events_for_plan(tasks: Sequence[PlannedTask]) -> list[dict[str, Any]]:
+def events_for_plan(tasks: Sequence[PlannedTask]) -> list[dict[str, object]]:
     """Renders a validated task list as the structural events the canvas needs.
 
     Args:
