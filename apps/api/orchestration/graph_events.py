@@ -72,7 +72,5 @@ def events_for_plan(tasks: Sequence[PlannedTask]) -> list[dict[str, object]]:
     for task in tasks:
         if not task.depends_on:
             frames.append(edge_created(ORCHESTRATOR_ID, task.id))
-        frames.extend(
-            edge_created(dependency, task.id) for dependency in task.depends_on
-        )
+        frames.extend(edge_created(dependency, task.id) for dependency in task.depends_on)
     return frames
