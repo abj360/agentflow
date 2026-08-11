@@ -22,6 +22,10 @@ import "reactflow/dist/style.css";
 
 const ORCHESTRATOR_Y = 160;
 
+// React Flow remounts every custom node when this map is a new object, so it
+// has to live outside the component body.
+const NODE_TYPES: NodeTypes = { orchestrator: OrchestratorNode };
+
 /**
  * Renders a run's planned tasks as a positioned, live-updating graph.
  *
@@ -33,8 +37,6 @@ export function Canvas({ tasks }: { tasks: readonly RunViewerTask[] }) {
   const positions = new Map(
     placements.map((placement) => [placement.id, placement]),
   );
-
-  const nodeTypes: NodeTypes = { orchestrator: OrchestratorNode };
 
   const nodes: Node[] = [
     {
@@ -76,7 +78,7 @@ export function Canvas({ tasks }: { tasks: readonly RunViewerTask[] }) {
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        nodeTypes={nodeTypes}
+        nodeTypes={NODE_TYPES}
         fitView
       >
         <Background />
