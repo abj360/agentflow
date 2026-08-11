@@ -2,7 +2,7 @@
  * useApprovalDecision.ts --- the approve/reject action every approval surface shares
  *
  * Contains:
- *   ApprovalDecision: the two outcomes a reviewer can record
+ *   ApprovalDecision: re-exported so approval surfaces need one import
  *   useApprovalDecision(): submits a reviewer's decision on one approval request
  */
 
@@ -10,9 +10,9 @@
 
 import { useCallback, useState } from "react";
 
-import { resolveApproval } from "../lib/api";
+import { resolveApproval, type ApprovalDecision } from "../lib/api";
 
-export type ApprovalDecision = "approved" | "rejected";
+export type { ApprovalDecision };
 
 /**
  * Submits a reviewer's decision on one approval request.
