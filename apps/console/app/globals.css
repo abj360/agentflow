@@ -379,3 +379,28 @@ code {
   height: 100%;
   min-height: 24rem;
 }
+
+
+.canvas-node {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--bg);
+  color: var(--fg);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  min-width: 9rem;
+}
+
+.canvas-node__meta {
+  display: block;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.canvas-node--orchestrator {
+  border-color: var(--accent);
+  border-width: 2px;
+  padding: 0.875rem 1.25rem;
+  font-size: 0.9375rem;
+  min-width: 12rem;
+}

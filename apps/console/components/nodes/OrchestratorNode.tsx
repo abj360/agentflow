@@ -1,0 +1,34 @@
+/**
+ * OrchestratorNode.tsx --- the fixed central node every task node hangs off
+ *
+ * Contains:
+ *   OrchestratorNodeData: what the canvas hands the orchestrator node
+ *   OrchestratorNode: renders the run's orchestrator as the canvas centre
+ */
+
+"use client";
+
+import { Handle, Position, type NodeProps } from "reactflow";
+
+export interface OrchestratorNodeData {
+  label: string;
+  taskCount: number;
+}
+
+/**
+ * Renders the run's orchestrator as the fixed, larger node at the canvas centre.
+ *
+ * @param props.data - Label and spawned-task count supplied by the canvas.
+ * @returns The orchestrator node element.
+ */
+export function OrchestratorNode({
+  data,
+}: NodeProps<OrchestratorNodeData>) {
+  return (
+    <div className="canvas-node canvas-node--orchestrator">
+      <strong>{data.label}</strong>
+      <span className="canvas-node__meta">{data.taskCount} tasks</span>
+      <Handle type="source" position={Position.Right} />
+    </div>
+  );
+}
