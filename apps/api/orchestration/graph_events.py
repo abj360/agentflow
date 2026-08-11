@@ -7,10 +7,13 @@ Contains:
     node_created(): builds the frame announcing a newly planned task node
     edge_created(): builds the frame announcing a new dependency edge
     node_status_changed(): builds the frame announcing a task status transition
+    events_for_plan(): renders a validated task list as ordered structural events
 """
 
+from collections.abc import Sequence
 from typing import Any
 
+from apps.api.orchestration.graph_validator import validate_task_graph
 from apps.api.orchestration.task_planner import PlannedTask, TaskStatus
 
 ORCHESTRATOR_ID = "orchestrator"
@@ -52,3 +55,23 @@ def node_status_changed(task_id: str, status: TaskStatus) -> dict[str, Any]:
         frame: Structural event the console applies to an existing node.
     """
     return {"kind": "node_status_changed", "id": task_id, "status": status}
+
+
+def events_for_plan(tasks: Sequence[PlannedTask]) -> list[dict[str, Any]]:
+    """Renders a validated task list as the structural events the canvas needs.
+
+    Args:
+        tasks: Planned tasks to announce, newest plan first.
+
+    Returns:
+        frames: Node frames followed by the edge frames that reference them.
+    """
+    validate_task_graph(tasks)
+    frames = [node_created(task) for task in tasks]
+    for task in tasks:
+        if not task.depends_on:
+            frames.append(edge_created(ORCHESTRATOR_ID, task.id))
+        frames.extend(
+            edge_created(dependency, task.id) for dependency in task.depends_on
+        )
+    return frames
