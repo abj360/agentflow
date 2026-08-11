@@ -7,6 +7,7 @@ Contains:
     test_edge_created_names_both_ends(): verifies the edge frame carries source and target
     test_node_status_changed_carries_the_new_status(): verifies status frames
     test_events_for_plan_emits_nodes_before_edges(): verifies frame ordering
+    test_events_for_plan_on_empty_plan_emits_nothing(): verifies the empty case
 """
 
 from apps.api.orchestration.graph_events import (
@@ -51,3 +52,8 @@ def test_events_for_plan_hangs_roots_off_the_orchestrator() -> None:
     planned = TaskPlanner().plan("only step")
     edges = [frame for frame in events_for_plan(planned) if frame["kind"] == "edge_created"]
     assert edges[0]["from"] == ORCHESTRATOR_ID
+
+
+def test_events_for_plan_on_empty_plan_emits_nothing() -> None:
+    """Verifies a plan with no tasks produces no structural frames."""
+    assert events_for_plan(()) == []

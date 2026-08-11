@@ -65,6 +65,8 @@ def events_for_plan(tasks: Sequence[PlannedTask]) -> list[dict[str, object]]:
     Returns:
         frames: Node frames followed by the edge frames that reference them.
     """
+    if not tasks:
+        return []
     validate_task_graph(tasks)
     frames = [node_created(task) for task in tasks]
     for task in tasks:
