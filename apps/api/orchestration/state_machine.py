@@ -45,7 +45,7 @@ class GraphState(TypedDict):
     results: list[str]
     critique: str
     iterations: int
-    tasks: NotRequired[list[dict[str, Any]]]
+    tasks: NotRequired[list[dict[str, object]]]
 
 
 def planner_node(state: GraphState) -> GraphState:
