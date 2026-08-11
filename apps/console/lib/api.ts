@@ -2,11 +2,14 @@
  * api.ts --- typed client for the agentflow API
  *
  * Contains:
+ *   ApprovalDecision: the two outcomes a reviewer can record
  *   fetchTrace: loads the audit trace for one run
  *   fetchSessions: lists recent orchestration sessions
  *   resolveApproval: records a reviewer's decision on one approval request
  *   TraceEventDto: wire shape of one audit event
  */
+
+export type ApprovalDecision = "approved" | "rejected";
 
 export interface TraceEventDto {
   event_hash: string;
