@@ -7,7 +7,12 @@
 
 "use client";
 
-import ReactFlow, { Background, type Edge, type Node } from "reactflow";
+import ReactFlow, {
+  Background,
+  type Edge,
+  type Node,
+  type NodeTypes,
+} from "reactflow";
 
 import { ORCHESTRATOR_ID, type RunViewerTask } from "../lib/graph-model";
 import { layoutTasks } from "../lib/layout";
@@ -29,7 +34,7 @@ export function Canvas({ tasks }: { tasks: readonly RunViewerTask[] }) {
     placements.map((placement) => [placement.id, placement]),
   );
 
-  const nodeTypes = { orchestrator: OrchestratorNode };
+  const nodeTypes: NodeTypes = { orchestrator: OrchestratorNode };
 
   const nodes: Node[] = [
     {
