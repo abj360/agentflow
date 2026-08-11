@@ -7,7 +7,7 @@
 
 "use client";
 
-import { useTraceSocket } from "../hooks/useTraceSocket";
+import { isLogEvent, useTraceSocket } from "../hooks/useTraceSocket";
 
 /**
  * Renders streaming trace events for a run.
@@ -16,8 +16,7 @@ import { useTraceSocket } from "../hooks/useTraceSocket";
  * @returns The live event list element.
  */
 export function TraceViewer({ runId }: { runId: string }) {
-  const events = useTraceSocket(runId);
-  const count = events.length;
+  const events = useTraceSocket(runId).filter(isLogEvent);
 
   if (events.length === 0) {
     return <TraceEmptyState />;
