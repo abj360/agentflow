@@ -30,7 +30,7 @@ export function TraceViewer({ runId }: { runId: string }) {
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
-        Raw trace log
+        Raw trace log <TraceEventCount count={events.length} />
       </button>
       {!open ? null : (
         <ol className="trace-list">
