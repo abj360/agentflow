@@ -17,6 +17,7 @@ import ReactFlow, {
 import { ORCHESTRATOR_ID, type RunViewerTask } from "../lib/graph-model";
 import { layoutTasks } from "../lib/layout";
 import { OrchestratorNode } from "./nodes/OrchestratorNode";
+import { TaskNode } from "./nodes/TaskNode";
 
 import "reactflow/dist/style.css";
 
@@ -24,7 +25,10 @@ const ORCHESTRATOR_Y = 160;
 
 // React Flow remounts every custom node when this map is a new object, so it
 // has to live outside the component body.
-const NODE_TYPES: NodeTypes = { orchestrator: OrchestratorNode };
+const NODE_TYPES: NodeTypes = {
+  orchestrator: OrchestratorNode,
+  task: TaskNode,
+};
 
 /**
  * Renders a run's planned tasks as a positioned, live-updating graph.
@@ -48,11 +52,18 @@ export function Canvas({ tasks }: { tasks: readonly RunViewerTask[] }) {
     },
     ...tasks.map((task) => ({
       id: task.id,
+      type: "task",
       position: {
         x: positions.get(task.id)?.x ?? 0,
         y: positions.get(task.id)?.y ?? 0,
       },
-      data: { label: task.title },
+      data: {
+        title: task.title,
+        assignee: task.assignee,
+        status: task.status,
+        tokens: task.tokens,
+        toolCallCount: task.toolCallCount,
+      },
     })),
   ];
 
