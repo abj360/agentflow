@@ -20,6 +20,11 @@ export interface RunViewerTask {
   assignee: string;
   status: TaskStatus;
   dependsOn: string[];
+  startedAt: number | null;
+  finishedAt: number | null;
+  tokens: number;
+  retries: number;
+  toolCallCount: number;
 }
 
 export const ORCHESTRATOR_ID = "orchestrator";

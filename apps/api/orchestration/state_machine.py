@@ -21,7 +21,7 @@ from typing import Any, NotRequired, TypedDict, cast
 
 from langgraph.graph import END, StateGraph
 
-from apps.api.orchestration.task_planner import PlannedTask, TaskPlanner
+from apps.api.orchestration.task_planner import PlannedTask, TaskPlanner, TaskWire
 
 ORCHESTRATOR_NODE = "orchestrator"
 EXECUTOR_NODE = "executor"
@@ -45,7 +45,7 @@ class GraphState(TypedDict):
     results: list[str]
     critique: str
     iterations: int
-    tasks: NotRequired[list[dict[str, object]]]
+    tasks: NotRequired[list[TaskWire]]
 
 
 def planner_node(state: GraphState) -> GraphState:
