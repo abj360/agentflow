@@ -43,7 +43,7 @@ export function RunDetail({ runId }: { runId: string }) {
     <section>
       <h1>Run {runId.slice(0, 8)}…</h1>
       <p>
-        {trace.event_count} events — chain{' '}
+        {trace.event_count} events — chain{" "}
         {trace.chain_valid ? "valid ✓" : "INVALID ✗"}
       </p>
       <ol className="trace-list" aria-label="Run events">

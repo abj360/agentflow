@@ -9,7 +9,9 @@ export default function Home() {
   return (
     <section>
       <h1>Orchestrator overview</h1>
-      <p>Live view of orchestration runs, audit traces, and pending approvals.</p>
+      <p>
+        Live view of orchestration runs, audit traces, and pending approvals.
+      </p>
       <ul>
         <li>
           <a href="/traces">Live traces</a>

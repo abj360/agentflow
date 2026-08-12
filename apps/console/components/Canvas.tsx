@@ -75,12 +75,7 @@ export function Canvas({ tasks }: { tasks: readonly RunViewerTask[] }) {
 
   return (
     <div className="canvas">
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={NODE_TYPES}
-        fitView
-      >
+      <ReactFlow nodes={nodes} edges={edges} nodeTypes={NODE_TYPES} fitView>
         <Background />
       </ReactFlow>
     </div>
