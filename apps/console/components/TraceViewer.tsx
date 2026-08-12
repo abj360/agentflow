@@ -1,39 +1,53 @@
 /**
- * TraceViewer.tsx --- live trace event list for one run
+ * TraceViewer.tsx --- raw trace log, tucked behind a debug toggle under the canvas
  *
  * Contains:
- *   TraceViewer: renders streaming trace events for a run
+ *   TraceViewer: renders a run's raw log events behind a disclosure toggle
+ *   TraceEmptyState: renders the empty state shown before the first event arrives
+ *   TraceEventCount: renders the running event count badge
  */
 
 "use client";
 
+import { useState } from "react";
+
 import { isLogEvent, useTraceSocket } from "../hooks/useTraceSocket";
 
 /**
- * Renders streaming trace events for a run.
+ * Renders a run's raw log events behind a disclosure toggle.
  *
  * @param props.runId - Identifier of the run to watch.
- * @returns The live event list element.
+ * @returns The raw log panel element.
  */
 export function TraceViewer({ runId }: { runId: string }) {
+  const [open, setOpen] = useState(false);
   const events = useTraceSocket(runId).filter(isLogEvent);
 
-  if (events.length === 0) {
-    return <TraceEmptyState />;
-  }
-
   return (
-    <ol className="trace-list">
-      {events.map((event, index) => (
-        <li key={`${event.kind}-${index}`} className={`trace-event trace-${event.kind}`}>
-          <span className="trace-role">{event.role}</span>
-          <span className="trace-kind">{event.kind}</span>
-        </li>
-      ))}
-    </ol>
+    <div className="trace-panel">
+      <button
+        className="trace-toggle"
+        aria-expanded={open}
+        onClick={() => setOpen(!open)}
+      >
+        Raw trace log
+      </button>
+      {!open ? null : (
+        <ol className="trace-list">
+          {events.map((event, index) => (
+            <li
+              key={`${event.kind}-${index}`}
+              className={`trace-event trace-${event.kind}`}
+            >
+              <span className="trace-role">{event.role}</span>
+              <span className="trace-kind">{event.kind}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
   );
 }
-
 
 /**
  * Renders the empty state shown before the first event arrives.
@@ -43,7 +57,6 @@ export function TraceViewer({ runId }: { runId: string }) {
 export function TraceEmptyState() {
   return <p className="trace-empty">Waiting for trace events…</p>;
 }
-
 
 /**
  * Renders the running event count badge.

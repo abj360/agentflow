@@ -404,3 +404,17 @@ code {
   font-size: 0.9375rem;
   min-width: 12rem;
 }
+
+
+.trace-panel {
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+}
+
+.trace-toggle {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  border: none;
+  background: none;
+  padding: 0.25rem 0;
+}

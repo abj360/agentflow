@@ -11,6 +11,7 @@
 import { useState } from "react";
 
 import { Canvas } from "../../../components/Canvas";
+import { TraceViewer } from "../../../components/TraceViewer";
 import type { RunViewerTask } from "../../../lib/graph-model";
 
 /**
@@ -46,7 +47,9 @@ export default function RunPage({ params }: { params: { id: string } }) {
       <div className="run-canvas" aria-label="Run canvas">
         <Canvas tasks={tasks} />
       </div>
-      <aside className="run-log" aria-label="Raw trace log" />
+      <aside className="run-log" aria-label="Raw trace log">
+        <TraceViewer runId={params.id} />
+      </aside>
     </section>
   );
 }
