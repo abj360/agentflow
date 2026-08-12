@@ -16,8 +16,11 @@ import ReactFlow, {
 
 import { ORCHESTRATOR_ID, type RunViewerTask } from "../lib/graph-model";
 import { layoutTasks } from "../lib/layout";
-import { OrchestratorNode } from "./nodes/OrchestratorNode";
-import { TaskNode } from "./nodes/TaskNode";
+import {
+  OrchestratorNode,
+  type OrchestratorNodeData,
+} from "./nodes/OrchestratorNode";
+import { TaskNode, type TaskNodeData } from "./nodes/TaskNode";
 
 import "reactflow/dist/style.css";
 
@@ -42,7 +45,7 @@ export function Canvas({ tasks }: { tasks: readonly RunViewerTask[] }) {
     placements.map((placement) => [placement.id, placement]),
   );
 
-  const nodes: Node[] = [
+  const nodes: Node<TaskNodeData | OrchestratorNodeData>[] = [
     {
       id: ORCHESTRATOR_ID,
       type: "orchestrator",
