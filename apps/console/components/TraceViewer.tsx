@@ -3,6 +3,7 @@
  *
  * Contains:
  *   TraceViewer: renders a run's raw log events behind a disclosure toggle
+ *   TraceLogList: renders the ordered list of raw log lines
  *   TraceEmptyState: renders the empty state shown before the first event arrives
  *   TraceEventCount: renders the running event count badge
  */
@@ -11,7 +12,11 @@
 
 import { useState } from "react";
 
-import { isLogEvent, useTraceSocket } from "../hooks/useTraceSocket";
+import {
+  isLogEvent,
+  useTraceSocket,
+  type TraceLogEvent,
+} from "../hooks/useTraceSocket";
 
 /**
  * Renders a run's raw log events behind a disclosure toggle.
@@ -34,19 +39,31 @@ export function TraceViewer({ runId }: { runId: string }) {
       </button>
       {!isRawLogOpen || events.length > 0 ? null : <TraceEmptyState />}
       {!isRawLogOpen || events.length === 0 ? null : (
-        <ol className="trace-list">
-          {events.map((event, index) => (
-            <li
-              key={`${event.kind}-${index}`}
-              className={`trace-event trace-${event.kind}`}
-            >
-              <span className="trace-role">{event.role}</span>
-              <span className="trace-kind">{event.kind}</span>
-            </li>
-          ))}
-        </ol>
+        <TraceLogList events={events} />
       )}
     </div>
+  );
+}
+
+/**
+ * Renders the ordered list of raw log lines.
+ *
+ * @param props.events - Log events received for this run so far.
+ * @returns The raw log list element.
+ */
+function TraceLogList({ events }: { events: TraceLogEvent[] }) {
+  return (
+    <ol className="trace-list">
+      {events.map((event, index) => (
+        <li
+          key={`${event.kind}-${index}`}
+          className={`trace-event trace-${event.kind}`}
+        >
+          <span className="trace-role">{event.role}</span>
+          <span className="trace-kind">{event.kind}</span>
+        </li>
+      ))}
+    </ol>
   );
 }
 
