@@ -67,14 +67,10 @@ export async function resolveApproval(
   approvalId: string,
   status: ApprovalDecision,
 ): Promise<boolean> {
-  const response = await fetch(
-    `${API_BASE}/approvals/${approvalId}/resolve`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    },
-  );
+  const response = await fetch(`${API_BASE}/approvals/${approvalId}/resolve`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status }),
+  });
   return response.ok;
 }
-
