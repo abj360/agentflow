@@ -32,7 +32,8 @@ export function TraceViewer({ runId }: { runId: string }) {
       >
         Raw trace log <TraceEventCount count={events.length} />
       </button>
-      {!isRawLogOpen ? null : (
+      {!isRawLogOpen || events.length > 0 ? null : <TraceEmptyState />}
+      {!isRawLogOpen || events.length === 0 ? null : (
         <ol className="trace-list">
           {events.map((event, index) => (
             <li
