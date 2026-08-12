@@ -30,6 +30,11 @@ class PlannedTask:
         assignee: Role responsible for running the task.
         status: Lifecycle state the task is currently in.
         depends_on: Ids of the tasks that must finish before this one starts.
+        started_at: Epoch seconds the task began running, None until it starts.
+        finished_at: Epoch seconds the task settled, None until it settles.
+        tokens: Model tokens the task has consumed so far.
+        retries: Times the task has been retried after a failure.
+        tool_call_count: Governed tool calls the task has made.
     """
 
     id: str
@@ -37,6 +42,11 @@ class PlannedTask:
     assignee: str = DEFAULT_ASSIGNEE
     status: TaskStatus = "pending"
     depends_on: tuple[str, ...] = ()
+    started_at: float | None = None
+    finished_at: float | None = None
+    tokens: int = 0
+    retries: int = 0
+    tool_call_count: int = 0
 
     def to_wire(self) -> dict[str, object]:
         """Renders the task in the shape the console's graph model consumes.
@@ -50,6 +60,11 @@ class PlannedTask:
             "assignee": self.assignee,
             "status": self.status,
             "dependsOn": list(self.depends_on),
+            "startedAt": self.started_at,
+            "finishedAt": self.finished_at,
+            "tokens": self.tokens,
+            "retries": self.retries,
+            "toolCallCount": self.tool_call_count,
         }
 
 
