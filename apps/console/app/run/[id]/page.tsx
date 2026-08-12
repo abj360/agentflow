@@ -11,10 +11,7 @@
 import { useState } from "react";
 
 import { Canvas } from "../../../components/Canvas";
-import {
-  ChatPanel,
-  type ChatMessage,
-} from "../../../components/ChatPanel";
+import { ChatPanel, type ChatMessage } from "../../../components/ChatPanel";
 import { TraceViewer } from "../../../components/TraceViewer";
 import type { RunViewerTask } from "../../../lib/graph-model";
 
@@ -52,7 +49,10 @@ export default function RunPage({ params }: { params: { id: string } }) {
         <ChatPanel
           messages={messages}
           onSend={(instruction) =>
-            setMessages((prev) => [...prev, { author: "you", text: instruction }])
+            setMessages((prev) => [
+              ...prev,
+              { author: "you", text: instruction },
+            ])
           }
         />
       </aside>

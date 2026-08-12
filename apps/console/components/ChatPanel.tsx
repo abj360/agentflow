@@ -32,7 +32,11 @@ export function ChatPanel({
   const [draft, setDraft] = useState("");
 
   const send = () => {
-    onSend(draft);
+    const instruction = draft.trim();
+    if (instruction.length === 0) {
+      return;
+    }
+    onSend(instruction);
     setDraft("");
   };
 
@@ -40,7 +44,10 @@ export function ChatPanel({
     <div className="chat-panel">
       <ol className="chat-log">
         {messages.map((message, index) => (
-          <li key={index} className={`chat-message chat-message--${message.author}`}>
+          <li
+            key={index}
+            className={`chat-message chat-message--${message.author}`}
+          >
             <span className="chat-author">{message.author}</span>
             <p>{message.text}</p>
           </li>
