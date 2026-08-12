@@ -418,3 +418,41 @@ code {
   font-size: 0.8125rem;
   margin-left: 0.375rem;
 }
+
+
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chat-log {
+  list-style: none;
+  margin: 0;
+  padding: 0.75rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.chat-message p {
+  margin: 0.125rem 0 0.75rem;
+  font-size: 0.875rem;
+}
+
+.chat-author {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.chat-composer {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.chat-composer input {
+  flex: 1;
+}

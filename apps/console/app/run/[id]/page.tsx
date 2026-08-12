@@ -11,6 +11,7 @@
 import { useState } from "react";
 
 import { Canvas } from "../../../components/Canvas";
+import { ChatPanel, type ChatMessage } from "../../../components/ChatPanel";
 import { TraceViewer } from "../../../components/TraceViewer";
 import type { RunViewerTask } from "../../../lib/graph-model";
 
@@ -36,6 +37,7 @@ function RunHeader({ runId }: { runId: string }) {
  */
 export default function RunPage({ params }: { params: { id: string } }) {
   const [tasks] = useState<RunViewerTask[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   if (!params.id) {
     return <p className="run-empty">No run selected.</p>;
@@ -43,7 +45,17 @@ export default function RunPage({ params }: { params: { id: string } }) {
   return (
     <section className="run-screen" data-run={params.id}>
       <RunHeader runId={params.id} />
-      <aside className="run-chat" aria-label="Run chat" />
+      <aside className="run-chat" aria-label="Run chat">
+        <ChatPanel
+          messages={messages}
+          onSend={(instruction) =>
+            setMessages((prev) => [
+              ...prev,
+              { author: "you", text: instruction },
+            ])
+          }
+        />
+      </aside>
       <div className="run-canvas" aria-label="Run canvas">
         <Canvas tasks={tasks} />
       </div>
