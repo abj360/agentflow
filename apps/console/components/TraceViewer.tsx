@@ -24,7 +24,7 @@ import {
  * @param props.runId - Identifier of the run to watch.
  * @returns The raw log panel element.
  */
-export function TraceViewer({ runId }: { runId: string }) {
+export function TraceViewer({ runId }: Readonly<{ runId: string }>) {
   const [isRawLogOpen, setRawLogOpen] = useState(false);
   const events = useTraceSocket(runId).filter(isLogEvent);
 
@@ -51,7 +51,11 @@ export function TraceViewer({ runId }: { runId: string }) {
  * @param props.events - Log events received for this run so far.
  * @returns The raw log list element.
  */
-function TraceLogList({ events }: { events: TraceLogEvent[] }) {
+function TraceLogList({
+  events,
+}: {
+  events: readonly TraceLogEvent[];
+}) {
   return (
     <ol className="trace-list">
       {events.map((event, index) => (
