@@ -20,19 +20,19 @@ import { isLogEvent, useTraceSocket } from "../hooks/useTraceSocket";
  * @returns The raw log panel element.
  */
 export function TraceViewer({ runId }: { runId: string }) {
-  const [open, setOpen] = useState(false);
+  const [isRawLogOpen, setRawLogOpen] = useState(false);
   const events = useTraceSocket(runId).filter(isLogEvent);
 
   return (
     <div className="trace-panel">
       <button
         className="trace-toggle"
-        aria-expanded={open}
-        onClick={() => setOpen(!open)}
+        aria-expanded={isRawLogOpen}
+        onClick={() => setRawLogOpen(!isRawLogOpen)}
       >
         Raw trace log <TraceEventCount count={events.length} />
       </button>
-      {!open ? null : (
+      {!isRawLogOpen ? null : (
         <ol className="trace-list">
           {events.map((event, index) => (
             <li
