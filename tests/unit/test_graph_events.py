@@ -8,6 +8,7 @@ Contains:
     test_node_status_changed_carries_the_new_status(): verifies status frames
     test_events_for_plan_emits_nodes_before_edges(): verifies frame ordering
     test_events_for_plan_on_empty_plan_emits_nothing(): verifies the empty case
+    test_fresh_task_reports_no_cost_yet(): verifies a planned task starts at zero
 """
 
 from apps.api.orchestration.graph_events import (
@@ -57,3 +58,10 @@ def test_events_for_plan_hangs_roots_off_the_orchestrator() -> None:
 def test_events_for_plan_on_empty_plan_emits_nothing() -> None:
     """Verifies a plan with no tasks produces no structural frames."""
     assert events_for_plan(()) == []
+
+
+def test_fresh_task_reports_no_cost_yet() -> None:
+    """Verifies a freshly planned task reports no timing and no spend."""
+    wire = node_created(PlannedTask(id="task-1", title="draft"))["task"]
+    assert wire["startedAt"] is None
+    assert (wire["tokens"], wire["retries"], wire["toolCallCount"]) == (0, 0, 0)
