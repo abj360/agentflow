@@ -23,7 +23,6 @@ import "reactflow/dist/style.css";
 
 const ORCHESTRATOR_Y = 160;
 
-
 /**
  * Renders a run's planned tasks as a positioned, live-updating graph.
  *

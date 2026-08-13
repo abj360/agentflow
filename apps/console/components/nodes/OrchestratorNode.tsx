@@ -21,9 +21,7 @@ export interface OrchestratorNodeData {
  * @param props.data - Label and spawned-task count supplied by the canvas.
  * @returns The orchestrator node element.
  */
-export function OrchestratorNode({
-  data,
-}: NodeProps<OrchestratorNodeData>) {
+export function OrchestratorNode({ data }: NodeProps<OrchestratorNodeData>) {
   return (
     <div className="canvas-node canvas-node--orchestrator">
       <strong>{data.label}</strong>

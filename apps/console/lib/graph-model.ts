@@ -33,7 +33,7 @@ export const ORCHESTRATOR_ID = "orchestrator";
 
 export type TaskSpecies = "research" | "tool-call" | "file-op" | "approval";
 
-const SPECIES_BY_ASSIGNEE: Record<string, TaskSpecies> = {
+const SPECIES_BY_ASSIGNEE: Readonly<Record<string, TaskSpecies>> = {
   researcher: "research",
   executor: "tool-call",
   writer: "file-op",
@@ -46,7 +46,7 @@ const SPECIES_BY_ASSIGNEE: Record<string, TaskSpecies> = {
  * @returns species - Species name matching a key in the canvas node type map,
  *   falling back to research for an assignee the console does not know yet.
  */
-export function speciesFor(task: RunViewerTask): TaskSpecies {
+export function speciesFor(task: Readonly<RunViewerTask>): TaskSpecies {
   if (task.status === "awaiting-approval") {
     return "approval";
   }
