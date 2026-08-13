@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-loop.py --- bounded planner/executor/critic orchestration loop
+loop.py --- orchestration loop, bounded per plan branch
 
 Contains:
     run_session(): runs one orchestration session to completion
@@ -11,10 +11,12 @@ Contains:
 from typing import Any, cast
 
 from apps.api.orchestration.state import StateStore
-from apps.api.orchestration.state_machine import GraphState, build_graph
+from apps.api.orchestration.state_machine import (
+    MAX_REVISIONS,
+    GraphState,
+    build_graph,
+)
 from apps.api.orchestration.task_planner import TaskPlanner
-
-MAX_REVISIONS = 3  # hard cap per ADR-001; never let a run spin unbounded
 
 
 class LoopHooks:

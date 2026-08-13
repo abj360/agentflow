@@ -8,10 +8,12 @@ Contains:
     PlannedTask.to_wire(): renders the task in the shape the console consumes
     task_id(): builds the stable id for a task at a plan position
     split_objectives(): splits a task description into separately planned objectives
+    branch_roots(): maps every task to the root its plan branch descends from
     TaskPlanner: turns a task description into a dependency-linked task list
     TaskPlanner.plan(): builds the task list for one run
 """
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Literal, TypedDict
 
@@ -122,6 +124,31 @@ def split_objectives(task: str) -> tuple[str, ...]:
     if len(lines) > 1:
         return lines
     return lines[:1]
+
+
+def branch_roots(tasks: Sequence[PlannedTask]) -> dict[str, str]:
+    """Maps every task id to the root task its plan branch descends from.
+
+    Args:
+        tasks: Runtime-planned tasks carrying the ids they depend on.
+
+    Returns:
+        roots: Root task id per task id, so each branch is budgeted on its own.
+            A task whose dependency is not in the plan is its own root.
+    """
+    by_id = {task.id: task for task in tasks}
+    roots: dict[str, str] = {}
+    for task in tasks:
+        current = task
+        # A plan can only be len(tasks) deep, so a longer walk means the caller
+        # handed us a cycle the validator has not rejected yet.
+        for _ in range(len(tasks)):
+            parent = by_id.get(current.depends_on[0]) if current.depends_on else None
+            if parent is None:
+                break
+            current = parent
+        roots[task.id] = current.id
+    return roots
 
 
 class TaskPlanner:
