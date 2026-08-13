@@ -43,11 +43,12 @@ const SPECIES_BY_ASSIGNEE: Record<string, TaskSpecies> = {
  * Resolves which node species the canvas renders a task as.
  *
  * @param task - The runtime-planned task about to be rendered.
- * @returns species - Species name matching a key in the canvas node type map.
+ * @returns species - Species name matching a key in the canvas node type map,
+ *   falling back to research for an assignee the console does not know yet.
  */
 export function speciesFor(task: RunViewerTask): TaskSpecies {
   if (task.status === "awaiting-approval") {
     return "approval";
   }
-  return SPECIES_BY_ASSIGNEE[task.assignee];
+  return SPECIES_BY_ASSIGNEE[task.assignee] ?? "research";
 }
