@@ -6,7 +6,11 @@ Contains:
     GraphState: typed state flowing through the orchestration graph
     planner_node(): drafts the runtime task plan the graph is wired from
     executor_node(): runs the current plan steps and collects their outputs
+    MAX_REVISIONS: revisions one plan branch may spend before it is stopped
     critic_node(): reviews collected outputs and accepts or requests revision
+    active_branch(): returns the plan branch the critic is reviewing
+    branch_revision_count(): returns how many revisions a branch has spent
+    record_branch_revision(): returns the counters with one more revision spent
     task_runner(): builds the node function that runs one planned task
     root_ids(): ids of the tasks that wait on nothing else
     leaf_ids(): ids of the tasks that nothing else depends on
@@ -27,6 +31,8 @@ ORCHESTRATOR_NODE = "orchestrator"
 EXECUTOR_NODE = "executor"
 CRITIC_NODE = "critic"
 
+MAX_REVISIONS = 3  # per plan branch, per ADR-002; ADR-001 applied it per session
+
 
 class GraphState(TypedDict):
     """Represents the state flowing through the orchestration graph.
@@ -38,6 +44,8 @@ class GraphState(TypedDict):
         critique: Latest critic feedback on the plan or results.
         iterations: Number of critic review cycles completed so far.
         tasks: Runtime-planned tasks in the wire shape the console consumes.
+        active_branch: Root task id of the branch that last produced a result.
+        branch_revisions: Revisions already spent, per branch root id.
     """
 
     task: str
@@ -46,6 +54,8 @@ class GraphState(TypedDict):
     critique: str
     iterations: int
     tasks: NotRequired[list[TaskWire]]
+    active_branch: NotRequired[str]
+    branch_revisions: NotRequired[dict[str, int]]
 
 
 def planner_node(state: GraphState) -> GraphState:
@@ -88,14 +98,64 @@ def critic_node(state: GraphState) -> GraphState:
     """
     has_results = bool(state["results"])
     verdict = "accept" if has_results else "revise"
-    return {**state, "critique": verdict, "iterations": state["iterations"] + 1}
+    update: GraphState = {
+        **state,
+        "critique": verdict,
+        "iterations": state["iterations"] + 1,
+    }
+    if verdict == "revise":
+        update["branch_revisions"] = record_branch_revision(
+            state, active_branch(state)
+        )
+    return update
 
 
-def task_runner(task: PlannedTask) -> Callable[[GraphState], GraphState]:
+def active_branch(state: GraphState) -> str:
+    """Returns the plan branch the critic is currently reviewing.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        branch: Root task id of the branch that last produced a result.
+    """
+    return state.get("active_branch", ORCHESTRATOR_NODE)
+
+
+def branch_revision_count(state: GraphState, branch: str) -> int:
+    """Returns how many revisions a plan branch has already spent.
+
+    Args:
+        state: Current graph state.
+        branch: Root task id of the branch being counted.
+
+    Returns:
+        revisions: Revisions this branch has taken out of its own budget.
+    """
+    return state.get("branch_revisions", {}).get(branch, 0)
+
+
+def record_branch_revision(state: GraphState, branch: str) -> dict[str, int]:
+    """Returns the revision counters with one more revision spent on a branch.
+
+    Args:
+        state: Current graph state.
+        branch: Root task id of the branch about to be revised.
+
+    Returns:
+        counters: Revisions spent per branch, with this branch incremented.
+    """
+    counters = dict(state.get("branch_revisions", {}))
+    counters[branch] = counters.get(branch, 0) + 1
+    return counters
+
+
+def task_runner(task: PlannedTask, branch: str) -> Callable[[GraphState], GraphState]:
     """Builds the node function that runs one planned task.
 
     Args:
         task: The planned task this graph node is responsible for.
+        branch: Root task id of the branch this task belongs to.
 
     Returns:
         execute_task: Node function appending this task's output to the results.
@@ -110,7 +170,11 @@ def task_runner(task: PlannedTask) -> Callable[[GraphState], GraphState]:
         Returns:
             update: State update carrying this task's output.
         """
-        return {**state, "results": [*state["results"], f"done: {task.title}"]}
+        return {
+            **state,
+            "active_branch": branch,
+            "results": [*state["results"], f"done: {task.title}"],
+        }
 
     return execute_task
 
@@ -174,30 +238,37 @@ def build_graph(tasks: Sequence[PlannedTask] | None = None) -> StateGraph[GraphS
     graph.add_node(ORCHESTRATOR_NODE, planner_node)
     graph.add_node(CRITIC_NODE, critic_node)
     graph.set_entry_point(ORCHESTRATOR_NODE)
+    roots = {
+        task.id: (task.depends_on[0] if task.depends_on else task.id)
+        for task in planned
+    }
     for task in planned:
         # langgraph types the node argument against the graph's inferred Never
         # state, which a per-task closure cannot satisfy structurally.
-        graph.add_node(task.id, cast(Any, task_runner(task)))
+        graph.add_node(task.id, cast(Any, task_runner(task, roots[task.id])))
     wire_dependencies(graph, planned)
     graph.add_conditional_edges(
         CRITIC_NODE,
         route_after_critic,
-        {"revise": ORCHESTRATOR_NODE, "accept": END},
+        {"revise": ORCHESTRATOR_NODE, "accept": END, "bounded": END},
     )
     return graph
 
 
 def route_after_critic(state: GraphState) -> str:
-    """Routes the graph based on the critic's verdict.
+    """Routes the graph on the critic's verdict, bounded per plan branch.
 
     Args:
         state: Current graph state containing the critique.
 
     Returns:
-        route: "revise" to loop back to the orchestrator, "accept" to finish.
+        route: "accept" to finish, "bounded" once the branch has spent its
+            revision budget, "revise" to send that branch back for another pass.
     """
     if state["critique"] == "accept":
         return "accept"
+    if branch_revision_count(state, active_branch(state)) > MAX_REVISIONS:
+        return "bounded"
     return "revise"
 
 
