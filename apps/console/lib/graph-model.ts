@@ -4,7 +4,9 @@
  * Contains:
  *   TaskStatus: lifecycle states a task node moves through
  *   RunViewerTask: one runtime-planned task as the API streams it
+ *   TaskSpecies: the node species the canvas renders a task as
  *   ORCHESTRATOR_ID: id of the fixed central node every run hangs off
+ *   speciesFor(): resolves which species the canvas renders a task as
  */
 
 export type TaskStatus =
@@ -28,3 +30,25 @@ export interface RunViewerTask {
 }
 
 export const ORCHESTRATOR_ID = "orchestrator";
+
+export type TaskSpecies = "research" | "tool-call" | "file-op" | "approval";
+
+const SPECIES_BY_ASSIGNEE: Readonly<Record<string, TaskSpecies>> = {
+  researcher: "research",
+  executor: "tool-call",
+  writer: "file-op",
+};
+
+/**
+ * Resolves which node species the canvas renders a task as.
+ *
+ * @param task - The runtime-planned task about to be rendered.
+ * @returns species - Species name matching a key in the canvas node type map,
+ *   falling back to research for an assignee the console does not know yet.
+ */
+export function speciesFor(task: Readonly<RunViewerTask>): TaskSpecies {
+  if (task.status === "awaiting-approval") {
+    return "approval";
+  }
+  return SPECIES_BY_ASSIGNEE[task.assignee] ?? "research";
+}
