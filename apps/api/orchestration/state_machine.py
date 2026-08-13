@@ -25,7 +25,12 @@ from typing import Any, NotRequired, TypedDict, cast
 
 from langgraph.graph import END, StateGraph
 
-from apps.api.orchestration.task_planner import PlannedTask, TaskPlanner, TaskWire
+from apps.api.orchestration.task_planner import (
+    PlannedTask,
+    TaskPlanner,
+    TaskWire,
+    branch_roots,
+)
 
 ORCHESTRATOR_NODE = "orchestrator"
 EXECUTOR_NODE = "executor"
@@ -238,10 +243,7 @@ def build_graph(tasks: Sequence[PlannedTask] | None = None) -> StateGraph[GraphS
     graph.add_node(ORCHESTRATOR_NODE, planner_node)
     graph.add_node(CRITIC_NODE, critic_node)
     graph.set_entry_point(ORCHESTRATOR_NODE)
-    roots = {
-        task.id: (task.depends_on[0] if task.depends_on else task.id)
-        for task in planned
-    }
+    roots = branch_roots(planned)
     for task in planned:
         # langgraph types the node argument against the graph's inferred Never
         # state, which a per-task closure cannot satisfy structurally.
