@@ -11,6 +11,7 @@ Contains:
     active_branch(): returns the plan branch the critic is reviewing
     branch_revision_count(): returns how many revisions a branch has spent
     record_branch_revision(): returns the counters with one more revision spent
+    TaskNode: signature every task node in the assembled graph satisfies
     task_runner(): builds the node function that runs one planned task
     root_ids(): ids of the tasks that wait on nothing else
     leaf_ids(): ids of the tasks that nothing else depends on
@@ -155,7 +156,10 @@ def record_branch_revision(state: GraphState, branch: str) -> dict[str, int]:
     return counters
 
 
-def task_runner(task: PlannedTask, branch: str) -> Callable[[GraphState], GraphState]:
+TaskNode = Callable[[GraphState], GraphState]
+
+
+def task_runner(task: PlannedTask, branch: str) -> TaskNode:
     """Builds the node function that runs one planned task.
 
     Args:
