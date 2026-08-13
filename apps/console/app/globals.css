@@ -495,3 +495,11 @@ code {
   border-color: #f59e0b;
   animation: approval-pulse 1.6s ease-in-out infinite;
 }
+
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas-node--awaiting-approval {
+    animation: none;
+    box-shadow: 0 0 0 3px rgb(245 158 11 / 0.35);
+  }
+}
