@@ -479,3 +479,19 @@ code {
     animation: none;
   }
 }
+
+
+@keyframes approval-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(245 158 11 / 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgb(245 158 11 / 0);
+  }
+}
+
+.canvas-node--awaiting-approval {
+  border-color: #f59e0b;
+  animation: approval-pulse 1.6s ease-in-out infinite;
+}
