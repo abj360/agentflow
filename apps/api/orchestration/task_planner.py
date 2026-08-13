@@ -134,13 +134,19 @@ def branch_roots(tasks: Sequence[PlannedTask]) -> dict[str, str]:
 
     Returns:
         roots: Root task id per task id, so each branch is budgeted on its own.
+            A task whose dependency is not in the plan is its own root.
     """
     by_id = {task.id: task for task in tasks}
     roots: dict[str, str] = {}
     for task in tasks:
         current = task
-        while current.depends_on:
-            current = by_id[current.depends_on[0]]
+        # A plan can only be len(tasks) deep, so a longer walk means the caller
+        # handed us a cycle the validator has not rejected yet.
+        for _ in range(len(tasks)):
+            parent = by_id.get(current.depends_on[0]) if current.depends_on else None
+            if parent is None:
+                break
+            current = parent
         roots[task.id] = current.id
     return roots
 
