@@ -269,7 +269,7 @@ def route_after_critic(state: GraphState) -> str:
     """
     if state["critique"] == "accept":
         return "accept"
-    if branch_revision_count(state, active_branch(state)) > MAX_REVISIONS:
+    if branch_revision_count(state, active_branch(state)) >= MAX_REVISIONS:
         return "bounded"
     return "revise"
 
