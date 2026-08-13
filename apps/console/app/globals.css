@@ -503,3 +503,25 @@ code {
     box-shadow: 0 0 0 3px rgb(245 158 11 / 0.35);
   }
 }
+
+
+.canvas-edge {
+  stroke: var(--border);
+  stroke-width: 1.5;
+}
+
+.canvas-edge--active {
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 6 8;
+  animation: edge-sweep 700ms linear infinite;
+}
+
+@keyframes edge-sweep {
+  from {
+    stroke-dashoffset: 28;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}

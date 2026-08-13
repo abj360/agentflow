@@ -7,7 +7,12 @@
 
 "use client";
 
-import ReactFlow, { Background, type Edge, type Node } from "reactflow";
+import ReactFlow, {
+  Background,
+  type Edge,
+  type EdgeTypes,
+  type Node,
+} from "reactflow";
 
 import {
   ORCHESTRATOR_ID,
@@ -16,12 +21,16 @@ import {
 } from "../lib/graph-model";
 import { layoutTasks } from "../lib/layout";
 import { NODE_TYPES } from "./nodes";
+import { PulseEdge } from "./PulseEdge";
 import type { OrchestratorNodeData } from "./nodes/OrchestratorNode";
 import type { TaskNodeData } from "./nodes/TaskNode";
 
 import "reactflow/dist/style.css";
 
 const ORCHESTRATOR_Y = 160;
+
+// React Flow remounts every custom edge when this map is a new object.
+const EDGE_TYPES: EdgeTypes = { pulse: PulseEdge };
 
 /**
  * Renders a run's planned tasks as a positioned, live-updating graph.
@@ -65,21 +74,31 @@ export function Canvas({ tasks }: { tasks: readonly RunViewerTask[] }) {
       .filter((task) => task.dependsOn.length === 0)
       .map((task) => ({
         id: `${ORCHESTRATOR_ID}->${task.id}`,
+        type: "pulse",
         source: ORCHESTRATOR_ID,
         target: task.id,
+        data: { active: false },
       })),
     ...tasks.flatMap((task) =>
       task.dependsOn.map((dependency) => ({
         id: `${dependency}->${task.id}`,
+        type: "pulse",
         source: dependency,
         target: task.id,
+        data: { active: false },
       })),
     ),
   ];
 
   return (
     <div className="canvas">
-      <ReactFlow nodes={nodes} edges={edges} nodeTypes={NODE_TYPES} fitView>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={NODE_TYPES}
+        edgeTypes={EDGE_TYPES}
+        fitView
+      >
         <Background />
       </ReactFlow>
     </div>
