@@ -18,6 +18,7 @@ from apps.api.orchestration.state_machine import (
 )
 from apps.api.orchestration.task_planner import TaskPlanner
 
+
 class LoopHooks:
     """Receives lifecycle callbacks from the orchestration loop."""
 

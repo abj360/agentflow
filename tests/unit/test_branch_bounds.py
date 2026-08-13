@@ -58,9 +58,7 @@ def test_branch_under_its_bound_still_revises() -> None:
 
 def test_branch_at_its_bound_stops_revising() -> None:
     """Verifies a branch that has spent its budget ends instead of looping."""
-    state = make_state(
-        active_branch="task-1", branch_revisions={"task-1": MAX_REVISIONS}
-    )
+    state = make_state(active_branch="task-1", branch_revisions={"task-1": MAX_REVISIONS})
     assert route_after_critic(state) == "bounded"
 
 

@@ -110,9 +110,7 @@ def critic_node(state: GraphState) -> GraphState:
         "iterations": state["iterations"] + 1,
     }
     if verdict == "revise":
-        update["branch_revisions"] = record_branch_revision(
-            state, active_branch(state)
-        )
+        update["branch_revisions"] = record_branch_revision(state, active_branch(state))
     return update
 
 
