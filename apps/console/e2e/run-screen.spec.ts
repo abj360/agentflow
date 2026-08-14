@@ -28,6 +28,11 @@ test.describe("unified run screen", () => {
 
   test("anchors the graph on the orchestrator node", async ({ page }) => {
     await page.goto(`/run/${RUN_ID}`);
+    // React Flow measures the pane before it paints, so wait for attachment
+    // rather than visibility or the assertion races the first layout pass.
+    await page.locator(".canvas-node--orchestrator").waitFor({
+      state: "attached",
+    });
     await expect(page.locator(".canvas-node--orchestrator")).toBeVisible();
   });
 });
