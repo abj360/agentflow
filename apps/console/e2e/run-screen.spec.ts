@@ -25,4 +25,9 @@ test.describe("unified run screen", () => {
     await page.goto(`/run/${RUN_ID}`);
     await expect(page.locator(".canvas")).toBeVisible();
   });
+
+  test("anchors the graph on the orchestrator node", async ({ page }) => {
+    await page.goto(`/run/${RUN_ID}`);
+    await expect(page.locator(".canvas-node--orchestrator")).toBeVisible();
+  });
 });
