@@ -21,6 +21,7 @@ import {
 } from "../lib/graph-model";
 import { layoutTasks } from "../lib/layout";
 import { NODE_TYPES } from "./nodes";
+import { edgeId } from "../lib/edge-pulse";
 import { PulseEdge } from "./PulseEdge";
 import type { OrchestratorNodeData } from "./nodes/OrchestratorNode";
 import type { TaskNodeData } from "./nodes/TaskNode";
@@ -73,7 +74,7 @@ export function Canvas({ tasks }: { tasks: readonly RunViewerTask[] }) {
     ...tasks
       .filter((task) => task.dependsOn.length === 0)
       .map((task) => ({
-        id: `${ORCHESTRATOR_ID}->${task.id}`,
+        id: edgeId(ORCHESTRATOR_ID, task.id),
         type: "pulse",
         source: ORCHESTRATOR_ID,
         target: task.id,
@@ -81,7 +82,7 @@ export function Canvas({ tasks }: { tasks: readonly RunViewerTask[] }) {
       })),
     ...tasks.flatMap((task) =>
       task.dependsOn.map((dependency) => ({
-        id: `${dependency}->${task.id}`,
+        id: edgeId(dependency, task.id),
         type: "pulse",
         source: dependency,
         target: task.id,
