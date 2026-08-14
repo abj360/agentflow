@@ -40,6 +40,9 @@ export interface RelaxationNode extends SimulationNodeDatum {
 export function relaxPositions(
   placements: readonly PositionedTask[],
 ): PositionedTask[] {
+  if (placements.length === 0) {
+    return [];
+  }
   const nodes: RelaxationNode[] = placements.map((placement) => ({
     id: placement.id,
     x: placement.x,
