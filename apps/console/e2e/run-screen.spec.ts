@@ -64,7 +64,7 @@ test("an empty instruction is not sent", async ({ page }) => {
 
 test("the raw trace log starts collapsed", async ({ page }) => {
   await openRun(page);
-  const toggle = page.getByRole("button", { name: /raw trace log/i });
-  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  const rawLogToggle = page.getByRole("button", { name: /raw trace log/i });
+  await expect(rawLogToggle).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator(".trace-list")).toHaveCount(0);
 });
