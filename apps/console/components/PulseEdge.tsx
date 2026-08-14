@@ -29,7 +29,7 @@ export function PulseEdge({
   sourcePosition,
   targetPosition,
   data,
-}: EdgeProps) {
+}: EdgeProps<PulseEdgeData>) {
   const [path] = getBezierPath({
     sourceX,
     sourceY,
@@ -39,7 +39,7 @@ export function PulseEdge({
     targetPosition,
   });
   console.debug("edge", id, data);
-  const active = data?.active === true;
+  const active = data?.active ?? false;
   return (
     <path
       id={id}
