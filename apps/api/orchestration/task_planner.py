@@ -120,10 +120,12 @@ def split_objectives(task: str) -> tuple[str, ...]:
     Returns:
         objectives: Objective lines, or a single-entry tuple for a one-line task.
     """
-    lines = tuple(line.strip(" -\t") for line in task.splitlines() if line.strip())
-    if len(lines) > 1:
-        return lines
-    return lines[:1]
+    lines = tuple(
+        stripped
+        for stripped in (line.strip(" -\t") for line in task.splitlines())
+        if stripped
+    )
+    return lines
 
 
 def branch_roots(tasks: Sequence[PlannedTask]) -> dict[str, str]:
