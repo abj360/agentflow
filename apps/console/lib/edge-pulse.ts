@@ -41,7 +41,7 @@ export function recordPulse(
   now: number,
 ): EdgePulse[] {
   const live = pulses.filter(
-    (pulse) => pulse.id !== id && now - pulse.firedAt <= PULSE_DURATION_MS,
+    (pulse) => pulse.id !== id && now - pulse.firedAt < PULSE_DURATION_MS,
   );
   return [...live, { id, firedAt: now }];
 }
@@ -59,7 +59,7 @@ export function activeEdges(
 ): Set<string> {
   return new Set(
     pulses
-      .filter((pulse) => now - pulse.firedAt <= PULSE_DURATION_MS)
+      .filter((pulse) => now - pulse.firedAt < PULSE_DURATION_MS)
       .map((pulse) => pulse.id),
   );
 }
