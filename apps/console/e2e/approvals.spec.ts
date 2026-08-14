@@ -10,10 +10,11 @@ import { expect, test } from "@playwright/test";
 test.describe("approval queue", () => {
   test("lists pending approvals", async ({ page }) => {
     await page.goto("/approvals");
-    await expect(page.getByRole("heading", { name: "Approvals" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Approvals" }),
+    ).toBeVisible();
   });
 });
-
 
 test("approve removes the card from the queue", async ({ page }) => {
   await page.goto("/approvals");
@@ -22,7 +23,6 @@ test("approve removes the card from the queue", async ({ page }) => {
   await expect(card).toHaveCount(0);
 });
 
-
 test("reject removes the card from the queue", async ({ page }) => {
   await page.goto("/approvals");
   const card = page.locator(".approval-card").first();
@@ -30,18 +30,15 @@ test("reject removes the card from the queue", async ({ page }) => {
   await expect(card).toHaveCount(0);
 });
 
-
 test("empty queue shows the empty state", async ({ page }) => {
   await page.goto("/approvals");
   await expect(page.getByText(/no pending approvals/i)).toBeVisible();
 });
 
-
 test("queue list is visible", async ({ page }) => {
   await page.goto("/approvals");
   await expect(page.locator(".approval-queue")).toBeVisible();
 });
-
 
 test("approval card shows the tool name", async ({ page }) => {
   await page.goto("/approvals");
@@ -49,33 +46,28 @@ test("approval card shows the tool name", async ({ page }) => {
   await expect(card.locator("strong").first()).toBeVisible();
 });
 
-
 test("approval card shows truncated trace id", async ({ page }) => {
   await page.goto("/approvals");
   const card = page.locator(".approval-card").first();
   await expect(card.locator(".approval-trace")).toBeVisible();
 });
 
-
 test("status badge renders pending state", async ({ page }) => {
   await page.goto("/approvals");
   await expect(page.locator(".status-badge").first()).toBeVisible();
 });
 
-
 test("traces page renders the live viewer", async ({ page }) => {
   await page.goto("/traces");
   await expect(
-    page.getByRole("heading", { name: "Live traces" })
+    page.getByRole("heading", { name: "Live traces" }),
   ).toBeVisible();
 });
-
 
 test("run detail shows chain validity", async ({ page }) => {
   await page.goto("/traces/run-e2e-1");
   await expect(page.getByText(/chain valid/i)).toBeVisible();
 });
-
 
 test("home links to traces and approvals", async ({ page }) => {
   await page.goto("/");
@@ -83,23 +75,21 @@ test("home links to traces and approvals", async ({ page }) => {
   await expect(page.getByRole("link", { name: /approvals/i })).toBeVisible();
 });
 
-
 test("theme toggle switches theme attribute", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: /dark mode/i }).click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", /dark|light/);
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-theme",
+    /dark|light/,
+  );
 });
-
 
 test("approval buttons are keyboard reachable", async ({ page }) => {
   await page.goto("/approvals");
-  const approveButton = page
-    .getByRole("button", { name: /approve/i })
-    .first();
+  const approveButton = page.getByRole("button", { name: /approve/i }).first();
   await approveButton.focus();
   await expect(approveButton).toBeFocused();
 });
-
 
 test("approval flow end to end", async ({ page }) => {
   await page.goto("/approvals");
