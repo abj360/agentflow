@@ -7,6 +7,7 @@ Contains:
     test_each_objective_waits_on_the_one_before_it(): verifies the chained dependsOn
     test_plan_is_capped_at_max_tasks(): verifies the plan-size ceiling holds
     test_wire_shape_uses_the_console_key_names(): verifies the camelCase wire keys
+    test_blank_task_plans_nothing(): verifies an empty task yields no tasks
 """
 
 from apps.api.orchestration.task_planner import (
@@ -51,3 +52,8 @@ def test_wire_shape_uses_the_console_key_names() -> None:
         "retries",
         "toolCallCount",
     }
+
+
+def test_blank_task_plans_nothing() -> None:
+    """Verifies a blank task description plans no work at all."""
+    assert TaskPlanner().plan("   ") == ()
