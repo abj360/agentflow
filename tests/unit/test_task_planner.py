@@ -8,6 +8,7 @@ Contains:
     test_plan_is_capped_at_max_tasks(): verifies the plan-size ceiling holds
     test_wire_shape_uses_the_console_key_names(): verifies the camelCase wire keys
     test_blank_task_plans_nothing(): verifies an empty task yields no tasks
+    test_split_objectives_drops_list_markers(): verifies bullet markers are stripped
 """
 
 from apps.api.orchestration.task_planner import (
@@ -57,3 +58,8 @@ def test_wire_shape_uses_the_console_key_names() -> None:
 def test_blank_task_plans_nothing() -> None:
     """Verifies a blank task description plans no work at all."""
     assert TaskPlanner().plan("   ") == ()
+
+
+def test_split_objectives_drops_list_markers() -> None:
+    """Verifies a bulleted task list plans one objective per bullet."""
+    assert split_objectives("- first\n- second") == ("first", "second")
