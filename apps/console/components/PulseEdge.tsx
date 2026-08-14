@@ -38,7 +38,6 @@ export function PulseEdge({
     targetY,
     targetPosition,
   });
-  console.debug("edge", id, data);
   const active = data?.active ?? false;
   return (
     <path
