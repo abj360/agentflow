@@ -121,9 +121,7 @@ def split_objectives(task: str) -> tuple[str, ...]:
         objectives: Objective lines, or a single-entry tuple for a one-line task.
     """
     lines = tuple(
-        stripped
-        for stripped in (line.strip(" -\t") for line in task.splitlines())
-        if stripped
+        stripped for stripped in (line.strip(" -\t") for line in task.splitlines()) if stripped
     )
     return lines
 
