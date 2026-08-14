@@ -525,3 +525,11 @@ code {
     stroke-dashoffset: 0;
   }
 }
+
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas-edge--active {
+    animation: none;
+    stroke-dasharray: none;
+  }
+}
