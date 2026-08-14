@@ -19,7 +19,7 @@ import {
 import type { PositionedTask } from "./layout";
 
 export const RELAXATION_TICKS = 60;
-export const COLLIDE_RADIUS = 64;
+export const COLLIDE_RADIUS = 72;
 
 export interface RelaxationNode extends SimulationNodeDatum {
   id: string;
@@ -53,7 +53,7 @@ export function relaxPositions(
       "column",
       forceX<RelaxationNode>((node) => node.anchorX).strength(0.9),
     )
-    .force("row", forceY<RelaxationNode>((node) => node.anchorY).strength(0.08))
+    .force("row", forceY<RelaxationNode>((node) => node.anchorY).strength(0.12))
     .force("collide", forceCollide<RelaxationNode>(COLLIDE_RADIUS))
     .stop()
     .tick(RELAXATION_TICKS);
