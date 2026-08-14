@@ -61,3 +61,10 @@ test("an empty instruction is not sent", async ({ page }) => {
   await page.getByRole("button", { name: "Send" }).click();
   await expect(page.locator(".chat-message")).toHaveCount(0);
 });
+
+test("the raw trace log starts collapsed", async ({ page }) => {
+  await openRun(page);
+  const toggle = page.getByRole("button", { name: /raw trace log/i });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await expect(page.locator(".trace-list")).toHaveCount(0);
+});
