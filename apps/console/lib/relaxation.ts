@@ -5,6 +5,7 @@
  *   RELAXATION_TICKS: simulation ticks one relaxation pass runs
  *   COLLIDE_RADIUS: minimum gap the simulation keeps between two node centres
  *   RelaxationNode: one placed task while the simulation is running
+ *   toSimulationNodes(): turns deterministic placements into simulation nodes
  *   relaxPositions(): nudges nodes apart without leaving their topological column
  */
 
@@ -28,6 +29,24 @@ export interface RelaxationNode extends SimulationNodeDatum {
 }
 
 /**
+ * Turns deterministic placements into simulation nodes anchored to them.
+ *
+ * @param placements - Deterministic positions the topological layout produced.
+ * @returns nodes - Simulation nodes carrying their anchor as a restoring force.
+ */
+function toSimulationNodes(
+  placements: readonly PositionedTask[],
+): RelaxationNode[] {
+  return placements.map((placement) => ({
+    id: placement.id,
+    x: placement.x,
+    y: placement.y,
+    anchorX: placement.x,
+    anchorY: placement.y,
+  }));
+}
+
+/**
  * Nudges nodes apart without letting them drift out of their topological column.
  *
  * The column force stays deliberately stronger than the row force: the layout's
@@ -43,13 +62,7 @@ export function relaxPositions(
   if (placements.length === 0) {
     return [];
   }
-  const nodes: RelaxationNode[] = placements.map((placement) => ({
-    id: placement.id,
-    x: placement.x,
-    y: placement.y,
-    anchorX: placement.x,
-    anchorY: placement.y,
-  }));
+  const nodes = toSimulationNodes(placements);
 
   forceSimulation(nodes)
     .force(
