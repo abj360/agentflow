@@ -19,7 +19,8 @@ import {
   speciesFor,
   type RunViewerTask,
 } from "../lib/graph-model";
-import { layoutTasks } from "../lib/layout";
+import { layoutTasks, type PositionedTask } from "../lib/layout";
+import { relaxPositions } from "../lib/relaxation";
 import { NODE_TYPES } from "./nodes";
 import { edgeId } from "../lib/edge-pulse";
 import { PulseEdge } from "./PulseEdge";
@@ -40,7 +41,9 @@ const EDGE_TYPES: EdgeTypes = { pulse: PulseEdge };
  * @returns The canvas element.
  */
 export function Canvas({ tasks }: { tasks: readonly RunViewerTask[] }) {
-  const placements = layoutTasks(tasks);
+  const placements: readonly PositionedTask[] = relaxPositions(
+    layoutTasks(tasks),
+  );
   const positions = new Map(
     placements.map((placement) => [placement.id, placement]),
   );

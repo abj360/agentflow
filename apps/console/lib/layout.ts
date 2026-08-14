@@ -31,7 +31,9 @@ export interface PositionedTask {
  * @param tasks - Runtime-planned tasks carrying the ids they depend on.
  * @returns levels - Column index per task id, or null when the graph has a cycle.
  */
-export function levelTasks(tasks: readonly RunViewerTask[]): ReadonlyMap<string, number> | null {
+export function levelTasks(
+  tasks: readonly RunViewerTask[],
+): ReadonlyMap<string, number> | null {
   if (tasks.length === 0) {
     return new Map();
   }
@@ -64,7 +66,10 @@ export function levelTasks(tasks: readonly RunViewerTask[]): ReadonlyMap<string,
       break;
     }
     for (const dependent of dependents.get(id) ?? []) {
-      const promoted = Math.max(levels.get(dependent) ?? 0, (levels.get(id) ?? 0) + 1);
+      const promoted = Math.max(
+        levels.get(dependent) ?? 0,
+        (levels.get(id) ?? 0) + 1,
+      );
       levels.set(dependent, promoted);
       const left = (remaining.get(dependent) ?? 0) - 1;
       remaining.set(dependent, left);
