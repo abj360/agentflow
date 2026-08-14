@@ -120,10 +120,13 @@ def validate_task_graph(tasks: Sequence[PlannedTask]) -> None:
         return
     problems = [
         *(f"duplicate task id: {duplicate}" for duplicate in find_duplicate_ids(tasks)),
-        *(f"unknown dependency: {dangling}" for dangling in find_unknown_dependencies(tasks)),
+        *(
+            f"dependsOn names a task the plan never declares: {dangling}"
+            for dangling in find_unknown_dependencies(tasks)
+        ),
     ]
     cycle = find_cycle(tasks)
     if cycle is not None:
-        problems.append("dependency cycle: " + " -> ".join(cycle))
+        problems.append("dependsOn cycle: " + " -> ".join(cycle))
     if problems:
         raise GraphValidationError(problems)
