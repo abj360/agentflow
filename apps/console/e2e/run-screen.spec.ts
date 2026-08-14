@@ -31,3 +31,18 @@ test.describe("unified run screen", () => {
     await expect(page.locator(".canvas-node--orchestrator")).toBeVisible();
   });
 });
+
+test("the composer sends an instruction into the run", async ({ page }) => {
+  await page.goto(`/run/${RUN_ID}`);
+  await page.getByLabel("Instruction").fill("summarise the findings");
+  await page.getByRole("button", { name: "Send" }).click();
+  await expect(page.locator(".chat-message")).toContainText(
+    "summarise the findings",
+  );
+});
+
+test("an empty instruction is not sent", async ({ page }) => {
+  await page.goto(`/run/${RUN_ID}`);
+  await page.getByRole("button", { name: "Send" }).click();
+  await expect(page.locator(".chat-message")).toHaveCount(0);
+});
