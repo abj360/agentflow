@@ -58,7 +58,7 @@ function toSimulationNodes(
  */
 export function relaxPositions(
   placements: readonly PositionedTask[],
-): PositionedTask[] {
+): readonly PositionedTask[] {
   if (placements.length < 2) {
     return [...placements];
   }
