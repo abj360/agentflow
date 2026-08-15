@@ -8,6 +8,8 @@ Contains:
     test_a_two_task_cycle_is_rejected(): verifies the smallest cycle is caught
     test_a_long_cycle_is_rejected(): verifies a cycle several hops long is caught
     test_the_reported_cycle_names_its_members(): verifies the error names the cycle
+    test_a_self_dependency_is_a_cycle(): verifies a task waiting on itself is caught
+    test_duplicate_task_ids_are_rejected(): verifies colliding ids are caught
 """
 
 import pytest
@@ -73,3 +75,20 @@ def test_the_reported_cycle_names_its_members() -> None:
         validate_task_graph(tasks)
     assert "task-1" in str(raised.value)
     assert "task-2" in str(raised.value)
+
+
+def test_a_self_dependency_is_a_cycle() -> None:
+    """Verifies a task that waits on itself is rejected as a cycle."""
+    tasks = [PlannedTask(id="task-1", title="a", depends_on=("task-1",))]
+    with pytest.raises(GraphValidationError):
+        validate_task_graph(tasks)
+
+
+def test_duplicate_task_ids_are_rejected() -> None:
+    """Verifies two tasks claiming the same id never reach the canvas."""
+    tasks = [
+        PlannedTask(id="task-1", title="a"),
+        PlannedTask(id="task-1", title="b"),
+    ]
+    with pytest.raises(GraphValidationError):
+        validate_task_graph(tasks)
