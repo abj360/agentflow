@@ -4,6 +4,9 @@
   --accent: #1d4ed8;
   --muted: #6b7280;
   --border: #e5e7eb;
+  --node-bg: #ffffff;
+  --node-orchestrator: #1d4ed8;
+  --edge-active: #1d4ed8;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -13,6 +16,9 @@
     --accent: #60a5fa;
     --muted: #7d8fa8;
     --border: #1e293b;
+    --node-bg: #111c31;
+    --node-orchestrator: #60a5fa;
+    --edge-active: #60a5fa;
   }
 }
 
@@ -233,6 +239,9 @@ code {
   --accent: #60a5fa;
   --muted: #94a3b8;
   --border: #1e293b;
+  --node-bg: #111c31;
+  --node-orchestrator: #60a5fa;
+  --edge-active: #60a5fa;
 }
 
 .trace-empty {
@@ -349,7 +358,7 @@ code {
 .canvas-node {
   border: 1px solid var(--border);
   border-radius: 0.5rem;
-  background: var(--bg);
+  background: var(--node-bg);
   color: var(--fg);
   padding: 0.5rem 0.75rem;
   font-size: 0.8125rem;
@@ -363,7 +372,7 @@ code {
 }
 
 .canvas-node--orchestrator {
-  border-color: var(--accent);
+  border-color: var(--node-orchestrator);
   border-width: 2px;
   padding: 0.875rem 1.25rem;
   font-size: 0.9375rem;
@@ -475,7 +484,7 @@ code {
 }
 
 .canvas-edge--active {
-  stroke: var(--accent);
+  stroke: var(--edge-active);
   stroke-width: 2;
   stroke-dasharray: 6 8;
   animation: edge-sweep 700ms linear infinite;
