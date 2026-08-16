@@ -69,3 +69,12 @@ test("a cycle lays out nothing rather than hanging", () => {
   const placed = layoutTasks([task("a", ["b"]), task("b", ["a"])]);
   expect(placed).toEqual([]);
 });
+
+test("an empty plan lays out nothing", () => {
+  expect(layoutTasks([])).toEqual([]);
+});
+
+test("a dependency the plan has not streamed yet is ignored", () => {
+  const levels = levelTasks([task("b", ["a"])]);
+  expect(levels?.get("b")).toBe(0);
+});
