@@ -13,6 +13,7 @@ Contains:
     test_batcher_holds_events_until_the_frame_is_full(): verifies buffering
     test_batcher_returns_a_whole_frame_once_full(): verifies the automatic flush
     test_structural_frame_names_its_run(): verifies the frame carries the run id
+    test_flushing_an_empty_batcher_sends_nothing(): verifies the empty flush
 """
 
 from apps.api.orchestration.graph_events import (
@@ -101,3 +102,8 @@ def test_structural_frame_names_its_run() -> None:
     frame = structural_frame("run-7", [node_status_changed("task-1", "done")])
     assert frame["kind"] == "graph_delta"
     assert frame["runId"] == "run-7"
+
+
+def test_flushing_an_empty_batcher_sends_nothing() -> None:
+    """Verifies flushing an idle batcher never writes an empty frame."""
+    assert StructuralEventBatcher().flush() == []
