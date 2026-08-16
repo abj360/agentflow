@@ -80,9 +80,7 @@ def events_for_plan(tasks: Sequence[PlannedTask]) -> list[dict[str, object]]:
     return frames
 
 
-def structural_frame(
-    run_id: str, events: Sequence[dict[str, object]]
-) -> dict[str, object]:
+def structural_frame(run_id: str, events: Sequence[dict[str, object]]) -> dict[str, object]:
     """Wraps a batch of structural events in the single frame the console reads.
 
     Args:

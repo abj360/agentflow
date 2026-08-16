@@ -74,9 +74,7 @@ class TraceHub:
                 # a viewer that died between events must not stall the fan-out
                 self.discard(run_id, socket)
 
-    async def broadcast_batch(
-        self, run_id: str, events: Sequence[dict[str, object]]
-    ) -> None:
+    async def broadcast_batch(self, run_id: str, events: Sequence[dict[str, object]]) -> None:
         """Sends a batch of structural events to a run's viewers as one frame.
 
         Args:
