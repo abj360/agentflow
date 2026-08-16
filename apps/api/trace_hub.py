@@ -75,7 +75,7 @@ class TraceHub:
                 self.discard(run_id, socket)
 
     async def broadcast_batch(
-        self, run_id: str, events: Sequence[dict[str, Any]]
+        self, run_id: str, events: Sequence[dict[str, object]]
     ) -> None:
         """Sends a batch of structural events to a run's viewers as one frame.
 
