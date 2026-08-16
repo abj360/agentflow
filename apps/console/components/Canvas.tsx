@@ -96,6 +96,9 @@ export function Canvas({ tasks }: { tasks: readonly RunViewerTask[] }) {
 
   return (
     <div className="canvas">
+      {tasks.length > 0 ? null : (
+        <p className="canvas-empty">Waiting for the planner…</p>
+      )}
       <ReactFlow
         nodes={nodes}
         edges={edges}
