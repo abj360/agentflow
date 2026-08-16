@@ -24,7 +24,8 @@ import type { RunViewerTask } from "../../../lib/graph-model";
 function RunHeader({ runId }: { runId: string }) {
   return (
     <header className="run-header">
-      <h1>Run {runId.slice(0, 8)}…</h1>
+      <h1>Run {runId.slice(0, 8)}</h1>
+      <span className="run-status">live</span>
     </header>
   );
 }
