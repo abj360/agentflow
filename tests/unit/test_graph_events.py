@@ -10,14 +10,19 @@ Contains:
     test_events_for_plan_on_empty_plan_emits_nothing(): verifies the empty case
     test_wire_task_carries_cost_counters(): verifies tokens/retries/tool calls ship
     test_fresh_task_reports_no_cost_yet(): verifies a planned task starts at zero
+    test_batcher_holds_events_until_the_frame_is_full(): verifies buffering
+    test_batcher_returns_a_whole_frame_once_full(): verifies the automatic flush
+    test_structural_frame_names_its_run(): verifies the frame carries the run id
 """
 
 from apps.api.orchestration.graph_events import (
     ORCHESTRATOR_ID,
+    StructuralEventBatcher,
     edge_created,
     events_for_plan,
     node_created,
     node_status_changed,
+    structural_frame,
 )
 from apps.api.orchestration.task_planner import PlannedTask, TaskPlanner
 
@@ -73,3 +78,26 @@ def test_wire_task_carries_cost_counters() -> None:
     task = PlannedTask(id="task-1", title="fetch", tokens=120, retries=1, tool_call_count=3)
     wire = node_created(task)["task"]
     assert (wire["tokens"], wire["retries"], wire["toolCallCount"]) == (120, 1, 3)
+
+
+def test_batcher_holds_events_until_the_frame_is_full() -> None:
+    """Verifies a partly filled batcher writes no frame at all."""
+    batcher = StructuralEventBatcher(max_batch=3)
+    assert batcher.add(node_status_changed("task-1", "running")) is None
+    assert batcher.add(node_status_changed("task-2", "running")) is None
+
+
+def test_batcher_returns_a_whole_frame_once_full() -> None:
+    """Verifies the batcher hands back every buffered event in one go."""
+    batcher = StructuralEventBatcher(max_batch=2)
+    batcher.add(node_status_changed("task-1", "running"))
+    batch = batcher.add(node_status_changed("task-2", "running"))
+    assert batch is not None
+    assert len(batch) == 2
+
+
+def test_structural_frame_names_its_run() -> None:
+    """Verifies a batched frame says which run it belongs to."""
+    frame = structural_frame("run-7", [node_status_changed("task-1", "done")])
+    assert frame["kind"] == "graph_delta"
+    assert frame["runId"] == "run-7"
