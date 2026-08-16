@@ -7,7 +7,10 @@ Contains:
     node_created(): builds the frame announcing a newly planned task node
     edge_created(): builds the frame announcing a new dependency edge
     node_status_changed(): builds the frame announcing a task status transition
+    MAX_EVENTS_PER_FRAME: structural events one WebSocket frame may carry
     events_for_plan(): renders a validated task list as ordered structural events
+    structural_frame(): wraps a batch of structural events in one frame
+    StructuralEventBatcher: coalesces structural events into whole frames
 """
 
 from collections.abc import Sequence
@@ -16,6 +19,7 @@ from apps.api.orchestration.graph_validator import validate_task_graph
 from apps.api.orchestration.task_planner import PlannedTask, TaskStatus
 
 ORCHESTRATOR_ID = "orchestrator"
+MAX_EVENTS_PER_FRAME = 32
 
 
 def node_created(task: PlannedTask) -> dict[str, object]:
@@ -74,3 +78,60 @@ def events_for_plan(tasks: Sequence[PlannedTask]) -> list[dict[str, object]]:
             frames.append(edge_created(ORCHESTRATOR_ID, task.id))
         frames.extend(edge_created(dependency, task.id) for dependency in task.depends_on)
     return frames
+
+
+def structural_frame(run_id: str, events: Sequence[dict[str, object]]) -> dict[str, object]:
+    """Wraps a batch of structural events in the single frame the console reads.
+
+    Args:
+        run_id: Run the batched events belong to.
+        events: Structural events to deliver together.
+
+    Returns:
+        frame: One graph_delta frame carrying every event in the batch.
+    """
+    return {"kind": "graph_delta", "runId": run_id, "events": list(events)}
+
+
+class StructuralEventBatcher:
+    """Coalesces structural events so one plan costs one WebSocket frame.
+
+    A run that plans twelve tasks used to write twelve frames, and the console
+    re-laid the canvas out on each one. Batching keeps that to a single layout.
+
+    Attributes:
+        max_batch: Events that accumulate before the batcher flushes on its own.
+    """
+
+    def __init__(self, max_batch: int = MAX_EVENTS_PER_FRAME) -> None:
+        """Initializes the batcher with an empty buffer.
+
+        Args:
+            max_batch: Events that accumulate before an automatic flush.
+        """
+        self.max_batch = max_batch
+        self._buffered: list[dict[str, object]] = []
+
+    def add(self, event: dict[str, object]) -> list[dict[str, object]] | None:
+        """Buffers one structural event, returning a full batch when it fills.
+
+        Args:
+            event: Structural event to deliver to the console.
+
+        Returns:
+            batch: The events to send now, or None while the buffer has room.
+        """
+        self._buffered.append(event)
+        if len(self._buffered) < self.max_batch:
+            return None
+        return self.flush()
+
+    def flush(self) -> list[dict[str, object]]:
+        """Returns and clears whatever the batcher is still holding.
+
+        Returns:
+            batch: The buffered events, which may be empty.
+        """
+        batch = self._buffered
+        self._buffered = []
+        return batch

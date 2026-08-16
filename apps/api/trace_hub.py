@@ -4,12 +4,16 @@ trace_hub.py --- server-side fan-out hub for live trace WebSocket streams
 
 Contains:
     TraceHub: tracks connected trace viewers and broadcasts events
+    TraceHub.broadcast_batch(): sends a batch of structural events as one frame
     MAX_CONNECTIONS_PER_RUN: cap on simultaneous viewers per run
 """
 
+from collections.abc import Sequence
 from typing import Any
 
 from fastapi import WebSocket
+
+from apps.api.orchestration.graph_events import structural_frame
 
 MAX_CONNECTIONS_PER_RUN = 8
 
@@ -69,3 +73,14 @@ class TraceHub:
             except Exception:  # transport errors vary by ASGI server, so catch broadly
                 # a viewer that died between events must not stall the fan-out
                 self.discard(run_id, socket)
+
+    async def broadcast_batch(self, run_id: str, events: Sequence[dict[str, object]]) -> None:
+        """Sends a batch of structural events to a run's viewers as one frame.
+
+        Args:
+            run_id: Run the events belong to.
+            events: Structural events to deliver together.
+        """
+        if not events:
+            return
+        await self.broadcast(run_id, structural_frame(run_id, list(events)))
