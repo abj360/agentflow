@@ -24,7 +24,7 @@ import { useRunGraph } from "../../../hooks/useRunGraph";
  * @param props.runId - Identifier of the run currently on screen.
  * @returns The run header element.
  */
-function RunHeader({ runId }: { runId: string }) {
+function RunHeader({ runId }: Readonly<{ runId: string }>) {
   return (
     <header className="run-header">
       <h1>Run {runId.slice(0, 8)}</h1>
@@ -54,7 +54,9 @@ function appendMessage(
  * @param props.params - Route parameters carrying the run identifier.
  * @returns The unified run screen element.
  */
-export default function RunPage({ params }: { params: { id: string } }) {
+export default function RunPage({
+  params,
+}: Readonly<{ params: { id: string } }>) {
   // Hooks cannot sit behind the guard below, so the empty run id is handled
   // by the socket refusing to connect rather than by an early return.
   const { tasks } = useRunGraph(params.id);
