@@ -10,6 +10,7 @@
 
 import { useState } from "react";
 
+import { usePendingApprovals } from "../../../hooks/usePendingApprovals";
 import { Canvas } from "../../../components/Canvas";
 import { RunChainBadge } from "../../../components/RunChainBadge";
 import { ChatPanel, type ChatMessage } from "../../../components/ChatPanel";
@@ -43,6 +44,7 @@ export default function RunPage({ params }: { params: { id: string } }) {
   // by the socket refusing to connect rather than by an early return.
   const { tasks } = useRunGraph(params.id);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const { approvals, dismiss } = usePendingApprovals();
 
   if (!params.id) {
     return <p className="run-empty">No run selected.</p>;
@@ -62,7 +64,7 @@ export default function RunPage({ params }: { params: { id: string } }) {
         />
       </aside>
       <div className="run-canvas" aria-label="Run canvas">
-        <Canvas tasks={tasks} />
+        <Canvas tasks={tasks} approvals={approvals} onResolve={dismiss} />
       </div>
       <aside className="run-log" aria-label="Raw trace log">
         <TraceViewer runId={params.id} />
