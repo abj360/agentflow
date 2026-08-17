@@ -7,6 +7,8 @@
 
 "use client";
 
+import { useMemo } from "react";
+
 import ReactFlow, {
   Background,
   type Edge,
@@ -55,8 +57,9 @@ export function Canvas({
 }>) {
   const waiting = pairApprovals(tasks, approvals);
   const placements: readonly PositionedTask[] = useRelaxedLayout(tasks);
-  const positions = new Map(
-    placements.map((placement) => [placement.id, placement]),
+  const positions = useMemo(
+    () => new Map(placements.map((placement) => [placement.id, placement])),
+    [placements],
   );
 
   const nodes: Node<TaskNodeData | OrchestratorNodeData>[] = [
