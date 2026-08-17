@@ -3,6 +3,8 @@
  *
  * Contains:
  *   ApprovalDecision: the two outcomes a reviewer can record
+ *   Approval: one pending approval request as the API returns it
+ *   fetchPendingApprovals: lists the approvals waiting on a reviewer
  *   fetchTrace: loads the audit trace for one run
  *   fetchSessions: lists recent orchestration sessions
  *   resolveApproval: records a reviewer's decision on one approval request
@@ -10,6 +12,13 @@
  */
 
 export type ApprovalDecision = "approved" | "rejected";
+
+export interface Approval {
+  approval_id: string;
+  trace_id: string;
+  tool_name: string;
+  status: string;
+}
 
 export interface TraceEventDto {
   event_hash: string;
@@ -73,4 +82,20 @@ export async function resolveApproval(
     body: JSON.stringify({ status }),
   });
   return response.ok;
+}
+
+/**
+ * Lists the approval requests currently waiting on a reviewer.
+ *
+ * @returns approvals - Pending approvals, empty when nothing is waiting.
+ */
+export async function fetchPendingApprovals(): Promise<Approval[]> {
+  const response = await fetch(`${API_BASE}/approvals/pending`, {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`approvals fetch failed: ${response.status}`);
+  }
+  const body: { approvals?: Approval[] } = await response.json();
+  return body.approvals ?? [];
 }

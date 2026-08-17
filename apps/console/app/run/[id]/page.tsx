@@ -11,6 +11,7 @@
 import { useState } from "react";
 
 import { Canvas } from "../../../components/Canvas";
+import { RunChainBadge } from "../../../components/RunChainBadge";
 import { ChatPanel, type ChatMessage } from "../../../components/ChatPanel";
 import { TraceViewer } from "../../../components/TraceViewer";
 import type { RunViewerTask } from "../../../lib/graph-model";
@@ -26,6 +27,7 @@ function RunHeader({ runId }: { runId: string }) {
     <header className="run-header">
       <h1>Run {runId.slice(0, 8)}</h1>
       <span className="run-status">live</span>
+      <RunChainBadge runId={runId} />
     </header>
   );
 }

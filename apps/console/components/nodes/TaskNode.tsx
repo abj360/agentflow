@@ -8,9 +8,11 @@
 
 "use client";
 
+import type { ReactNode } from "react";
 import { Handle, Position, type NodeProps } from "reactflow";
 
 import type { TaskSpecies, TaskStatus } from "../../lib/graph-model";
+import type { Approval } from "../../lib/api";
 
 export interface TaskNodeData {
   title: string;
@@ -18,6 +20,8 @@ export interface TaskNodeData {
   status: TaskStatus;
   tokens: number;
   toolCallCount: number;
+  approval?: Approval;
+  onResolve?: (approvalId: string) => void;
 }
 
 /**
@@ -26,15 +30,18 @@ export interface TaskNodeData {
  * @param props.data - Title, assignee, status, and cost counters for the task.
  * @param props.species - Species class the node is styled and labelled as.
  * @param props.detail - Extra line the species wants under the assignee.
+ * @param props.children - Body a species expands the node into, when it has one.
  * @returns The task node element.
  */
 export function TaskNode({
   data,
   species,
   detail,
+  children,
 }: NodeProps<TaskNodeData> & {
   species: TaskSpecies;
   detail?: string;
+  children?: ReactNode;
 }) {
   return (
     <div
@@ -46,6 +53,7 @@ export function TaskNode({
       {detail === undefined ? null : (
         <span className="canvas-node__meta">{detail}</span>
       )}
+      {children}
       <Handle type="source" position={Position.Right} />
     </div>
   );

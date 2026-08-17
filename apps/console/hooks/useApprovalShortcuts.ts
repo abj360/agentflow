@@ -12,8 +12,7 @@
 
 import { useEffect } from "react";
 
-import type { Approval } from "../components/ApprovalCard";
-import type { ApprovalDecision } from "./useApprovalDecision";
+import type { Approval, ApprovalDecision } from "../lib/api";
 
 export const APPROVE_KEY = "a";
 export const REJECT_KEY = "r";

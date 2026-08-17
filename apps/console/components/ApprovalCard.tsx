@@ -2,7 +2,6 @@
  * ApprovalCard.tsx --- one approval request, as a queue row or an expanded node body
  *
  * Contains:
- *   Approval: one pending approval request as the API returns it
  *   ApprovalCard: shows an approval request with approve/reject buttons
  *   ApprovalStatusBadge: renders a small status badge for an approval request
  */
@@ -13,13 +12,7 @@ import {
   useApprovalDecision,
   type ApprovalDecision,
 } from "../hooks/useApprovalDecision";
-
-export interface Approval {
-  approval_id: string;
-  trace_id: string;
-  tool_name: string;
-  status: string;
-}
+import type { Approval } from "../lib/api";
 
 /**
  * Shows an approval request with approve/reject buttons.
