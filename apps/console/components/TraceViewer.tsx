@@ -51,11 +51,7 @@ export function TraceViewer({ runId }: Readonly<{ runId: string }>) {
  * @param props.events - Log events received for this run so far.
  * @returns The raw log list element.
  */
-function TraceLogList({
-  events,
-}: {
-  events: readonly TraceLogEvent[];
-}) {
+function TraceLogList({ events }: { events: readonly TraceLogEvent[] }) {
   return (
     <ol className="trace-list">
       {events.map((event, index) => (

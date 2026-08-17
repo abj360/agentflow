@@ -22,7 +22,9 @@ export function ApprovalNode(props: NodeProps<TaskNodeData>) {
   const { approval, onResolve } = props.data;
 
   if (approval === undefined || onResolve === undefined) {
-    return <TaskNode {...props} species="approval" detail="Awaiting decision" />;
+    return (
+      <TaskNode {...props} species="approval" detail="Awaiting decision" />
+    );
   }
 
   return (
