@@ -34,3 +34,10 @@ test("an edge goes dark exactly when the window closes", () => {
   const pulses = recordPulse([], "e", START);
   expect(activeEdges(pulses, START + PULSE_DURATION_MS).size).toBe(0);
 });
+
+test("refiring an edge restarts its window instead of stacking", () => {
+  const first = recordPulse([], "e", START);
+  const second = recordPulse(first, "e", START + 400);
+  expect(second).toHaveLength(1);
+  expect(activeEdges(second, START + PULSE_DURATION_MS).size).toBe(1);
+});
