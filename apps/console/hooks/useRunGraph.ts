@@ -41,7 +41,10 @@ export function applyStructuralEvent(
   if (event.kind === "edge_created") {
     return {
       ...graph,
-      pulses: [...graph.pulses, { id: edgeId(event.from, event.to), firedAt: Date.now() }],
+      pulses: [
+        ...graph.pulses,
+        { id: edgeId(event.from, event.to), firedAt: Date.now() },
+      ],
     };
   }
   if (event.kind === "node_status_changed") {
