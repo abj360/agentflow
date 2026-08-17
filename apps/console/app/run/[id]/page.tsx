@@ -3,6 +3,7 @@
  *
  * Contains:
  *   RunHeader: renders the run screen header with the truncated run id
+ *   appendMessage(): adds one authored turn to a run's conversation
  *   RunPage: hosts the chat, canvas, and raw-log surfaces for one run
  */
 
@@ -34,6 +35,20 @@ function RunHeader({ runId }: { runId: string }) {
 }
 
 /**
+ * Adds one authored turn to a run's conversation.
+ *
+ * @param messages - Turns exchanged so far.
+ * @param text - The instruction the reviewer just sent.
+ * @returns conversation - The turns with the new instruction appended.
+ */
+function appendMessage(
+  messages: readonly ChatMessage[],
+  text: string,
+): ChatMessage[] {
+  return [...messages, { author: "you", text }];
+}
+
+/**
  * Hosts the chat, canvas, and raw-log surfaces for one run.
  *
  * @param props.params - Route parameters carrying the run identifier.
@@ -56,10 +71,7 @@ export default function RunPage({ params }: { params: { id: string } }) {
         <ChatPanel
           messages={messages}
           onSend={(instruction) =>
-            setMessages((prev) => [
-              ...prev,
-              { author: "you", text: instruction },
-            ])
+            setMessages((prev) => appendMessage(prev, instruction))
           }
         />
       </aside>
