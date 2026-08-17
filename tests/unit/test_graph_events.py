@@ -14,6 +14,7 @@ Contains:
     test_batcher_returns_a_whole_frame_once_full(): verifies the automatic flush
     test_structural_frame_names_its_run(): verifies the frame carries the run id
     test_flushing_an_empty_batcher_sends_nothing(): verifies the empty flush
+    test_traced_events_match_the_untraced_ones(): verifies tracing is transparent
 """
 
 from apps.api.orchestration.graph_events import (
@@ -24,6 +25,7 @@ from apps.api.orchestration.graph_events import (
     node_created,
     node_status_changed,
     structural_frame,
+    traced_events_for_plan,
 )
 from apps.api.orchestration.task_planner import PlannedTask, TaskPlanner
 
@@ -107,3 +109,9 @@ def test_structural_frame_names_its_run() -> None:
 def test_flushing_an_empty_batcher_sends_nothing() -> None:
     """Verifies flushing an idle batcher never writes an empty frame."""
     assert StructuralEventBatcher().flush() == []
+
+
+def test_traced_events_match_the_untraced_ones() -> None:
+    """Verifies tracing a plan changes nothing about the frames it emits."""
+    planned = TaskPlanner().plan("first\nsecond")
+    assert traced_events_for_plan("run-7", planned) == events_for_plan(planned)
