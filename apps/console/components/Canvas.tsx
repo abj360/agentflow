@@ -14,8 +14,10 @@ import ReactFlow, {
   type Node,
 } from "reactflow";
 
+import type { Approval } from "../lib/api";
 import {
   ORCHESTRATOR_ID,
+  pairApprovals,
   speciesFor,
   type RunViewerTask,
 } from "../lib/graph-model";
@@ -38,9 +40,20 @@ const EDGE_TYPES: EdgeTypes = { pulse: PulseEdge };
  * Renders a run's planned tasks as a positioned, live-updating graph.
  *
  * @param props.tasks - Runtime-planned tasks streamed in for this run so far.
+ * @param props.approvals - Approval requests currently waiting on a reviewer.
+ * @param props.onResolve - Called with the approval a reviewer has decided.
  * @returns The canvas element.
  */
-export function Canvas({ tasks }: { tasks: readonly RunViewerTask[] }) {
+export function Canvas({
+  tasks,
+  approvals = [],
+  onResolve,
+}: Readonly<{
+  tasks: readonly RunViewerTask[];
+  approvals?: readonly Approval[];
+  onResolve?: (approvalId: string) => void;
+}>) {
+  const waiting = pairApprovals(tasks, approvals);
   const placements: readonly PositionedTask[] = relaxPositions(
     layoutTasks(tasks),
   );
@@ -69,6 +82,8 @@ export function Canvas({ tasks }: { tasks: readonly RunViewerTask[] }) {
         status: task.status,
         tokens: task.tokens,
         toolCallCount: task.toolCallCount,
+        approval: waiting.get(task.id),
+        onResolve,
       },
     })),
   ];

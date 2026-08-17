@@ -7,7 +7,10 @@
  *   TaskSpecies: the node species the canvas renders a task as
  *   ORCHESTRATOR_ID: id of the fixed central node every run hangs off
  *   speciesFor(): resolves which species the canvas renders a task as
+ *   pairApprovals(): pairs each waiting task with a pending approval request
  */
+
+import type { Approval } from "./api";
 
 export type TaskStatus =
   | "pending"
@@ -51,4 +54,30 @@ export function speciesFor(task: Readonly<RunViewerTask>): TaskSpecies {
     return "approval";
   }
   return SPECIES_BY_ASSIGNEE[task.assignee] ?? "research";
+}
+
+/**
+ * Pairs every task waiting on a reviewer with one pending approval request.
+ *
+ * The approvals API keys requests by trace rather than by task, so the pairing
+ * is positional: waiting tasks and pending approvals both arrive in plan order.
+ *
+ * @param tasks - Runtime-planned tasks streamed in for this run.
+ * @param approvals - Approval requests currently waiting on a reviewer.
+ * @returns paired - The approval each waiting task should expand into.
+ */
+export function pairApprovals(
+  tasks: readonly RunViewerTask[],
+  approvals: readonly Approval[],
+): ReadonlyMap<string, Approval> {
+  const paired = new Map<string, Approval>();
+  tasks
+    .filter((task) => task.status === "awaiting-approval")
+    .forEach((task, index) => {
+      const approval = approvals[index];
+      if (approval !== undefined) {
+        paired.set(task.id, approval);
+      }
+    });
+  return paired;
 }
