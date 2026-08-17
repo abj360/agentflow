@@ -14,7 +14,7 @@ import { Canvas } from "../../../components/Canvas";
 import { RunChainBadge } from "../../../components/RunChainBadge";
 import { ChatPanel, type ChatMessage } from "../../../components/ChatPanel";
 import { TraceViewer } from "../../../components/TraceViewer";
-import type { RunViewerTask } from "../../../lib/graph-model";
+import { useRunGraph } from "../../../hooks/useRunGraph";
 
 /**
  * Renders the run screen header with the truncated run identifier.
@@ -39,7 +39,7 @@ function RunHeader({ runId }: { runId: string }) {
  * @returns The unified run screen element.
  */
 export default function RunPage({ params }: { params: { id: string } }) {
-  const [tasks] = useState<RunViewerTask[]>([]);
+  const { tasks } = useRunGraph(params.id);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   if (!params.id) {
