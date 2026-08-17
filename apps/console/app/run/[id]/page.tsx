@@ -39,6 +39,8 @@ function RunHeader({ runId }: { runId: string }) {
  * @returns The unified run screen element.
  */
 export default function RunPage({ params }: { params: { id: string } }) {
+  // Hooks cannot sit behind the guard below, so the empty run id is handled
+  // by the socket refusing to connect rather than by an early return.
   const { tasks } = useRunGraph(params.id);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
