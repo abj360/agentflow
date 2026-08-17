@@ -43,8 +43,8 @@ test("refiring an edge restarts its window instead of stacking", () => {
 });
 
 test("recording one edge drops the edges that already expired", () => {
-  const stale = recordPulse([], "old", START);
-  const fresh = recordPulse(stale, "new", START + PULSE_DURATION_MS);
+  const expiring = recordPulse([], "old", START);
+  const fresh = recordPulse(expiring, "new", START + PULSE_DURATION_MS);
   expect(fresh.map((pulse) => pulse.id)).toEqual(["new"]);
 });
 
