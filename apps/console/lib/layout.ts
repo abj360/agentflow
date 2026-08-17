@@ -93,11 +93,11 @@ export function layoutTasks(tasks: readonly RunViewerTask[]): PositionedTask[] {
   if (levels === null) {
     return [];
   }
-  const filled = new Map<number, number>();
+  const rowsPerColumn = new Map<number, number>();
   return tasks.map((task) => {
     const column = levels.get(task.id) ?? 0;
-    const row = filled.get(column) ?? 0;
-    filled.set(column, row + 1);
+    const row = rowsPerColumn.get(column) ?? 0;
+    rowsPerColumn.set(column, row + 1);
     return { id: task.id, x: (column + 1) * COLUMN_WIDTH, y: row * ROW_HEIGHT };
   });
 }
