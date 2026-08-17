@@ -8,6 +8,7 @@ Contains:
     current_trace_id(): returns the active span's trace id as hex
     set_span_attribute(): sets an attribute on the current span
     traced_section(): wraps a block in a manual span
+    structural_span(): wraps the emission of one structural graph event
     instrument_redis(): instruments an async Redis client
     shutdown_tracing(): flushes and shuts down the tracer provider
 """
@@ -98,6 +99,21 @@ def traced_section(name: str, **attributes: str | bool | int | float) -> Iterato
         for key, value in attributes.items():
             span.set_attribute(key, value)
         yield span  # callers may set additional attributes
+
+
+@contextmanager
+def structural_span(kind: str, run_id: str) -> Iterator[trace.Span]:
+    """Wraps the emission of one structural graph event in a span.
+
+    Args:
+        kind: Structural event name, such as node_created or edge_created.
+        run_id: Run whose canvas the event is being emitted to.
+
+    Yields:
+        span: The started span, so callers can attach the node or edge ids.
+    """
+    with traced_section(f"graph.{kind}", **{"graph.run_id": run_id}) as span:
+        yield span
 
 
 def instrument_redis(redis_client: Redis) -> None:
