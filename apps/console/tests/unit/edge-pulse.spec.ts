@@ -41,3 +41,14 @@ test("refiring an edge restarts its window instead of stacking", () => {
   expect(second).toHaveLength(1);
   expect(activeEdges(second, START + PULSE_DURATION_MS).size).toBe(1);
 });
+
+test("recording one edge drops the edges that already expired", () => {
+  const stale = recordPulse([], "old", START);
+  const fresh = recordPulse(stale, "new", START + PULSE_DURATION_MS);
+  expect(fresh.map((pulse) => pulse.id)).toEqual(["new"]);
+});
+
+test("edges fired in the same frame are all lit together", () => {
+  const both = recordPulse(recordPulse([], "a", START), "b", START);
+  expect(activeEdges(both, START).size).toBe(2);
+});
