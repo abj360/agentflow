@@ -9,12 +9,14 @@ Contains:
     node_status_changed(): builds the frame announcing a task status transition
     MAX_EVENTS_PER_FRAME: structural events one WebSocket frame may carry
     events_for_plan(): renders a validated task list as ordered structural events
+    traced_events_for_plan(): emits a plan's structural events under OTel spans
     structural_frame(): wraps a batch of structural events in one frame
     StructuralEventBatcher: coalesces structural events into whole frames
 """
 
 from collections.abc import Sequence
 
+from apps.api.observability.tracing import set_span_attribute, structural_span
 from apps.api.orchestration.graph_validator import validate_task_graph
 from apps.api.orchestration.task_planner import PlannedTask, TaskStatus
 
@@ -135,3 +137,21 @@ class StructuralEventBatcher:
         batch = self._buffered
         self._buffered = []
         return batch
+
+
+def traced_events_for_plan(run_id: str, tasks: Sequence[PlannedTask]) -> list[dict[str, object]]:
+    """Renders a plan's structural events, one OTel span per emitted event.
+
+    Args:
+        run_id: Run whose canvas the events are being emitted to.
+        tasks: Planned tasks to announce.
+
+    Returns:
+        frames: The same frames events_for_plan builds, each one traced.
+    """
+    frames = events_for_plan(tasks)
+    for frame in frames:
+        kind = str(frame["kind"])
+        with structural_span(kind, run_id):
+            set_span_attribute("graph.event_kind", kind)
+    return frames
