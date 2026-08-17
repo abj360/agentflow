@@ -2,24 +2,15 @@
  * page.tsx --- console landing page
  *
  * Contains:
- *   Home: overview page linking to traces and approvals
+ *   Home: points at the live run screen
  */
 
 export default function Home() {
   return (
     <section>
       <h1>Orchestrator overview</h1>
-      <p>
-        Live view of orchestration runs, audit traces, and pending approvals.
-      </p>
-      <ul>
-        <li>
-          <a href="/traces">Live traces</a>
-        </li>
-        <li>
-          <a href="/approvals">Approval queue</a>
-        </li>
-      </ul>
+      <p>Every run opens on one screen: chat, live task graph, and approvals.</p>
+      <a href="/run/default">Open the live run</a>
     </section>
   );
 }
