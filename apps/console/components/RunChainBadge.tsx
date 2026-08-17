@@ -18,7 +18,7 @@ import { fetchTrace, type TraceResponse } from "../lib/api";
  * @returns The chain verdict element, or nothing until the trace loads.
  */
 export function RunChainBadge({ runId }: Readonly<{ runId: string }>) {
-  const [trace, setTrace] = useState<TraceResponse | null>(null);
+  const [trace, setTrace] = useState<Readonly<TraceResponse> | null>(null);
 
   useEffect(() => {
     let cancelled = false;

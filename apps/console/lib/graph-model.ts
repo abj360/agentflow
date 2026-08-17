@@ -69,7 +69,7 @@ export function speciesFor(task: Readonly<RunViewerTask>): TaskSpecies {
 export function pairApprovals(
   tasks: readonly RunViewerTask[],
   approvals: readonly Approval[],
-): Map<string, Approval> {
+): ReadonlyMap<string, Approval> {
   const paired = new Map<string, Approval>();
   tasks
     .filter((task) => task.status === "awaiting-approval")
