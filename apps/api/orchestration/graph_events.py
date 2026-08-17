@@ -139,9 +139,7 @@ class StructuralEventBatcher:
         return batch
 
 
-def traced_events_for_plan(
-    run_id: str, tasks: Sequence[PlannedTask]
-) -> list[dict[str, object]]:
+def traced_events_for_plan(run_id: str, tasks: Sequence[PlannedTask]) -> list[dict[str, object]]:
     """Renders a plan's structural events, one OTel span per emitted event.
 
     Args:
