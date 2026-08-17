@@ -7,6 +7,8 @@
 
 "use client";
 
+import { useMemo } from "react";
+
 import ReactFlow, {
   Background,
   type Edge,
@@ -21,8 +23,8 @@ import {
   speciesFor,
   type RunViewerTask,
 } from "../lib/graph-model";
-import { layoutTasks, type PositionedTask } from "../lib/layout";
-import { relaxPositions } from "../lib/relaxation";
+import { useRelaxedLayout } from "../hooks/useRelaxedLayout";
+import type { PositionedTask } from "../lib/layout";
 import { NODE_TYPES } from "./nodes";
 import { edgeId } from "../lib/edge-pulse";
 import { PulseEdge } from "./PulseEdge";
@@ -54,11 +56,10 @@ export function Canvas({
   onResolve?: (approvalId: string) => void;
 }>) {
   const waiting = pairApprovals(tasks, approvals);
-  const placements: readonly PositionedTask[] = relaxPositions(
-    layoutTasks(tasks),
-  );
-  const positions = new Map(
-    placements.map((placement) => [placement.id, placement]),
+  const placements: readonly PositionedTask[] = useRelaxedLayout(tasks);
+  const positions = useMemo(
+    () => new Map(placements.map((placement) => [placement.id, placement])),
+    [placements],
   );
 
   const nodes: Node<TaskNodeData | OrchestratorNodeData>[] = [
