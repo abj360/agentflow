@@ -6,6 +6,7 @@ Contains:
     test_a_plan_becomes_a_graph_and_a_frame(): verifies plan, wiring, and frames agree
     test_every_edge_frame_names_an_announced_node(): verifies frames are self-consistent
     test_a_run_completes_over_the_dynamic_graph(): verifies the loop still finishes
+    test_a_single_step_plan_still_reaches_the_canvas(): verifies the degenerate plan
 """
 
 import pytest
@@ -52,3 +53,13 @@ async def test_a_run_completes_over_the_dynamic_graph() -> None:
     """Verifies a session still runs to completion on a planner-built topology."""
     result = await run_session("it-canvas-1", PLAN_TEXT)
     assert result["status"] in {"completed", "revision-bounded"}
+
+
+def test_a_single_step_plan_still_reaches_the_canvas() -> None:
+    """Verifies a one-objective plan produces a node and an orchestrator edge."""
+    frames = events_for_plan(TaskPlanner().plan("just do it"))
+    assert [frame["kind"] for frame in frames] == [
+        "node_created",
+        "edge_created",
+    ]
+    assert frames[1]["from"] == ORCHESTRATOR_ID
