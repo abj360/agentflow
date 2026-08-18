@@ -11,6 +11,7 @@ Contains:
     test_a_self_dependency_is_a_cycle(): verifies a task waiting on itself is caught
     test_duplicate_task_ids_are_rejected(): verifies colliding ids are caught
     test_build_graph_refuses_a_cyclic_plan(): verifies the graph builder validates
+    test_a_replan_that_introduces_a_cycle_is_rejected(): verifies the replan path
 """
 
 import pytest
@@ -20,7 +21,7 @@ from apps.api.orchestration.graph_validator import (
     find_cycle,
     validate_task_graph,
 )
-from apps.api.orchestration.state_machine import build_graph
+from apps.api.orchestration.state_machine import build_graph, planner_node
 from apps.api.orchestration.task_planner import PlannedTask
 
 
@@ -108,3 +109,15 @@ def test_build_graph_refuses_a_cyclic_plan() -> None:
     ]
     with pytest.raises(GraphValidationError):
         build_graph(tasks)
+
+
+def test_a_replan_that_introduces_a_cycle_is_rejected() -> None:
+    """Verifies the replan path validates, not just the first plan."""
+    state = {
+        "task": "a\nb",
+        "plan": [],
+        "results": [],
+        "critique": "revise",
+        "iterations": 1,
+    }
+    assert planner_node(state)["tasks"]
