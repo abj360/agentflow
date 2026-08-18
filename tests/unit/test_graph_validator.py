@@ -76,6 +76,7 @@ def test_the_reported_cycle_names_its_members() -> None:
     ]
     with pytest.raises(GraphValidationError) as raised:
         validate_task_graph(tasks)
+    assert "rejected before emit" in str(raised.value)
     assert "task-1" in str(raised.value)
     assert "task-2" in str(raised.value)
 

@@ -29,7 +29,7 @@ class GraphValidationError(ValueError):
             problems: Human-readable description of every problem found.
         """
         self.problems = tuple(problems)
-        super().__init__("; ".join(problems))
+        super().__init__("task graph rejected before emit: " + "; ".join(problems))
 
 
 def find_duplicate_ids(tasks: Sequence[PlannedTask]) -> tuple[str, ...]:
