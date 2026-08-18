@@ -3,6 +3,7 @@
  *
  * Contains:
  *   MAX_RECONNECT_ATTEMPTS: reconnect budget before the hook stays offline
+ *   MAX_RETAINED_EVENTS: how many events a single run keeps in memory
  *   TraceLogEvent: one free-form log event received over the trace stream
  *   NodeCreatedEvent: announces a task node the planner has just spawned
  *   EdgeCreatedEvent: announces a dependency edge between two task nodes
@@ -25,6 +26,7 @@ import { useEffect, useState } from "react";
 import type { RunViewerTask, TaskStatus } from "../lib/graph-model";
 
 const MAX_RECONNECT_ATTEMPTS = 5; // then give up and stay offline
+const MAX_RETAINED_EVENTS = 2000; // a long run must not grow the list forever
 
 export interface TraceLogEvent {
   kind: string;
@@ -177,7 +179,9 @@ export function useTraceSocket(runId: string): TraceEvent[] {
         }
         const unpacked = flattenFrame(frame);
         if (unpacked.length > 0) {
-          setEvents((prev) => [...prev, ...unpacked]);
+          setEvents((prev) =>
+            [...prev, ...unpacked].slice(-MAX_RETAINED_EVENTS),
+          );
         }
       };
       socket.onclose = () => {
