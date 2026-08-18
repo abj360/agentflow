@@ -7,13 +7,16 @@ Contains:
     test_every_edge_frame_names_an_announced_node(): verifies frames are self-consistent
     test_a_run_completes_over_the_dynamic_graph(): verifies the loop still finishes
     test_a_single_step_plan_still_reaches_the_canvas(): verifies the degenerate plan
+    test_batching_a_plan_costs_one_frame(): verifies the whole plan ships together
 """
 
 import pytest
 
 from apps.api.orchestration.graph_events import (
     ORCHESTRATOR_ID,
+    StructuralEventBatcher,
     events_for_plan,
+    structural_frame,
 )
 from apps.api.orchestration.loop import run_session
 from apps.api.orchestration.state_machine import build_graph
@@ -63,3 +66,12 @@ def test_a_single_step_plan_still_reaches_the_canvas() -> None:
         "edge_created",
     ]
     assert frames[1]["from"] == ORCHESTRATOR_ID
+
+
+def test_batching_a_plan_costs_one_frame() -> None:
+    """Verifies a whole plan reaches the console as a single graph_delta frame."""
+    frames = events_for_plan(TaskPlanner().plan(PLAN_TEXT))
+    batcher = StructuralEventBatcher(max_batch=len(frames))
+    batches = [batcher.add(frame) for frame in frames]
+    assert batches[:-1] == [None] * (len(frames) - 1)
+    assert len(structural_frame("run-1", batches[-1] or [])["events"]) == len(frames)
