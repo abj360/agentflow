@@ -10,6 +10,7 @@ Contains:
     test_the_reported_cycle_names_its_members(): verifies the error names the cycle
     test_a_self_dependency_is_a_cycle(): verifies a task waiting on itself is caught
     test_duplicate_task_ids_are_rejected(): verifies colliding ids are caught
+    test_build_graph_refuses_a_cyclic_plan(): verifies the graph builder validates
 """
 
 import pytest
@@ -19,6 +20,7 @@ from apps.api.orchestration.graph_validator import (
     find_cycle,
     validate_task_graph,
 )
+from apps.api.orchestration.state_machine import build_graph
 from apps.api.orchestration.task_planner import PlannedTask
 
 
@@ -92,3 +94,17 @@ def test_duplicate_task_ids_are_rejected() -> None:
     ]
     with pytest.raises(GraphValidationError):
         validate_task_graph(tasks)
+
+
+def test_build_graph_refuses_a_cyclic_plan() -> None:
+    """Verifies a cyclic plan is rejected before any node is wired.
+
+    build_graph() used to wire whatever it was handed, so a cycle produced by a
+    mid-run replan reached the console and emptied the canvas.
+    """
+    tasks = [
+        PlannedTask(id="task-1", title="a", depends_on=("task-2",)),
+        PlannedTask(id="task-2", title="b", depends_on=("task-1",)),
+    ]
+    with pytest.raises(GraphValidationError):
+        build_graph(tasks)
