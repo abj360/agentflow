@@ -26,6 +26,7 @@ from typing import Any, NotRequired, TypedDict, cast
 
 from langgraph.graph import END, StateGraph
 
+from apps.api.orchestration.graph_validator import validate_task_graph
 from apps.api.orchestration.task_planner import (
     PlannedTask,
     TaskPlanner,
@@ -67,13 +68,21 @@ class GraphState(TypedDict):
 def planner_node(state: GraphState) -> GraphState:
     """Drafts the runtime task plan the graph is wired from.
 
+    Every revise cycle runs this node again, so a replan is the one place a
+    cycle can enter a plan that validated on the first pass. Validating here
+    keeps a cyclic plan out of the state the canvas is rendered from.
+
     Args:
         state: Current graph state containing the task.
 
     Returns:
         update: State update carrying the plan steps and the planned tasks.
+
+    Raises:
+        GraphValidationError: When the plan is not a graph the canvas can draw.
     """
     planned = TaskPlanner().plan(state["task"])
+    validate_task_graph(planned)
     return {
         **state,
         "plan": [task.title for task in planned],
@@ -239,8 +248,12 @@ def build_graph(tasks: Sequence[PlannedTask] | None = None) -> StateGraph[GraphS
 
     Returns:
         graph: State machine wired to run exactly this plan.
+
+    Raises:
+        GraphValidationError: When the plan is not a renderable DAG.
     """
     planned: Sequence[PlannedTask] = tasks or ()
+    validate_task_graph(planned)
     graph = StateGraph(GraphState)
     graph.add_node(ORCHESTRATOR_NODE, planner_node)
     graph.add_node(CRITIC_NODE, critic_node)
