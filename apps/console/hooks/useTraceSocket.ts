@@ -136,7 +136,7 @@ export function flattenFrame(
   frame: TraceEvent | GraphDeltaFrame,
 ): TraceEvent[] {
   if (isGraphDelta(frame)) {
-    return [...frame.events];
+    return frame.events.length === 0 ? [] : [...frame.events];
   }
   return [frame];
 }
