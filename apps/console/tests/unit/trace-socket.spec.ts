@@ -38,3 +38,12 @@ test("an empty graph delta yields nothing", () => {
     flattenFrame({ kind: "graph_delta", runId: "run-1", events: [] }),
   ).toEqual([]);
 });
+
+test("a plain log line is delivered untouched", () => {
+  const events = flattenFrame({
+    kind: "plan_created",
+    role: "planner",
+    payload: {},
+  });
+  expect(events[0]?.kind).toBe("plan_created");
+});
