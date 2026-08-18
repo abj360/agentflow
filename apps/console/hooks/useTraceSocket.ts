@@ -56,8 +56,8 @@ export type StructuralEvent =
 
 export interface GraphDeltaFrame {
   kind: "graph_delta";
-  runId: string;
-  events: StructuralEvent[];
+  readonly runId: string;
+  events: readonly StructuralEvent[];
 }
 
 export type TraceEvent = TraceLogEvent | StructuralEvent;
