@@ -140,8 +140,8 @@ def branch_roots(tasks: Sequence[PlannedTask]) -> dict[str, str]:
     roots: dict[str, str] = {}
     for task in tasks:
         current = task
-        # A plan can only be len(tasks) deep, so a longer walk means the caller
-        # handed us a cycle the validator has not rejected yet.
+        # Callers validate first, so this bound is belt and braces rather than
+        # the thing standing between a cyclic plan and the canvas.
         for _ in range(len(tasks)):
             parent = by_id.get(current.depends_on[0]) if current.depends_on else None
             if parent is None:
