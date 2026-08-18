@@ -13,6 +13,7 @@
  *   isStructuralEvent(): narrows a trace event to the graph-shaping frames
  *   isLogEvent(): narrows a trace event to the free-form log frames
  *   parseFrame(): parses one socket frame, discarding anything unreadable
+ *   isGraphDelta(): narrows a parsed frame to the batched graph delta shape
  *   flattenFrame(): unpacks a batched graph delta into the events it carries
  *   useTraceSocket(): connects to the trace stream and exposes received events
  */
@@ -67,6 +68,8 @@ const STRUCTURAL_KINDS = new Set<string>([
   "node_status_changed",
 ]);
 
+const GRAPH_DELTA_KIND = "graph_delta";
+
 /**
  * Narrows a trace event to the frames that shape the canvas graph.
  *
@@ -109,6 +112,18 @@ function parseFrame(frame: string): TraceEvent | GraphDeltaFrame | null {
 }
 
 /**
+ * Narrows a parsed frame to the batched graph delta shape.
+ *
+ * @param frame - One parsed frame from the trace stream.
+ * @returns isDelta - True when the frame carries a batch of structural events.
+ */
+function isGraphDelta(
+  frame: TraceEvent | GraphDeltaFrame,
+): frame is GraphDeltaFrame {
+  return frame.kind === GRAPH_DELTA_KIND && "events" in frame;
+}
+
+/**
  * Unpacks a batched graph delta into the individual events it carries.
  *
  * The API coalesces a whole plan into one frame so the canvas lays out once
@@ -120,7 +135,7 @@ function parseFrame(frame: string): TraceEvent | GraphDeltaFrame | null {
 export function flattenFrame(
   frame: TraceEvent | GraphDeltaFrame,
 ): TraceEvent[] {
-  if ("events" in frame) {
+  if (isGraphDelta(frame)) {
     return [...frame.events];
   }
   return [frame];
