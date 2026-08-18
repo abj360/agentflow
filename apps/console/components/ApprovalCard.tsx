@@ -73,7 +73,7 @@ export function ApprovalCard({
   if (expanded) {
     return <div className="approval-inline">{body}</div>;
   }
-  return <li className="approval-card">{body}</li>;
+  return <div className="approval-card">{body}</div>;
 }
 
 /**
