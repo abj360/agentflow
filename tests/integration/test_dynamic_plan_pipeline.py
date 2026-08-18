@@ -30,9 +30,7 @@ def test_a_plan_becomes_a_graph_and_a_frame() -> None:
     planned = TaskPlanner().plan(PLAN_TEXT)
     graph = build_graph(planned)
     frames = events_for_plan(planned)
-    announced = {
-        frame["task"]["id"] for frame in frames if frame["kind"] == "node_created"
-    }
+    announced = {frame["task"]["id"] for frame in frames if frame["kind"] == "node_created"}
     assert announced == {task.id for task in planned}
     assert announced <= set(graph.nodes)
 
@@ -41,9 +39,7 @@ def test_every_edge_frame_names_an_announced_node() -> None:
     """Verifies no edge frame points at a node the canvas was never told about."""
     planned = TaskPlanner().plan(PLAN_TEXT)
     frames = events_for_plan(planned)
-    announced = {
-        frame["task"]["id"] for frame in frames if frame["kind"] == "node_created"
-    }
+    announced = {frame["task"]["id"] for frame in frames if frame["kind"] == "node_created"}
     announced.add(ORCHESTRATOR_ID)
     for frame in frames:
         if frame["kind"] == "edge_created":
