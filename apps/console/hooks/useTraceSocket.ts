@@ -175,9 +175,9 @@ export function useTraceSocket(runId: string): TraceEvent[] {
         if (frame === null) {
           return; // a truncated frame must not take the stream down
         }
-        const delivered = flattenFrame(frame);
-        if (delivered.length > 0) {
-          setEvents((prev) => [...prev, ...delivered]);
+        const unpacked = flattenFrame(frame);
+        if (unpacked.length > 0) {
+          setEvents((prev) => [...prev, ...unpacked]);
         }
       };
       socket.onclose = () => {
