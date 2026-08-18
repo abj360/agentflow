@@ -9,8 +9,10 @@
     "format:write": "prettier --write .",
     "lint": "next lint --dir app --dir components --dir hooks --dir lib",
     "start": "next start",
-    "typecheck": "tsc --noEmit",
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:e2e": "playwright test e2e",
+    "test:unit": "playwright test tests/unit",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "d3-force": "3.0.0",
