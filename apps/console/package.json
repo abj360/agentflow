@@ -1,16 +1,18 @@
 {
   "name": "agentflow-console",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "format:check": "prettier --check .",
-    "format:write": "prettier --write .",
-    "lint": "next lint --dir app --dir components --dir hooks --dir lib",
+    "format:check": "prettier --check app components e2e hooks lib tests",
+    "format:write": "prettier --write app components e2e hooks lib tests",
+    "lint": "next lint --dir app --dir components --dir hooks --dir lib --dir tests",
     "start": "next start",
-    "typecheck": "tsc --noEmit",
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:e2e": "playwright test e2e",
+    "test:unit": "playwright test tests/unit",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "d3-force": "3.0.0",
