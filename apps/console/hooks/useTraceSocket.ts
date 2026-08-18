@@ -1,5 +1,5 @@
 /**
- * useTraceSocket.ts --- opens and maintains the live trace WebSocket
+ * useTraceSocket.ts --- opens the live trace WebSocket and unpacks its frames
  *
  * Contains:
  *   MAX_RECONNECT_ATTEMPTS: reconnect budget before the hook stays offline
