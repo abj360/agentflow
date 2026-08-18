@@ -7,7 +7,7 @@
     "dev": "next dev",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
-    "lint": "next lint --dir app --dir components --dir hooks --dir lib",
+    "lint": "next lint --dir app --dir components --dir hooks --dir lib --dir tests",
     "start": "next start",
     "test": "playwright test",
     "test:e2e": "playwright test e2e",
