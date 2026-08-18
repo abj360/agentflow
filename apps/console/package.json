@@ -5,8 +5,8 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "format:check": "prettier --check .",
-    "format:write": "prettier --write .",
+    "format:check": "prettier --check app components e2e hooks lib tests",
+    "format:write": "prettier --write app components e2e hooks lib tests",
     "lint": "next lint --dir app --dir components --dir hooks --dir lib --dir tests",
     "start": "next start",
     "test": "playwright test",
