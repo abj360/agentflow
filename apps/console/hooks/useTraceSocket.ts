@@ -8,10 +8,12 @@
  *   EdgeCreatedEvent: announces a dependency edge between two task nodes
  *   NodeStatusChangedEvent: announces a task node's status transition
  *   StructuralEvent: the three frames that shape the canvas graph
+ *   GraphDeltaFrame: a batch of structural events delivered as one frame
  *   TraceEvent: every frame shape the trace stream can deliver
  *   isStructuralEvent(): narrows a trace event to the graph-shaping frames
  *   isLogEvent(): narrows a trace event to the free-form log frames
  *   parseFrame(): parses one socket frame, discarding anything unreadable
+ *   flattenFrame(): unpacks a batched graph delta into the events it carries
  *   useTraceSocket(): connects to the trace stream and exposes received events
  */
 
@@ -51,6 +53,12 @@ export type StructuralEvent =
   | EdgeCreatedEvent
   | NodeStatusChangedEvent;
 
+export interface GraphDeltaFrame {
+  kind: "graph_delta";
+  runId: string;
+  events: StructuralEvent[];
+}
+
 export type TraceEvent = TraceLogEvent | StructuralEvent;
 
 const STRUCTURAL_KINDS = new Set<string>([
@@ -85,19 +93,37 @@ export function isLogEvent(event: TraceEvent): event is TraceLogEvent {
  * @param frame - Raw text the socket delivered.
  * @returns event - The parsed event, or null when the frame is unusable.
  */
-function parseFrame(frame: string): TraceEvent | null {
+function parseFrame(frame: string): TraceEvent | GraphDeltaFrame | null {
   try {
     const parsed: unknown = JSON.parse(frame);
     if (typeof parsed !== "object" || parsed === null) {
       return null;
     }
-    return "kind" in parsed ? (parsed as TraceEvent) : null;
+    return "kind" in parsed ? (parsed as TraceEvent | GraphDeltaFrame) : null;
   } catch (error) {
     if (error instanceof SyntaxError) {
       return null;
     }
     throw error;
   }
+}
+
+/**
+ * Unpacks a batched graph delta into the individual events it carries.
+ *
+ * The API coalesces a whole plan into one frame so the canvas lays out once
+ * rather than once per node, so the hook has to undo that before folding.
+ *
+ * @param frame - One parsed frame from the trace stream.
+ * @returns events - The events the frame delivered, in arrival order.
+ */
+export function flattenFrame(
+  frame: TraceEvent | GraphDeltaFrame,
+): TraceEvent[] {
+  if ("events" in frame) {
+    return [...frame.events];
+  }
+  return [frame];
 }
 
 /**
@@ -130,11 +156,14 @@ export function useTraceSocket(runId: string): TraceEvent[] {
         if (socket !== current) {
           return; // drop events from a stale socket
         }
-        const event = parseFrame(message.data);
-        if (event === null) {
+        const frame = parseFrame(message.data);
+        if (frame === null) {
           return; // a truncated frame must not take the stream down
         }
-        setEvents((prev) => [...prev, event]);
+        const delivered = flattenFrame(frame);
+        if (delivered.length > 0) {
+          setEvents((prev) => [...prev, ...delivered]);
+        }
       };
       socket.onclose = () => {
         if (!stopped && attempts < MAX_RECONNECT_ATTEMPTS) {
