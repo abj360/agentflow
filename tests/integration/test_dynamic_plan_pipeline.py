@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+"""
+test_dynamic_plan_pipeline.py --- end-to-end tests from a planned task to a canvas frame
+
+Contains:
+    test_a_plan_becomes_a_graph_and_a_frame(): verifies plan, wiring, and frames agree
+    test_every_edge_frame_names_an_announced_node(): verifies frames are self-consistent
+    test_a_run_completes_over_the_dynamic_graph(): verifies the loop still finishes
+    test_a_single_step_plan_still_reaches_the_canvas(): verifies the degenerate plan
+    test_batching_a_plan_costs_one_frame(): verifies the whole plan ships together
+"""
+
+import pytest
+
+from apps.api.orchestration.graph_events import (
+    ORCHESTRATOR_ID,
+    StructuralEventBatcher,
+    events_for_plan,
+    structural_frame,
+)
+from apps.api.orchestration.loop import run_session
+from apps.api.orchestration.state_machine import build_graph
+from apps.api.orchestration.task_planner import TaskPlanner
+
+PLAN_TEXT = "gather the sources\ndraft the summary\ncheck the citations"
+
+
+def test_a_plan_becomes_a_graph_and_a_frame() -> None:
+    """Verifies one plan produces matching graph nodes and canvas frames."""
+    planned = TaskPlanner().plan(PLAN_TEXT)
+    graph = build_graph(planned)
+    frames = events_for_plan(planned)
+    announced = {frame["task"]["id"] for frame in frames if frame["kind"] == "node_created"}
+    assert announced == {task.id for task in planned}
+    assert announced <= set(graph.nodes)
+
+
+def test_every_edge_frame_names_an_announced_node() -> None:
+    """Verifies no edge frame points at a node the canvas was never told about."""
+    planned = TaskPlanner().plan(PLAN_TEXT)
+    frames = events_for_plan(planned)
+    announced = {frame["task"]["id"] for frame in frames if frame["kind"] == "node_created"}
+    announced.add(ORCHESTRATOR_ID)
+    for frame in frames:
+        if frame["kind"] == "edge_created":
+            assert frame["from"] in announced
+            assert frame["to"] in announced
+
+
+@pytest.mark.asyncio
+async def test_a_run_completes_over_the_dynamic_graph() -> None:
+    """Verifies a session still runs to completion on a planner-built topology."""
+    result = await run_session("it-canvas-1", PLAN_TEXT)
+    assert result["status"] in {"completed", "revision-bounded"}
+
+
+def test_a_single_step_plan_still_reaches_the_canvas() -> None:
+    """Verifies a one-objective plan produces a node and an orchestrator edge."""
+    frames = events_for_plan(TaskPlanner().plan("just do it"))
+    assert [frame["kind"] for frame in frames] == [
+        "node_created",
+        "edge_created",
+    ]
+    assert frames[1]["from"] == ORCHESTRATOR_ID
+
+
+def test_batching_a_plan_costs_one_frame() -> None:
+    """Verifies a whole plan reaches the console as a single graph_delta frame."""
+    frames = events_for_plan(TaskPlanner().plan(PLAN_TEXT))
+    batcher = StructuralEventBatcher(max_batch=len(frames))
+    batches = [batcher.add(frame) for frame in frames]
+    assert batches[:-1] == [None] * (len(frames) - 1)
+    assert len(structural_frame("run-1", batches[-1] or [])["events"]) == len(frames)
