@@ -127,7 +127,7 @@ export function Canvas({
     })),
   ];
 
-  const edges = buildEdges(tasks, lit);
+  const edges = useMemo(() => buildEdges(tasks, lit), [tasks, lit]);
 
   return (
     <div className="canvas">
