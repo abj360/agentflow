@@ -7,6 +7,7 @@ Contains:
     PlannedTask: one runtime-planned unit of work and what it waits on
     PlannedTask.to_wire(): renders the task in the shape the console consumes
     task_id(): builds the stable id for a task at a plan position
+    assignee_for(): picks the role that should own a planned objective
     split_objectives(): splits a task description into separately planned objectives
     branch_roots(): maps every task to the root its plan branch descends from
     TaskPlanner: turns a task description into a dependency-linked task list
@@ -20,6 +21,7 @@ from typing import Literal, TypedDict
 TaskStatus = Literal["pending", "running", "awaiting-approval", "done", "failed"]
 
 DEFAULT_ASSIGNEE = "executor"
+ASSIGNEE_ROTATION = ("researcher", "executor", "writer")
 MAX_TASKS_PER_PLAN = 12
 
 
@@ -111,6 +113,27 @@ def task_id(index: int) -> str:
     return f"task-{index + 1}"
 
 
+def assignee_for(objective: str, index: int) -> str:
+    """Picks the role that should own a planned objective.
+
+    The console renders a node species per assignee, so this is what decides
+    whether a step draws as research, a tool call, or a file operation.
+
+    Args:
+        objective: The objective text the planner produced.
+        index: Zero-based position of the objective in the plan.
+
+    Returns:
+        assignee: Role name the executor layer resolves against the registry.
+    """
+    lowered = objective.lower()
+    if lowered.startswith(("find", "gather", "research", "read")):
+        return "researcher"
+    if lowered.startswith(("write", "draft", "save", "record")):
+        return "writer"
+    return ASSIGNEE_ROTATION[index % len(ASSIGNEE_ROTATION)]
+
+
 def split_objectives(task: str) -> tuple[str, ...]:
     """Splits a task description into the objectives worth planning separately.
 
@@ -180,6 +203,7 @@ class TaskPlanner:
             PlannedTask(
                 id=task_id(index),
                 title=objective,
+                assignee=assignee_for(objective, index),
                 depends_on=(task_id(index - 1),) if index else (),
             )
             for index, objective in enumerate(objectives)
