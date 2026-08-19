@@ -10,6 +10,9 @@ Contains:
     test_blank_task_plans_nothing(): verifies an empty task yields no tasks
     test_split_objectives_drops_list_markers(): verifies bullet markers are stripped
     test_dependson_only_names_planned_tasks(): verifies no dangling dependency ids
+    test_gathering_work_goes_to_the_researcher(): verifies the assignee heuristic
+    test_replan_leaves_finished_work_alone(): verifies a revise keeps done tasks
+    test_replan_on_accept_changes_nothing(): verifies an accepted plan is untouched
 """
 
 from apps.api.orchestration.task_planner import (
@@ -71,3 +74,25 @@ def test_dependson_only_names_planned_tasks() -> None:
     planned = TaskPlanner().plan("one\ntwo\nthree")
     ids = {task.id for task in planned}
     assert all(set(task.depends_on) <= ids for task in planned)
+
+
+def test_gathering_work_goes_to_the_researcher() -> None:
+    """Verifies retrieval-shaped objectives are assigned to the researcher."""
+    planned = TaskPlanner().plan("gather the sources\nwrite the summary")
+    assert [task.assignee for task in planned] == ["researcher", "writer"]
+
+
+def test_replan_leaves_finished_work_alone() -> None:
+    """Verifies a revise cycle resets only the work that has not finished."""
+    tasks = (
+        PlannedTask(id="task-1", title="a", status="done"),
+        PlannedTask(id="task-2", title="b", status="failed"),
+    )
+    replanned = TaskPlanner().replan(tasks, "revise")
+    assert [task.status for task in replanned] == ["done", "pending"]
+
+
+def test_replan_on_accept_changes_nothing() -> None:
+    """Verifies an accepted plan is handed back exactly as it came in."""
+    tasks = (PlannedTask(id="task-1", title="a", status="running"),)
+    assert TaskPlanner().replan(tasks, "accept") == tasks
