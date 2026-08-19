@@ -11,13 +11,13 @@
 
 import { useState } from "react";
 
-import { activeEdges } from "../../../lib/edge-pulse";
-import { usePendingApprovals } from "../../../hooks/usePendingApprovals";
 import { Canvas } from "../../../components/Canvas";
-import { RunChainBadge } from "../../../components/RunChainBadge";
 import { ChatPanel, type ChatMessage } from "../../../components/ChatPanel";
+import { RunChainBadge } from "../../../components/RunChainBadge";
 import { TraceViewer } from "../../../components/TraceViewer";
+import { usePendingApprovals } from "../../../hooks/usePendingApprovals";
 import { useRunGraph } from "../../../hooks/useRunGraph";
+import { activeEdges } from "../../../lib/edge-pulse";
 
 /**
  * Renders the run screen header with the truncated run identifier.
