@@ -12,21 +12,18 @@
 
 import { useState } from "react";
 
-import {
-  isLogEvent,
-  useTraceSocket,
-  type TraceLogEvent,
-} from "../hooks/useTraceSocket";
+import type { TraceLogEvent } from "../hooks/useTraceSocket";
 
 /**
  * Renders a run's raw log events behind a disclosure toggle.
  *
- * @param props.runId - Identifier of the run to watch.
+ * @param props.events - Raw log lines the run screen already receives.
  * @returns The raw log panel element.
  */
-export function TraceViewer({ runId }: Readonly<{ runId: string }>) {
+export function TraceViewer({
+  events,
+}: Readonly<{ events: readonly TraceLogEvent[] }>) {
   const [isRawLogOpen, setRawLogOpen] = useState(false);
-  const events = useTraceSocket(runId).filter(isLogEvent);
 
   return (
     <div className="trace-panel">

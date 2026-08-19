@@ -60,7 +60,7 @@ export default function RunPage({
 }: Readonly<{ params: { id: string } }>) {
   // Hooks cannot sit behind the guard below, so the empty run id is handled
   // by the socket refusing to connect rather than by an early return.
-  const { tasks, pulses } = useRunGraph(params.id);
+  const { tasks, pulses, logs } = useRunGraph(params.id);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { approvals, dismiss } = usePendingApprovals();
 
@@ -87,7 +87,7 @@ export default function RunPage({
         />
       </div>
       <aside className="run-log" aria-label="Raw trace log">
-        <TraceViewer runId={params.id} />
+        <TraceViewer events={logs} />
       </aside>
     </section>
   );
