@@ -22,7 +22,7 @@ from typing import Literal, TypedDict
 TaskStatus = Literal["pending", "running", "awaiting-approval", "done", "failed"]
 
 DEFAULT_ASSIGNEE = "executor"
-ASSIGNEE_ROTATION = ("researcher", "executor", "writer")
+ASSIGNEE_ROTATION: tuple[str, ...] = ("researcher", "executor", "writer")
 MAX_TASKS_PER_PLAN = 12
 
 
