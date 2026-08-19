@@ -25,7 +25,9 @@ export function OrchestratorNode({ data }: NodeProps<OrchestratorNodeData>) {
   return (
     <div className="canvas-node canvas-node--orchestrator">
       <strong>{data.label}</strong>
-      <span className="canvas-node__meta">{data.taskCount} tasks</span>
+      <span className="canvas-node__meta">
+        {data.taskCount === 1 ? "1 task" : `${data.taskCount} tasks`}
+      </span>
       <Handle type="source" position={Position.Right} />
     </div>
   );
