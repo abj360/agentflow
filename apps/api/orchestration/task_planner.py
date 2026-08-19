@@ -12,10 +12,11 @@ Contains:
     branch_roots(): maps every task to the root its plan branch descends from
     TaskPlanner: turns a task description into a dependency-linked task list
     TaskPlanner.plan(): builds the task list for one run
+    TaskPlanner.replan(): folds critic feedback into an existing task list
 """
 
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Literal, TypedDict
 
 TaskStatus = Literal["pending", "running", "awaiting-approval", "done", "failed"]
@@ -209,3 +210,22 @@ class TaskPlanner:
             for index, objective in enumerate(objectives)
         ]
         return tuple(planned)
+
+    def replan(
+        self, tasks: Sequence[PlannedTask], critique: str
+    ) -> tuple[PlannedTask, ...]:
+        """Folds critic feedback into an existing task list.
+
+        Args:
+            tasks: Tasks the run has already planned.
+            critique: The critic's verdict on the current results.
+
+        Returns:
+            planned_tasks: The tasks to run next, with settled work left alone.
+        """
+        if critique == "accept":
+            return tuple(tasks)
+        return tuple(
+            task if task.status == "done" else replace(task, status="pending")
+            for task in tasks
+        )
