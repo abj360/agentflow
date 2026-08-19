@@ -72,7 +72,7 @@ class RoleRegistry:
             role: The role instance bound to that name.
         """
         if name not in self.roles:
-            raise KeyError(f"unregistered role: {name}")
+            raise KeyError(f"unregistered role: {name!r}; planner assigned it to a task")
         return self.roles[name]
 
 
