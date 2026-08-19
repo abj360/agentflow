@@ -211,9 +211,7 @@ class TaskPlanner:
         ]
         return tuple(planned)
 
-    def replan(
-        self, tasks: Sequence[PlannedTask], critique: str
-    ) -> tuple[PlannedTask, ...]:
+    def replan(self, tasks: Sequence[PlannedTask], critique: str) -> tuple[PlannedTask, ...]:
         """Folds critic feedback into an existing task list.
 
         Args:
@@ -226,6 +224,5 @@ class TaskPlanner:
         if not tasks or critique == "accept":
             return tuple(tasks)
         return tuple(
-            task if task.status == "done" else replace(task, status="pending")
-            for task in tasks
+            task if task.status == "done" else replace(task, status="pending") for task in tasks
         )
