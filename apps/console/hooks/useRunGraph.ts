@@ -23,8 +23,8 @@ import {
 } from "./useTraceSocket";
 
 export interface TaskGraph {
-  tasks: RunViewerTask[];
-  pulses: EdgePulse[];
+  readonly tasks: RunViewerTask[];
+  readonly pulses: EdgePulse[];
 }
 
 export interface RunGraph extends TaskGraph {
