@@ -11,6 +11,8 @@ import { useMemo } from "react";
 
 import ReactFlow, {
   Background,
+  BackgroundVariant,
+  Controls,
   type Edge,
   type EdgeTypes,
   type Node,
@@ -44,17 +46,21 @@ const EDGE_TYPES: EdgeTypes = { pulse: PulseEdge };
  * @param props.tasks - Runtime-planned tasks streamed in for this run so far.
  * @param props.approvals - Approval requests currently waiting on a reviewer.
  * @param props.onResolve - Called with the approval a reviewer has decided.
+ * @param props.activeEdgeIds - Edges currently lit by a trace event.
  * @returns The canvas element.
  */
 export function Canvas({
   tasks,
   approvals = [],
   onResolve,
+  activeEdgeIds,
 }: Readonly<{
   tasks: readonly RunViewerTask[];
   approvals?: readonly Approval[];
   onResolve?: (approvalId: string) => void;
+  activeEdgeIds?: ReadonlySet<string>;
 }>) {
+  const lit = activeEdgeIds ?? new Set<string>();
   const waiting = pairApprovals(tasks, approvals);
   const placements: readonly PositionedTask[] = useRelaxedLayout(tasks);
   const positions = useMemo(
@@ -97,7 +103,7 @@ export function Canvas({
         type: "pulse",
         source: ORCHESTRATOR_ID,
         target: task.id,
-        data: { active: false },
+        data: { active: lit.has(edgeId(ORCHESTRATOR_ID, task.id)) },
       })),
     ...tasks.flatMap((task) =>
       task.dependsOn.map((dependency) => ({
@@ -105,7 +111,7 @@ export function Canvas({
         type: "pulse",
         source: dependency,
         target: task.id,
-        data: { active: false },
+        data: { active: lit.has(edgeId(dependency, task.id)) },
       })),
     ),
   ];
@@ -122,7 +128,8 @@ export function Canvas({
         edgeTypes={EDGE_TYPES}
         fitView
       >
-        <Background />
+        <Background variant={BackgroundVariant.Dots} gap={18} size={1} />
+        <Controls showInteractive={false} />
       </ReactFlow>
     </div>
   );
