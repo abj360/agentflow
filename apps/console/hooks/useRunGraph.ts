@@ -2,7 +2,8 @@
  * useRunGraph.ts --- folds the live trace stream into the graph the canvas draws
  *
  * Contains:
- *   RunGraph: the tasks and edge firings the canvas renders for one run
+ *   TaskGraph: the tasks and edge firings folded out of the structural frames
+ *   RunGraph: everything one run screen reads off a single trace connection
  *   applyStructuralEvent(): folds one structural frame into a task list
  *   useRunGraph(): keeps a run's task list and edge pulses in step with the socket
  */
@@ -14,14 +15,20 @@ import { useMemo } from "react";
 import { edgeId, type EdgePulse } from "../lib/edge-pulse";
 import type { RunViewerTask } from "../lib/graph-model";
 import {
+  isLogEvent,
   isStructuralEvent,
   useTraceSocket,
   type StructuralEvent,
+  type TraceLogEvent,
 } from "./useTraceSocket";
 
-export interface RunGraph {
-  tasks: RunViewerTask[];
-  pulses: EdgePulse[];
+export interface TaskGraph {
+  readonly tasks: RunViewerTask[];
+  readonly pulses: EdgePulse[];
+}
+
+export interface RunGraph extends TaskGraph {
+  logs: TraceLogEvent[];
 }
 
 /**
@@ -32,9 +39,9 @@ export interface RunGraph {
  * @returns graph - The graph with this frame applied.
  */
 export function applyStructuralEvent(
-  graph: RunGraph,
+  graph: TaskGraph,
   event: StructuralEvent,
-): RunGraph {
+): TaskGraph {
   if (event.kind === "node_created") {
     return { ...graph, tasks: [...graph.tasks, event.task] };
   }
@@ -62,16 +69,18 @@ export function applyStructuralEvent(
  * Keeps a run's task list and edge firings in step with the live trace socket.
  *
  * @param runId - Identifier of the run to follow.
- * @returns graph - The tasks spawned so far and the edges currently firing.
+ * One connection feeds the whole screen: the canvas reads the folded graph and
+ * the raw-log panel reads the log lines, so no surface opens a second socket.
+ *
+ * @returns graph - The tasks, the edges currently firing, and the raw log lines.
  */
 export function useRunGraph(runId: string): RunGraph {
   const events = useTraceSocket(runId);
 
-  return useMemo(
-    () =>
-      events
-        .filter(isStructuralEvent)
-        .reduce(applyStructuralEvent, { tasks: [], pulses: [] }),
-    [events],
-  );
+  return useMemo(() => {
+    const folded = events
+      .filter(isStructuralEvent)
+      .reduce(applyStructuralEvent, { tasks: [], pulses: [] });
+    return { ...folded, logs: events.filter(isLogEvent) };
+  }, [events]);
 }

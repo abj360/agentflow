@@ -79,3 +79,11 @@ test("the canvas offers zoom controls", async ({ page }) => {
   await openRun(page);
   await expect(page.locator(".react-flow__controls")).toBeVisible();
 });
+
+test("opening the raw log reveals the log list", async ({ page }) => {
+  await openRun(page);
+  await page.getByRole("button", { name: /raw trace log/i }).click();
+  await expect(
+    page.getByRole("button", { name: /raw trace log/i }),
+  ).toHaveAttribute("aria-expanded", "true");
+});

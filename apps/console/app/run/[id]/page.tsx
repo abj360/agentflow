@@ -11,13 +11,13 @@
 
 import { useState } from "react";
 
-import { activeEdges } from "../../../lib/edge-pulse";
-import { usePendingApprovals } from "../../../hooks/usePendingApprovals";
 import { Canvas } from "../../../components/Canvas";
-import { RunChainBadge } from "../../../components/RunChainBadge";
 import { ChatPanel, type ChatMessage } from "../../../components/ChatPanel";
+import { RunChainBadge } from "../../../components/RunChainBadge";
 import { TraceViewer } from "../../../components/TraceViewer";
+import { usePendingApprovals } from "../../../hooks/usePendingApprovals";
 import { useRunGraph } from "../../../hooks/useRunGraph";
+import { activeEdges } from "../../../lib/edge-pulse";
 
 /**
  * Renders the run screen header with the truncated run identifier.
@@ -60,7 +60,7 @@ export default function RunPage({
 }: Readonly<{ params: { id: string } }>) {
   // Hooks cannot sit behind the guard below, so the empty run id is handled
   // by the socket refusing to connect rather than by an early return.
-  const { tasks, pulses } = useRunGraph(params.id);
+  const { tasks, pulses, logs } = useRunGraph(params.id);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { approvals, dismiss } = usePendingApprovals();
 
@@ -87,7 +87,7 @@ export default function RunPage({
         />
       </div>
       <aside className="run-log" aria-label="Raw trace log">
-        <TraceViewer runId={params.id} />
+        <TraceViewer events={logs} />
       </aside>
     </section>
   );
