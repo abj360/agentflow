@@ -95,7 +95,7 @@ export function Canvas({
 }>) {
   // A stable identity matters: an inline empty Set would rebuild every edge on
   // each render and undo the memo below.
-  const lit = activeEdgeIds ?? NO_ACTIVE_EDGES;
+  const litEdges = activeEdgeIds ?? NO_ACTIVE_EDGES;
   const waiting = pairApprovals(tasks, approvals);
   const placements: readonly PositionedTask[] = useRelaxedLayout(tasks);
   const positions = useMemo(
@@ -130,7 +130,7 @@ export function Canvas({
     })),
   ];
 
-  const edges = useMemo(() => buildEdges(tasks, lit), [tasks, lit]);
+  const edges = useMemo(() => buildEdges(tasks, litEdges), [tasks, litEdges]);
 
   return (
     <div className="canvas">
