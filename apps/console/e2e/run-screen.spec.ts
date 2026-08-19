@@ -74,3 +74,8 @@ test("an unknown run still renders the screen", async ({ page }) => {
   await expect(page.getByLabel("Run canvas")).toBeVisible();
   await expect(page.locator(".canvas-empty")).toBeVisible();
 });
+
+test("the canvas offers zoom controls", async ({ page }) => {
+  await openRun(page);
+  await expect(page.locator(".react-flow__controls")).toBeVisible();
+});
