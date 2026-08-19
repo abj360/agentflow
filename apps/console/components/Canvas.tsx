@@ -40,6 +40,7 @@ const ORCHESTRATOR_Y = 160;
 
 // React Flow remounts every custom edge when this map is a new object.
 const EDGE_TYPES: EdgeTypes = { pulse: PulseEdge };
+const NO_ACTIVE_EDGES: ReadonlySet<string> = new Set();
 
 /**
  * Turns a plan's dependencies into the edges React Flow draws.
@@ -92,7 +93,9 @@ export function Canvas({
   onResolve?: (approvalId: string) => void;
   activeEdgeIds?: ReadonlySet<string>;
 }>) {
-  const lit = activeEdgeIds ?? new Set<string>();
+  // A stable identity matters: an inline empty Set would rebuild every edge on
+  // each render and undo the memo below.
+  const lit = activeEdgeIds ?? NO_ACTIVE_EDGES;
   const waiting = pairApprovals(tasks, approvals);
   const placements: readonly PositionedTask[] = useRelaxedLayout(tasks);
   const positions = useMemo(
