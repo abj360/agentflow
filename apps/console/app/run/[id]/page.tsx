@@ -4,6 +4,7 @@
  * Contains:
  *   RunHeader: renders the run screen header with the truncated run id
  *   appendMessage(): adds one authored turn to a run's conversation
+ *   orchestratorReplies(): turns the run's log lines into orchestrator turns
  *   RunPage: hosts the chat, canvas, and raw-log surfaces for one run
  */
 
@@ -17,6 +18,7 @@ import { RunChainBadge } from "../../../components/RunChainBadge";
 import { TraceViewer } from "../../../components/TraceViewer";
 import { usePendingApprovals } from "../../../hooks/usePendingApprovals";
 import { useRunGraph } from "../../../hooks/useRunGraph";
+import type { TraceLogEvent } from "../../../hooks/useTraceSocket";
 import { activeEdges } from "../../../lib/edge-pulse";
 
 /**
@@ -50,6 +52,21 @@ function appendMessage(
 }
 
 /**
+ * Turns the run's log lines into the orchestrator's side of the conversation.
+ *
+ * @param logs - Raw log lines received for this run so far.
+ * @returns replies - One turn per line the orchestrator addressed to the user.
+ */
+function orchestratorReplies(logs: readonly TraceLogEvent[]): ChatMessage[] {
+  return logs
+    .filter((log) => log.kind === "orchestrator_message")
+    .map((log) => ({
+      author: "orchestrator" as const,
+      text: String(log.payload.text ?? ""),
+    }));
+}
+
+/**
  * Hosts the chat, canvas, and raw-log surfaces for one run.
  *
  * @param props.params - Route parameters carrying the run identifier.
@@ -72,7 +89,7 @@ export default function RunPage({
       <RunHeader runId={params.id} />
       <aside className="run-chat" aria-label="Run chat">
         <ChatPanel
-          messages={messages}
+          messages={[...messages, ...orchestratorReplies(logs)]}
           onSend={(instruction) =>
             setMessages((prev) => appendMessage(prev, instruction))
           }
