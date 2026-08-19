@@ -19,20 +19,20 @@ import ReactFlow, {
   type Node,
 } from "reactflow";
 
+import { useRelaxedLayout } from "../hooks/useRelaxedLayout";
 import type { Approval } from "../lib/api";
+import { edgeId } from "../lib/edge-pulse";
 import {
   ORCHESTRATOR_ID,
   pairApprovals,
   speciesFor,
   type RunViewerTask,
 } from "../lib/graph-model";
-import { useRelaxedLayout } from "../hooks/useRelaxedLayout";
 import type { PositionedTask } from "../lib/layout";
 import { NODE_TYPES } from "./nodes";
-import { edgeId } from "../lib/edge-pulse";
-import { PulseEdge } from "./PulseEdge";
 import type { OrchestratorNodeData } from "./nodes/OrchestratorNode";
 import type { TaskNodeData } from "./nodes/TaskNode";
+import { PulseEdge } from "./PulseEdge";
 
 import "reactflow/dist/style.css";
 
