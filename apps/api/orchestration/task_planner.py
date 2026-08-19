@@ -223,7 +223,7 @@ class TaskPlanner:
         Returns:
             planned_tasks: The tasks to run next, with settled work left alone.
         """
-        if critique == "accept":
+        if not tasks or critique == "accept":
             return tuple(tasks)
         return tuple(
             task if task.status == "done" else replace(task, status="pending")
