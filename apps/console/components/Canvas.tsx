@@ -36,7 +36,8 @@ import { PulseEdge } from "./PulseEdge";
 
 import "reactflow/dist/style.css";
 
-const ORCHESTRATOR_Y = 160;
+// The layout centres every column on y=0, so the orchestrator sits there too.
+const ORCHESTRATOR_Y = 0;
 
 // React Flow remounts every custom edge when this map is a new object.
 const EDGE_TYPES: EdgeTypes = { pulse: PulseEdge };
