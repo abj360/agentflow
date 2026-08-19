@@ -127,10 +127,10 @@ def assignee_for(objective: str, index: int) -> str:
     Returns:
         assignee: Role name the executor layer resolves against the registry.
     """
-    lowered = objective.lower()
-    if lowered.startswith(("find", "gather", "research", "read")):
+    phrasing = objective.lower()
+    if phrasing.startswith(("find", "gather", "research", "read")):
         return "researcher"
-    if lowered.startswith(("write", "draft", "save", "record")):
+    if phrasing.startswith(("write", "draft", "save", "record")):
         return "writer"
     return ASSIGNEE_ROTATION[index % len(ASSIGNEE_ROTATION)]
 
