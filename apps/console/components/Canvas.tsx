@@ -52,7 +52,7 @@ const NO_ACTIVE_EDGES: ReadonlySet<string> = new Set();
 function buildEdges(
   tasks: readonly RunViewerTask[],
   lit: ReadonlySet<string>,
-): Edge[] {
+): readonly Edge[] {
   const fromOrchestrator = tasks
     .filter((task) => task.dependsOn.length === 0)
     .map((task) => ({ source: ORCHESTRATOR_ID, target: task.id }));
@@ -103,7 +103,7 @@ export function Canvas({
     [placements],
   );
 
-  const nodes: Node<TaskNodeData | OrchestratorNodeData>[] = [
+  const nodes: readonly Node<TaskNodeData | OrchestratorNodeData>[] = [
     {
       id: ORCHESTRATOR_ID,
       type: "orchestrator",
@@ -138,8 +138,8 @@ export function Canvas({
         <p className="canvas-empty">Waiting for the planner…</p>
       )}
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={[...nodes]}
+        edges={[...edges]}
         nodeTypes={NODE_TYPES}
         edgeTypes={EDGE_TYPES}
         fitView
