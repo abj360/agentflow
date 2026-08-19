@@ -57,11 +57,17 @@ test("a task sits in the column after its longest path, not its shortest", () =>
   expect(levels?.get("c")).toBe(2);
 });
 
-test("independent roots share column zero and stack down rows", () => {
+test("independent roots share a column, centred on the orchestrator row", () => {
   const placed = layoutTasks([task("a"), task("b")]);
   expect(placed).toEqual([
+    { id: "a", x: COLUMN_WIDTH, y: -ROW_HEIGHT / 2 },
+    { id: "b", x: COLUMN_WIDTH, y: ROW_HEIGHT / 2 },
+  ]);
+});
+
+test("a single task in a column sits on the orchestrator row", () => {
+  expect(layoutTasks([task("a")])).toEqual([
     { id: "a", x: COLUMN_WIDTH, y: 0 },
-    { id: "b", x: COLUMN_WIDTH, y: ROW_HEIGHT },
   ]);
 });
 

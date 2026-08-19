@@ -85,6 +85,9 @@ export function levelTasks(
 /**
  * Places tasks in topological columns, leaving column zero to the orchestrator.
  *
+ * Each column is centred on the orchestrator's row rather than stacked downward,
+ * so a plan that fans out reads as a balanced fan instead of drifting off screen.
+ *
  * @param tasks - Runtime-planned tasks carrying the ids they depend on.
  * @returns placements - One canvas position per task, empty when a cycle is found.
  */
@@ -93,11 +96,22 @@ export function layoutTasks(tasks: readonly RunViewerTask[]): PositionedTask[] {
   if (levels === null) {
     return [];
   }
+  const columnHeight = new Map<number, number>();
+  for (const task of tasks) {
+    const column = levels.get(task.id) ?? 0;
+    columnHeight.set(column, (columnHeight.get(column) ?? 0) + 1);
+  }
+
   const rowsPerColumn = new Map<number, number>();
   return tasks.map((task) => {
     const column = levels.get(task.id) ?? 0;
     const row = rowsPerColumn.get(column) ?? 0;
+    const height = columnHeight.get(column) ?? 1;
     rowsPerColumn.set(column, row + 1);
-    return { id: task.id, x: (column + 1) * COLUMN_WIDTH, y: row * ROW_HEIGHT };
+    return {
+      id: task.id,
+      x: (column + 1) * COLUMN_WIDTH,
+      y: (row - (height - 1) / 2) * ROW_HEIGHT,
+    };
   });
 }
