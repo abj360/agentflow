@@ -10,6 +10,7 @@ Contains:
     test_blank_task_plans_nothing(): verifies an empty task yields no tasks
     test_split_objectives_drops_list_markers(): verifies bullet markers are stripped
     test_dependson_only_names_planned_tasks(): verifies no dangling dependency ids
+    test_gathering_work_goes_to_the_researcher(): verifies the assignee heuristic
 """
 
 from apps.api.orchestration.task_planner import (
@@ -71,3 +72,9 @@ def test_dependson_only_names_planned_tasks() -> None:
     planned = TaskPlanner().plan("one\ntwo\nthree")
     ids = {task.id for task in planned}
     assert all(set(task.depends_on) <= ids for task in planned)
+
+
+def test_gathering_work_goes_to_the_researcher() -> None:
+    """Verifies retrieval-shaped objectives are assigned to the researcher."""
+    planned = TaskPlanner().plan("gather the sources\nwrite the summary")
+    assert [task.assignee for task in planned] == ["researcher", "writer"]
