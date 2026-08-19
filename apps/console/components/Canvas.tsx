@@ -2,6 +2,7 @@
  * Canvas.tsx --- live React Flow rendering layer for one run's task graph
  *
  * Contains:
+ *   buildEdges(): turns a plan's dependencies into React Flow edges
  *   Canvas: renders a run's planned tasks as a positioned, live-updating graph
  */
 
@@ -39,6 +40,37 @@ const ORCHESTRATOR_Y = 160;
 
 // React Flow remounts every custom edge when this map is a new object.
 const EDGE_TYPES: EdgeTypes = { pulse: PulseEdge };
+
+/**
+ * Turns a plan's dependencies into the edges React Flow draws.
+ *
+ * @param tasks - Runtime-planned tasks carrying the ids they depend on.
+ * @param lit - Ids of the edges a trace event is currently firing along.
+ * @returns edges - One edge per dependency, plus one per root task.
+ */
+function buildEdges(
+  tasks: readonly RunViewerTask[],
+  lit: ReadonlySet<string>,
+): Edge[] {
+  const fromOrchestrator = tasks
+    .filter((task) => task.dependsOn.length === 0)
+    .map((task) => ({ source: ORCHESTRATOR_ID, target: task.id }));
+  const fromDependencies = tasks.flatMap((task) =>
+    task.dependsOn.map((dependency) => ({
+      source: dependency,
+      target: task.id,
+    })),
+  );
+  return [...fromOrchestrator, ...fromDependencies].map(
+    ({ source, target }) => ({
+      id: edgeId(source, target),
+      type: "pulse",
+      source,
+      target,
+      data: { active: lit.has(edgeId(source, target)) },
+    }),
+  );
+}
 
 /**
  * Renders a run's planned tasks as a positioned, live-updating graph.
@@ -95,26 +127,7 @@ export function Canvas({
     })),
   ];
 
-  const edges: Edge[] = [
-    ...tasks
-      .filter((task) => task.dependsOn.length === 0)
-      .map((task) => ({
-        id: edgeId(ORCHESTRATOR_ID, task.id),
-        type: "pulse",
-        source: ORCHESTRATOR_ID,
-        target: task.id,
-        data: { active: lit.has(edgeId(ORCHESTRATOR_ID, task.id)) },
-      })),
-    ...tasks.flatMap((task) =>
-      task.dependsOn.map((dependency) => ({
-        id: edgeId(dependency, task.id),
-        type: "pulse",
-        source: dependency,
-        target: task.id,
-        data: { active: lit.has(edgeId(dependency, task.id)) },
-      })),
-    ),
-  ];
+  const edges = buildEdges(tasks, lit);
 
   return (
     <div className="canvas">
