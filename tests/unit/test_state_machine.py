@@ -5,10 +5,11 @@ test_state_machine.py --- unit tests for the orchestration state machine
 Contains:
     test_graph_carries_orchestrator_and_critic(): verifies the fixed spine exists
     test_planner_seeds_plan_with_task(): verifies the planner puts the task in the plan
+    test_task_nodes_announce_their_status_transitions(): verifies the status sink
 """
 
 from apps.api.orchestration.state_machine import build_graph, planner_node
-from apps.api.orchestration.task_planner import TaskPlanner
+from apps.api.orchestration.task_planner import PlannedTask, TaskPlanner
 
 
 def make_state(**overrides: object) -> dict:
@@ -126,3 +127,13 @@ def test_critic_accepts_when_results_present() -> None:
     from apps.api.orchestration.state_machine import critic_node
 
     assert critic_node(make_state(results=["r"]))["critique"] == "accept"
+
+
+def test_task_nodes_announce_their_status_transitions() -> None:
+    """Verifies each task node reports running and then done to the sink."""
+    from apps.api.orchestration.state_machine import task_runner
+
+    seen: list[tuple[str, str]] = []
+    node = task_runner(PlannedTask(id="task-1", title="a"), "task-1", lambda task_id, status: seen.append((task_id, status)))
+    node(make_state())
+    assert seen == [("task-1", "running"), ("task-1", "done")]
