@@ -12,6 +12,7 @@ import { getBezierPath, type EdgeProps } from "reactflow";
 
 export interface PulseEdgeData {
   active: boolean;
+  pending: boolean;
 }
 
 /**
@@ -39,12 +40,13 @@ export function PulseEdge({
     targetPosition,
   });
   const active = data?.active ?? false;
+  const pending = data?.pending ?? false;
+  const state = active
+    ? " canvas-edge--active"
+    : pending
+      ? " canvas-edge--pending"
+      : "";
   return (
-    <path
-      id={id}
-      d={path}
-      fill="none"
-      className={active ? "canvas-edge canvas-edge--active" : "canvas-edge"}
-    />
+    <path id={id} d={path} fill="none" className={`canvas-edge${state}`} />
   );
 }
