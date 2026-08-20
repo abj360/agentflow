@@ -3,6 +3,7 @@
  *
  * Contains:
  *   TaskNodeData: what the canvas hands one task node
+ *   NodeCost: renders a task's token and tool-call counters
  *   TaskNode: renders one planned task, spawning in when it first mounts
  */
 
@@ -23,6 +24,27 @@ export interface TaskNodeData {
   toolCallCount: number;
   approval?: Approval;
   onResolve?: (approvalId: string) => void;
+}
+
+/**
+ * Renders a task's token and tool-call counters, once it has spent either.
+ *
+ * @param props.tokens - Model tokens the task has consumed.
+ * @param props.toolCallCount - Governed tool calls the task has made.
+ * @returns The cost line element, or nothing while the task is free.
+ */
+function NodeCost({
+  tokens,
+  toolCallCount,
+}: Readonly<{ tokens: number; toolCallCount: number }>) {
+  if (tokens === 0 && toolCallCount === 0) {
+    return null;
+  }
+  return (
+    <span className="canvas-node__meta">
+      {tokens} tok · {toolCallCount} calls
+    </span>
+  );
 }
 
 /**
@@ -55,6 +77,7 @@ export function TaskNode({
       {detail === undefined ? null : (
         <span className="canvas-node__meta">{detail}</span>
       )}
+      <NodeCost tokens={data.tokens} toolCallCount={data.toolCallCount} />
       {data.retries === 0 ? null : (
         <span className="canvas-node__retries">{data.retries} retries</span>
       )}
