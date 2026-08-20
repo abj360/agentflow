@@ -281,7 +281,7 @@ def build_graph(
     graph.add_node(ORCHESTRATOR_NODE, planner_node)
     graph.add_node(CRITIC_NODE, critic_node)
     graph.set_entry_point(ORCHESTRATOR_NODE)
-    roots = branch_roots(planned)
+    roots = branch_roots(planned)  # one walk for the whole plan, not per node
     for task in planned:
         # langgraph types the node argument against the graph's inferred Never
         # state, which a per-task closure cannot satisfy structurally.
