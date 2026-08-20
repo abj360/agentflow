@@ -11,6 +11,7 @@ Contains:
     active_branch(): returns the plan branch the critic is reviewing
     branch_revision_count(): returns how many revisions a branch has spent
     record_branch_revision(): returns the counters with one more revision spent
+    StatusSink: callback the graph reports each task's status transitions to
     TaskNode: signature every task node in the assembled graph satisfies
     task_runner(): builds the node function that runs one planned task
     root_ids(): ids of the tasks that wait on nothing else
@@ -30,6 +31,7 @@ from apps.api.orchestration.graph_validator import validate_task_graph
 from apps.api.orchestration.task_planner import (
     PlannedTask,
     TaskPlanner,
+    TaskStatus,
     TaskWire,
     branch_roots,
 )
@@ -163,15 +165,19 @@ def record_branch_revision(state: GraphState, branch: str) -> dict[str, int]:
     return counters
 
 
+StatusSink = Callable[[str, TaskStatus], None]
 TaskNode = Callable[[GraphState], GraphState]
 
 
-def task_runner(task: PlannedTask, branch: str) -> TaskNode:
+def task_runner(
+    task: PlannedTask, branch: str, on_status: StatusSink | None = None
+) -> TaskNode:
     """Builds the node function that runs one planned task.
 
     Args:
         task: The planned task this graph node is responsible for.
         branch: Root task id of the branch this task belongs to.
+        on_status: Called as the task enters and leaves its running state.
 
     Returns:
         execute_task: Node function appending this task's output to the results.
@@ -186,11 +192,16 @@ def task_runner(task: PlannedTask, branch: str) -> TaskNode:
         Returns:
             update: State update carrying this task's output.
         """
-        return {
+        if on_status is not None:
+            on_status(task.id, "running")
+        update: GraphState = {
             **state,
             "active_branch": branch,
             "results": [*state["results"], f"done: {task.title}"],
         }
+        if on_status is not None:
+            on_status(task.id, "done")
+        return update
 
     return execute_task
 
@@ -240,11 +251,16 @@ def wire_dependencies(graph: StateGraph[GraphState], tasks: Sequence[PlannedTask
         graph.add_edge(leaf, CRITIC_NODE)
 
 
-def build_graph(tasks: Sequence[PlannedTask] | None = None) -> StateGraph[GraphState]:
+def build_graph(
+    tasks: Sequence[PlannedTask] | None = None,
+    on_status: StatusSink | None = None,
+) -> StateGraph[GraphState]:
     """Assembles a LangGraph whose shape follows the runtime task plan.
 
     Args:
         tasks: Planned tasks whose dependsOn edges define the graph topology.
+        on_status: Called as each task enters and leaves its running state, so
+            the console can be told without the graph knowing about WebSockets.
 
     Returns:
         graph: State machine wired to run exactly this plan.
@@ -262,7 +278,9 @@ def build_graph(tasks: Sequence[PlannedTask] | None = None) -> StateGraph[GraphS
     for task in planned:
         # langgraph types the node argument against the graph's inferred Never
         # state, which a per-task closure cannot satisfy structurally.
-        graph.add_node(task.id, cast(Any, task_runner(task, roots[task.id])))
+        graph.add_node(
+            task.id, cast(Any, task_runner(task, roots[task.id], on_status))
+        )
     wire_dependencies(graph, planned)
     graph.add_conditional_edges(
         CRITIC_NODE,
