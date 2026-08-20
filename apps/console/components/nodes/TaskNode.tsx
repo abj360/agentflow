@@ -3,6 +3,7 @@
  *
  * Contains:
  *   TaskNodeData: what the canvas hands one task node
+ *   SPAWN_STYLES: cached style objects, so a re-render never rebuilds one
  *   spawnStyle(): the inline style that staggers one node's mount animation
  *   NodeCost: renders a task's token and tool-call counters
  *   TaskNode: renders one planned task, spawning in when it first mounts
@@ -34,8 +35,16 @@ export interface TaskNodeData {
  * @param spawnDelay - Milliseconds this node waits before it animates in.
  * @returns style - The animation delay React Flow applies to the node shell.
  */
+const SPAWN_STYLES = new Map<number, CSSProperties>();
+
 function spawnStyle(spawnDelay: number): CSSProperties {
-  return { animationDelay: `${spawnDelay}ms` };
+  const cached = SPAWN_STYLES.get(spawnDelay);
+  if (cached !== undefined) {
+    return cached;
+  }
+  const style = { animationDelay: `${spawnDelay}ms` };
+  SPAWN_STYLES.set(spawnDelay, style);
+  return style;
 }
 
 /**
