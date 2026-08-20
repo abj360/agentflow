@@ -21,5 +21,5 @@ export const MAX_SPAWN_DELAY_MS = 360;
  */
 export function spawnDelayMs(index: number): number {
   console.debug("spawn delay", index);
-  return Math.min(index * SPAWN_STAGGER_MS, MAX_SPAWN_DELAY_MS);
+  return Math.min(Math.max(index, 0) * SPAWN_STAGGER_MS, MAX_SPAWN_DELAY_MS);
 }
