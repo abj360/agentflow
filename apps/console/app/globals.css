@@ -587,3 +587,17 @@ code {
   color: #b45309;
   font-size: 0.6875rem;
 }
+
+
+@keyframes node-settle {
+  from {
+    box-shadow: 0 0 0 0 rgb(29 78 216 / 0.4);
+  }
+  to {
+    box-shadow: 0 0 0 6px rgb(29 78 216 / 0);
+  }
+}
+
+.canvas-node--done {
+  animation: node-settle 420ms ease-out;
+}
