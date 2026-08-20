@@ -10,7 +10,7 @@
 
 "use client";
 
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Handle, Position, type NodeProps } from "reactflow";
 
 import type { TaskSpecies, TaskStatus } from "../../lib/graph-model";
@@ -34,7 +34,7 @@ export interface TaskNodeData {
  * @param spawnDelay - Milliseconds this node waits before it animates in.
  * @returns style - The animation delay React Flow applies to the node shell.
  */
-function spawnStyle(spawnDelay: number) {
+function spawnStyle(spawnDelay: number): CSSProperties {
   return { animationDelay: `${spawnDelay}ms` };
 }
 
