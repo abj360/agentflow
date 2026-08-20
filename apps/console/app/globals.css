@@ -586,3 +586,10 @@ code {
 .canvas-node--file-op {
   border-left: 2px solid #ca8a04;
 }
+
+
+.canvas-node__retries {
+  display: block;
+  color: #b45309;
+  font-size: 0.6875rem;
+}

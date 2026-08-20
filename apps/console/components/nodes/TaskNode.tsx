@@ -19,6 +19,7 @@ export interface TaskNodeData {
   assignee: string;
   status: TaskStatus;
   tokens: number;
+  retries: number;
   toolCallCount: number;
   approval?: Approval;
   onResolve?: (approvalId: string) => void;
@@ -53,6 +54,9 @@ export function TaskNode({
       <span className="canvas-node__meta">{data.assignee}</span>
       {detail === undefined ? null : (
         <span className="canvas-node__meta">{detail}</span>
+      )}
+      {data.retries === 0 ? null : (
+        <span className="canvas-node__retries">{data.retries} retries</span>
       )}
       {children}
       <Handle type="source" position={Position.Right} />

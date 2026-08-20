@@ -124,6 +124,7 @@ export function Canvas({
         assignee: task.assignee,
         status: task.status,
         tokens: task.tokens,
+        retries: task.retries,
         toolCallCount: task.toolCallCount,
         approval: waiting.get(task.id),
         onResolve,
