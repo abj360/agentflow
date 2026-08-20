@@ -20,6 +20,5 @@ export const MAX_SPAWN_DELAY_MS = 360;
  * @returns delay - Milliseconds to wait, capped so long plans still land quickly.
  */
 export function spawnDelayMs(index: number): number {
-  console.debug("spawn delay", index);
   return Math.min(Math.max(index, 0) * SPAWN_STAGGER_MS, MAX_SPAWN_DELAY_MS);
 }
