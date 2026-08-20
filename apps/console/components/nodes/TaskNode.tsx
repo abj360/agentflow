@@ -4,6 +4,7 @@
  * Contains:
  *   TaskNodeData: what the canvas hands one task node
  *   SPAWN_STYLES: cached style objects, so a re-render never rebuilds one
+ *   shellClass(): the class list the node shell renders with
  *   spawnStyle(): the inline style that staggers one node's mount animation
  *   NodeCost: renders a task's token and tool-call counters
  *   TaskNode: renders one planned task, spawning in when it first mounts
@@ -27,6 +28,22 @@ export interface TaskNodeData {
   toolCallCount: number;
   approval?: Readonly<Approval>;
   onResolve?: (approvalId: string) => void;
+}
+
+/**
+ * Builds the class list the node shell renders with.
+ *
+ * @param species - Species the node is styled as.
+ * @param status - Lifecycle state the task is currently in.
+ * @returns className - Space-separated classes for the node shell.
+ */
+function shellClass(species: TaskSpecies, status: TaskStatus): string {
+  return [
+    "canvas-node",
+    `canvas-node--${species}`,
+    "canvas-node--spawning",
+    `canvas-node--${status}`,
+  ].join(" ");
 }
 
 /**
@@ -89,7 +106,7 @@ export function TaskNode({
 }) {
   return (
     <div
-      className={`canvas-node canvas-node--${species} canvas-node--spawning canvas-node--${data.status}`}
+      className={shellClass(species, data.status)}
       style={spawnStyle(data.spawnDelay)}
     >
       <Handle type="target" position={Position.Left} />
