@@ -22,7 +22,7 @@ from apps.api.orchestration.graph_validator import (
     validate_task_graph,
 )
 from apps.api.orchestration.state_machine import build_graph, planner_node
-from apps.api.orchestration.task_planner import PlannedTask
+from apps.api.orchestration.task_planner import MAX_TASKS_PER_PLAN, PlannedTask
 
 
 def chain(length: int) -> list[PlannedTask]:
@@ -122,3 +122,9 @@ def test_a_replan_that_introduces_a_cycle_is_rejected() -> None:
         "iterations": 1,
     }
     assert planner_node(state)["tasks"]
+
+
+def test_an_oversized_plan_is_rejected() -> None:
+    """Verifies a plan larger than the ceiling never reaches the canvas."""
+    with pytest.raises(GraphValidationError):
+        validate_task_graph(chain(MAX_TASKS_PER_PLAN + 1))

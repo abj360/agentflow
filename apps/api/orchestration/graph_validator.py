@@ -7,12 +7,13 @@ Contains:
     find_duplicate_ids(): returns task ids the plan declares more than once
     find_dangling_dependencies(): returns dependsOn ids naming no task in the plan
     find_cycle(): returns the first dependency cycle found in a task list
-    validate_task_graph(): raises when a task list is not a renderable DAG
+    validate_task_graph(): raises when a task list is not a renderable DAG,
+        is larger than one plan may be, or names a task it never declares
 """
 
 from collections.abc import Sequence
 
-from apps.api.orchestration.task_planner import PlannedTask
+from apps.api.orchestration.task_planner import MAX_TASKS_PER_PLAN, PlannedTask
 
 
 class GraphValidationError(ValueError):
@@ -119,6 +120,7 @@ def validate_task_graph(tasks: Sequence[PlannedTask]) -> None:
     if not tasks:
         return
     problems = [
+        *([f"plan exceeds {MAX_TASKS_PER_PLAN} tasks"] if len(tasks) > MAX_TASKS_PER_PLAN else []),
         *(f"duplicate task id: {duplicate}" for duplicate in find_duplicate_ids(tasks)),
         *(
             f"dependsOn names a task the plan never declares: {dangling}"
