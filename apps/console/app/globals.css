@@ -374,6 +374,7 @@ code {
 }
 
 .canvas-node {
+  position: relative;
   border: 1px solid var(--border);
   border-radius: 0.5rem;
   background: var(--node-bg);
@@ -570,11 +571,6 @@ code {
 .canvas-node__dot--failed {
   background: #b91c1c;
 }
-
-.canvas-node {
-  position: relative;
-}
-
 .canvas-node--research {
   border-left: 2px solid #7c3aed;
 }
