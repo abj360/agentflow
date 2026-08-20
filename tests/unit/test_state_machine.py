@@ -134,7 +134,11 @@ def test_task_nodes_announce_their_status_transitions() -> None:
     from apps.api.orchestration.state_machine import task_runner
 
     seen: list[tuple[str, str]] = []
-    node = task_runner(PlannedTask(id="task-1", title="a"), "task-1", lambda task_id, status: seen.append((task_id, status)))
+    node = task_runner(
+        PlannedTask(id="task-1", title="a"),
+        "task-1",
+        lambda task_id, status: seen.append((task_id, status)),
+    )
     node(make_state())
     assert seen == [("task-1", "running"), ("task-1", "done")]
 

@@ -169,9 +169,7 @@ StatusSink = Callable[[str, TaskStatus], None]
 TaskNode = Callable[[GraphState], GraphState]
 
 
-def task_runner(
-    task: PlannedTask, branch: str, on_status: StatusSink | None = None
-) -> TaskNode:
+def task_runner(task: PlannedTask, branch: str, on_status: StatusSink | None = None) -> TaskNode:
     """Builds the node function that runs one planned task.
 
     Args:
@@ -192,6 +190,7 @@ def task_runner(
         Returns:
             update: State update carrying this task's output.
         """
+
         def announce(status: TaskStatus) -> None:
             """Reports one status transition to the sink, when there is one.
 
@@ -285,9 +284,7 @@ def build_graph(
     for task in planned:
         # langgraph types the node argument against the graph's inferred Never
         # state, which a per-task closure cannot satisfy structurally.
-        graph.add_node(
-            task.id, cast(Any, task_runner(task, roots[task.id], on_status))
-        )
+        graph.add_node(task.id, cast(Any, task_runner(task, roots[task.id], on_status)))
     wire_dependencies(graph, planned)
     graph.add_conditional_edges(
         CRITIC_NODE,
