@@ -192,15 +192,22 @@ def task_runner(
         Returns:
             update: State update carrying this task's output.
         """
-        if on_status is not None:
-            on_status(task.id, "running")
+        def announce(status: TaskStatus) -> None:
+            """Reports one status transition to the sink, when there is one.
+
+            Args:
+                status: Lifecycle state the task has moved into.
+            """
+            if on_status is not None:
+                on_status(task.id, status)
+
+        announce("running")
         update: GraphState = {
             **state,
             "active_branch": branch,
             "results": [*state["results"], f"done: {task.title}"],
         }
-        if on_status is not None:
-            on_status(task.id, "done")
+        announce("done")
         return update
 
     return execute_task
