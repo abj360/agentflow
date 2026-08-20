@@ -137,3 +137,11 @@ def test_task_nodes_announce_their_status_transitions() -> None:
     node = task_runner(PlannedTask(id="task-1", title="a"), "task-1", lambda task_id, status: seen.append((task_id, status)))
     node(make_state())
     assert seen == [("task-1", "running"), ("task-1", "done")]
+
+
+def test_task_nodes_run_without_a_status_sink() -> None:
+    """Verifies a graph built with no sink still executes its task nodes."""
+    from apps.api.orchestration.state_machine import task_runner
+
+    node = task_runner(PlannedTask(id="task-1", title="a"), "task-1")
+    assert node(make_state())["results"] == ["done: a"]
