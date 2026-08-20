@@ -29,6 +29,7 @@ import {
   type RunViewerTask,
 } from "../lib/graph-model";
 import type { PositionedTask } from "../lib/layout";
+import { spawnDelayMs } from "../lib/spawn";
 import { NODE_TYPES } from "./nodes";
 import type { OrchestratorNodeData } from "./nodes/OrchestratorNode";
 import type { TaskNodeData } from "./nodes/TaskNode";
@@ -112,7 +113,7 @@ export function Canvas({
       draggable: false,
       data: { label: "Orchestrator", taskCount: tasks.length },
     },
-    ...tasks.map((task) => ({
+    ...tasks.map((task, index) => ({
       id: task.id,
       type: speciesFor(task),
       position: {
@@ -125,6 +126,7 @@ export function Canvas({
         status: task.status,
         tokens: task.tokens,
         retries: task.retries,
+        spawnDelay: spawnDelayMs(index),
         toolCallCount: task.toolCallCount,
         approval: waiting.get(task.id),
         onResolve,

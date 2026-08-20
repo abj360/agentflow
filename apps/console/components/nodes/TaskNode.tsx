@@ -21,6 +21,7 @@ export interface TaskNodeData {
   status: TaskStatus;
   tokens: number;
   retries: number;
+  spawnDelay: number;
   toolCallCount: number;
   approval?: Readonly<Approval>;
   onResolve?: (approvalId: string) => void;
@@ -69,6 +70,7 @@ export function TaskNode({
   return (
     <div
       className={`canvas-node canvas-node--${species} canvas-node--spawning canvas-node--${data.status}`}
+      style={{ animationDelay: `${data.spawnDelay}ms` }}
     >
       <Handle type="target" position={Position.Left} />
       <span
