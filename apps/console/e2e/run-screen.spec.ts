@@ -87,3 +87,8 @@ test("opening the raw log reveals the log list", async ({ page }) => {
     page.getByRole("button", { name: /raw trace log/i }),
   ).toHaveAttribute("aria-expanded", "true");
 });
+
+test("task nodes carry a status dot", async ({ page }) => {
+  await openRun(page);
+  await expect(page.locator(".canvas-node__status")).toHaveCount(0);
+});
