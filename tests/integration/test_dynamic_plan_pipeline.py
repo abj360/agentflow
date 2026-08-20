@@ -71,3 +71,14 @@ def test_batching_a_plan_costs_one_frame() -> None:
     batches = [batcher.add(frame) for frame in frames]
     assert batches[:-1] == [None] * (len(frames) - 1)
     assert len(structural_frame("run-1", batches[-1] or [])["events"]) == len(frames)
+
+
+@pytest.mark.asyncio
+async def test_a_run_reports_every_task_it_starts() -> None:
+    """Verifies the status sink sees every planned task move through running."""
+    seen: list[tuple[str, str]] = []
+    await run_session(
+        "it-canvas-2", PLAN_TEXT, on_status=lambda task_id, status: seen.append((task_id, status))
+    )
+    started = {task_id for task_id, status in seen if status == "running"}
+    assert started == {task.id for task in TaskPlanner().plan(PLAN_TEXT)}
