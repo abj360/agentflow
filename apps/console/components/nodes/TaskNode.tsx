@@ -71,7 +71,7 @@ export function TaskNode({
       className={`canvas-node canvas-node--${species} canvas-node--spawning canvas-node--${data.status}`}
     >
       <Handle type="target" position={Position.Left} />
-      <span className={`canvas-node__dot canvas-node__dot--${data.status}`} />
+      <span className={`canvas-node__status canvas-node__status--${data.status}`} />
       <strong>{data.title}</strong>
       <span className="canvas-node__meta">{data.assignee}</span>
       {detail === undefined ? null : (

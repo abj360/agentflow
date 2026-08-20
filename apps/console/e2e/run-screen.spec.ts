@@ -90,5 +90,5 @@ test("opening the raw log reveals the log list", async ({ page }) => {
 
 test("task nodes carry a status dot", async ({ page }) => {
   await openRun(page);
-  await expect(page.locator(".canvas-node__dot")).toHaveCount(0);
+  await expect(page.locator(".canvas-node__status")).toHaveCount(0);
 });

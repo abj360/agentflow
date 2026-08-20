@@ -550,7 +550,7 @@ code {
 }
 
 
-.canvas-node__dot {
+.canvas-node__status {
   position: absolute;
   top: 0.625rem;
   right: 0.625rem;
@@ -560,15 +560,15 @@ code {
   background: var(--muted);
 }
 
-.canvas-node__dot--running {
+.canvas-node__status--running {
   background: var(--accent);
 }
 
-.canvas-node__dot--done {
+.canvas-node__status--done {
   background: #15803d;
 }
 
-.canvas-node__dot--failed {
+.canvas-node__status--failed {
   background: #b91c1c;
 }
 .canvas-node--research {
