@@ -14,6 +14,7 @@ from apps.api.orchestration.state import StateStore
 from apps.api.orchestration.state_machine import (
     MAX_REVISIONS,
     GraphState,
+    StatusSink,
     build_graph,
 )
 from apps.api.orchestration.task_planner import TaskPlanner
@@ -39,19 +40,25 @@ class LoopHooks:
         """
 
 
-async def run_session(session_id: str, task: str, hooks: LoopHooks | None = None) -> dict[str, Any]:
+async def run_session(
+    session_id: str,
+    task: str,
+    hooks: LoopHooks | None = None,
+    on_status: StatusSink | None = None,
+) -> dict[str, Any]:
     """Runs one orchestration session to completion.
 
     Args:
         session_id: Identifier of the session being run.
         task: The user's task handed to the planner.
         hooks: Optional lifecycle callbacks for iteration and completion.
+        on_status: Optional sink the graph reports task transitions to.
 
     Returns:
         result: Final synthesized output and the session's iteration count.
     """
     store = StateStore()  # immutable snapshots; no shared mutable state
-    app = build_graph(list(TaskPlanner().plan(task))).compile()
+    app = build_graph(list(TaskPlanner().plan(task)), on_status).compile()
     graph_state: GraphState = {
         "task": task,
         "plan": [],
