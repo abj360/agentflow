@@ -22,7 +22,11 @@ export function ToolCallNode(props: NodeProps<TaskNodeData>) {
     <TaskNode
       {...props}
       species="tool-call"
-      detail={`${props.data.toolCallCount} calls`}
+      detail={
+        props.data.toolCallCount === 0
+          ? undefined
+          : `${props.data.toolCallCount} calls`
+      }
     />
   );
 }
