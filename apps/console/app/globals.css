@@ -601,3 +601,14 @@ code {
 .canvas-node--done {
   animation: node-settle 420ms ease-out;
 }
+
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas-node--done {
+    animation: none;
+  }
+
+  .canvas-node--spawning {
+    animation-delay: 0ms !important;
+  }
+}
