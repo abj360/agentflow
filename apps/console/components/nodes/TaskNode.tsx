@@ -22,7 +22,7 @@ export interface TaskNodeData {
   tokens: number;
   retries: number;
   toolCallCount: number;
-  approval?: Approval;
+  approval?: Readonly<Approval>;
   onResolve?: (approvalId: string) => void;
 }
 
