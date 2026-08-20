@@ -55,6 +55,9 @@ function buildEdges(
   tasks: readonly RunViewerTask[],
   lit: ReadonlySet<string>,
 ): readonly Edge[] {
+  const started = new Set(
+    tasks.filter((task) => task.status !== "pending").map((task) => task.id),
+  );
   const fromOrchestrator = tasks
     .filter((task) => task.dependsOn.length === 0)
     .map((task) => ({ source: ORCHESTRATOR_ID, target: task.id }));
@@ -70,7 +73,10 @@ function buildEdges(
       type: "pulse",
       source,
       target,
-      data: { active: lit.has(edgeId(source, target)) },
+      data: {
+        active: lit.has(edgeId(source, target)),
+        pending: !started.has(target),
+      },
     }),
   );
 }
