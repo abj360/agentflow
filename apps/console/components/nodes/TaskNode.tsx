@@ -3,6 +3,7 @@
  *
  * Contains:
  *   TaskNodeData: what the canvas hands one task node
+ *   spawnStyle(): the inline style that staggers one node's mount animation
  *   NodeCost: renders a task's token and tool-call counters
  *   TaskNode: renders one planned task, spawning in when it first mounts
  */
@@ -25,6 +26,16 @@ export interface TaskNodeData {
   toolCallCount: number;
   approval?: Readonly<Approval>;
   onResolve?: (approvalId: string) => void;
+}
+
+/**
+ * Builds the inline style that staggers one node's mount animation.
+ *
+ * @param spawnDelay - Milliseconds this node waits before it animates in.
+ * @returns style - The animation delay React Flow applies to the node shell.
+ */
+function spawnStyle(spawnDelay: number) {
+  return { animationDelay: `${spawnDelay}ms` };
 }
 
 /**
@@ -70,7 +81,7 @@ export function TaskNode({
   return (
     <div
       className={`canvas-node canvas-node--${species} canvas-node--spawning canvas-node--${data.status}`}
-      style={{ animationDelay: `${data.spawnDelay}ms` }}
+      style={spawnStyle(data.spawnDelay)}
     >
       <Handle type="target" position={Position.Left} />
       <span
