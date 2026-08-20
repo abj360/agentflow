@@ -3,13 +3,16 @@
  *
  * Contains:
  *   TaskNodeData: what the canvas hands one task node
+ *   SPAWN_STYLES: cached style objects, so a re-render never rebuilds one
+ *   shellClass(): the class list the node shell renders with
+ *   spawnStyle(): the inline style that staggers one node's mount animation
  *   NodeCost: renders a task's token and tool-call counters
  *   TaskNode: renders one planned task, spawning in when it first mounts
  */
 
 "use client";
 
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Handle, Position, type NodeProps } from "reactflow";
 
 import type { TaskSpecies, TaskStatus } from "../../lib/graph-model";
@@ -21,9 +24,44 @@ export interface TaskNodeData {
   status: TaskStatus;
   tokens: number;
   retries: number;
+  spawnDelay: number;
   toolCallCount: number;
   approval?: Readonly<Approval>;
   onResolve?: (approvalId: string) => void;
+}
+
+/**
+ * Builds the class list the node shell renders with.
+ *
+ * @param species - Species the node is styled as.
+ * @param status - Lifecycle state the task is currently in.
+ * @returns className - Space-separated classes for the node shell.
+ */
+function shellClass(species: TaskSpecies, status: TaskStatus): string {
+  return [
+    "canvas-node",
+    `canvas-node--${species}`,
+    "canvas-node--spawning",
+    `canvas-node--${status}`,
+  ].join(" ");
+}
+
+/**
+ * Builds the inline style that staggers one node's mount animation.
+ *
+ * @param spawnDelay - Milliseconds this node waits before it animates in.
+ * @returns style - The animation delay React Flow applies to the node shell.
+ */
+const SPAWN_STYLES = new Map<number, CSSProperties>();
+
+function spawnStyle(spawnDelay: number): CSSProperties {
+  const cached = SPAWN_STYLES.get(spawnDelay);
+  if (cached !== undefined) {
+    return cached;
+  }
+  const style = { animationDelay: `${spawnDelay}ms` };
+  SPAWN_STYLES.set(spawnDelay, style);
+  return style;
 }
 
 /**
@@ -68,7 +106,8 @@ export function TaskNode({
 }) {
   return (
     <div
-      className={`canvas-node canvas-node--${species} canvas-node--spawning canvas-node--${data.status}`}
+      className={shellClass(species, data.status)}
+      style={spawnStyle(data.spawnDelay)}
     >
       <Handle type="target" position={Position.Left} />
       <span
