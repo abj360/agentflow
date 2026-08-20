@@ -30,6 +30,6 @@ test("a negative index never pulls the delay below zero", () => {
 });
 
 test("the stagger never exceeds the ceiling", () => {
-  const delays = [0, 5, 20, 100].map(spawnDelayMs);
-  expect(Math.max(...delays)).toBeLessThanOrEqual(MAX_SPAWN_DELAY_MS);
+  const staggered = [0, 5, 20, 100].map(spawnDelayMs);
+  expect(Math.max(...staggered)).toBeLessThanOrEqual(MAX_SPAWN_DELAY_MS);
 });
