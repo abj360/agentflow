@@ -97,14 +97,16 @@ test("a diamond keeps its join in the last column", () => {
 });
 
 test("a wide fan spreads evenly around the orchestrator row", () => {
-  const placed = layoutTasks([
+  const placed = layoutTasks([task("a"), task("b"), task("c")]);
+  expect(placed.map((node) => node.y)).toEqual([-ROW_HEIGHT, 0, ROW_HEIGHT]);
+});
+
+test("a task that joins two columns lands after the deeper one", () => {
+  const levels = levelTasks([
     task("a"),
-    task("b"),
-    task("c"),
+    task("b", ["a"]),
+    task("c", ["b"]),
+    task("d", ["a", "c"]),
   ]);
-  expect(placed.map((node) => node.y)).toEqual([
-    -ROW_HEIGHT,
-    0,
-    ROW_HEIGHT,
-  ]);
+  expect(levels?.get("d")).toBe(3);
 });
