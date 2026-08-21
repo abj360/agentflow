@@ -623,8 +623,3 @@ code {
   opacity: 0.55;
 }
 
-@media (prefers-color-scheme: dark) {
-  .canvas-node--awaiting-approval {
-    border-color: #fbbf24;
-  }
-}
