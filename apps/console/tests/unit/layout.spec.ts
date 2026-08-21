@@ -84,3 +84,14 @@ test("a dependency the plan has not streamed yet is ignored", () => {
   const levels = levelTasks([task("b", ["a"])]);
   expect(levels?.get("b")).toBe(0);
 });
+
+test("a diamond keeps its join in the last column", () => {
+  const levels = levelTasks([
+    task("root"),
+    task("left", ["root"]),
+    task("right", ["root"]),
+    task("join", ["left", "right"]),
+  ]);
+  expect(levels?.get("join")).toBe(2);
+  expect(levels?.get("left")).toBe(levels?.get("right"));
+});
