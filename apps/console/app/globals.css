@@ -6,6 +6,8 @@
   --border: #e5e7eb;
   --node-bg: #ffffff;
   --node-orchestrator: #1d4ed8;
+  --node-approval: #b45309;
+  --edge: #cbd5e1;
   --edge-active: #1d4ed8;
 }
 
@@ -486,7 +488,7 @@ code {
 }
 
 .canvas-node--awaiting-approval {
-  border-color: #b45309;
+  border-color: var(--node-approval);
   border-width: 2px;
   animation: awaiting-approval-pulse 1.6s ease-in-out infinite;
 }
@@ -499,7 +501,7 @@ code {
 }
 
 .canvas-edge {
-  stroke: var(--border);
+  stroke: var(--edge);
   stroke-width: 1.5;
 }
 
