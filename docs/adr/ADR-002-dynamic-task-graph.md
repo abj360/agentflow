@@ -2,6 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-08-10
+- Last reviewed: 2026-08-21
 - Deciders: Peter
 - Reviewers: David, Yannick
 - Supersedes: the fixed-topology assumption in ADR-001
@@ -37,6 +38,19 @@ runs before any structural event is written to a WebSocket frame, so a cyclic,
 duplicated, or dangling dependency raises server-side instead of reaching the
 canvas, where a cycle would hang the topological layout.
 
+## One frame per plan, not one per node
+
+A twelve-task plan used to mean twelve WebSocket frames, and the console laid
+the canvas out again on each one. Structural events are batched into a single
+`graph_delta` frame, so a plan costs one layout pass. The console unpacks the
+batch before folding it, so nothing downstream knows the difference.
+
+## Reporting status without knowing about WebSockets
+
+`build_graph()` takes an optional status sink and calls it as each task enters
+and leaves `running`. The graph stays ignorant of transport; the API layer is
+what turns those calls into `node_status_changed` frames.
+
 ## Alternatives considered
 
 - **Keep the fixed topology and attach node metadata to it.** Rejected: the
@@ -47,6 +61,9 @@ canvas, where a cycle would hang the topological layout.
   nothing about whether one waited on the other.
 - **Validate the DAG in the console.** Rejected: fail closed on the server. A
   cycle that reaches the browser is already a frame we should not have sent.
+  Validating in one place turned out to be too few places: the first version
+  checked only the initial plan, and a mid-run replan emptied the canvas until
+  `planner_node()` and `build_graph()` both started validating too.
 
 ## Consequences
 
