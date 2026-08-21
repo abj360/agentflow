@@ -20,6 +20,8 @@
     --border: #1e293b;
     --node-bg: #111c31;
     --node-orchestrator: #60a5fa;
+    --node-approval: #fbbf24;
+    --edge: #334155;
     --edge-active: #60a5fa;
   }
 }
@@ -243,6 +245,8 @@ code {
   --border: #1e293b;
   --node-bg: #111c31;
   --node-orchestrator: #60a5fa;
+  --node-approval: #fbbf24;
+  --edge: #334155;
   --edge-active: #60a5fa;
 }
 
