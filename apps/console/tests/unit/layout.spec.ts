@@ -95,3 +95,16 @@ test("a diamond keeps its join in the last column", () => {
   expect(levels?.get("join")).toBe(2);
   expect(levels?.get("left")).toBe(levels?.get("right"));
 });
+
+test("a wide fan spreads evenly around the orchestrator row", () => {
+  const placed = layoutTasks([
+    task("a"),
+    task("b"),
+    task("c"),
+  ]);
+  expect(placed.map((node) => node.y)).toEqual([
+    -ROW_HEIGHT,
+    0,
+    ROW_HEIGHT,
+  ]);
+});
