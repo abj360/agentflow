@@ -60,6 +60,9 @@ what turns those calls into `node_status_changed` frames.
   nothing about whether one waited on the other.
 - **Validate the DAG in the console.** Rejected: fail closed on the server. A
   cycle that reaches the browser is already a frame we should not have sent.
+  Validating in one place turned out to be too few places: the first version
+  checked only the initial plan, and a mid-run replan emptied the canvas until
+  `planner_node()` and `build_graph()` both started validating too.
 
 ## Consequences
 
