@@ -481,7 +481,7 @@ code {
   }
 }
 
-@keyframes awaiting-approval-pulse {
+@keyframes approval-ring {
   0%,
   100% {
     box-shadow: 0 0 0 0 rgb(245 158 11 / 0.55);
@@ -494,7 +494,7 @@ code {
 .canvas-node--awaiting-approval {
   border-color: var(--node-approval);
   border-width: 2px;
-  animation: awaiting-approval-pulse 1.6s ease-in-out infinite;
+  animation: approval-ring 1.6s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
