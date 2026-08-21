@@ -2,6 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-08-10
+- Last reviewed: 2026-08-21
 - Deciders: Peter
 - Reviewers: David, Yannick
 - Supersedes: the fixed-topology assumption in ADR-001
