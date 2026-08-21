@@ -1,0 +1,44 @@
+/**
+ * relaxation.spec.ts --- tests for the force relaxation layered on the layout
+ *
+ * Contains:
+ *   relaxation specs: column discipline, separation, and the trivial cases
+ */
+
+import { expect, test } from "@playwright/test";
+
+import { COLUMN_WIDTH } from "../../lib/layout";
+import { relaxPositions } from "../../lib/relaxation";
+
+test("a single node is handed back untouched", () => {
+  const placed = [{ id: "a", x: 10, y: 20 }];
+  expect(relaxPositions(placed)).toEqual(placed);
+});
+
+test("an empty layout relaxes to nothing", () => {
+  expect(relaxPositions([])).toEqual([]);
+});
+
+test("nodes stay near the column the topology put them in", () => {
+  const relaxed = relaxPositions([
+    { id: "a", x: COLUMN_WIDTH, y: 0 },
+    { id: "b", x: COLUMN_WIDTH, y: 10 },
+  ]);
+  for (const node of relaxed) {
+    expect(Math.abs(node.x - COLUMN_WIDTH)).toBeLessThan(COLUMN_WIDTH / 2);
+  }
+});
+
+test("overlapping nodes are pushed apart", () => {
+  const relaxed = relaxPositions([
+    { id: "a", x: COLUMN_WIDTH, y: 0 },
+    { id: "b", x: COLUMN_WIDTH, y: 0 },
+  ]);
+  const [first, second] = relaxed;
+  expect(
+    Math.hypot(
+      (first?.x ?? 0) - (second?.x ?? 0),
+      (first?.y ?? 0) - (second?.y ?? 0),
+    ),
+  ).toBeGreaterThan(0);
+});
