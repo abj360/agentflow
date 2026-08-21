@@ -25,7 +25,7 @@ export function ApprovalNode(props: NodeProps<TaskNodeData>) {
     // The plan can mark a task as waiting before the approvals API has caught
     // up, so the node has to read as paused with no decision to offer yet.
     return (
-      <TaskNode {...props} species="approval" detail="Awaiting decision" />
+      <TaskNode {...props} species="approval" detail="Awaiting approval" />
     );
   }
 
