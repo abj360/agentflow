@@ -37,6 +37,19 @@ runs before any structural event is written to a WebSocket frame, so a cyclic,
 duplicated, or dangling dependency raises server-side instead of reaching the
 canvas, where a cycle would hang the topological layout.
 
+## One frame per plan, not one per node
+
+A twelve-task plan used to mean twelve WebSocket frames, and the console laid
+the canvas out again on each one. Structural events are batched into a single
+`graph_delta` frame, so a plan costs one layout pass. The console unpacks the
+batch before folding it, so nothing downstream knows the difference.
+
+## Reporting status without knowing about WebSockets
+
+`build_graph()` takes an optional status sink and calls it as each task enters
+and leaves `running`. The graph stays ignorant of transport; the API layer is
+what turns those calls into `node_status_changed` frames.
+
 ## Alternatives considered
 
 - **Keep the fixed topology and attach node metadata to it.** Rejected: the
