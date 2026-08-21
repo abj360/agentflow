@@ -475,12 +475,6 @@ code {
   animation: node-spawn 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .canvas-node--spawning {
-    animation: none;
-  }
-}
-
 @keyframes approval-ring {
   0%,
   100% {
@@ -609,12 +603,9 @@ code {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .canvas-node--done {
-    animation: none;
-  }
-
+  .canvas-node--done,
   .canvas-node--spawning {
-    animation-delay: 0ms !important;
+    animation: none;
   }
 }
 
@@ -622,4 +613,3 @@ code {
   stroke-dasharray: 2 6;
   opacity: 0.55;
 }
-
