@@ -84,3 +84,29 @@ test("a dependency the plan has not streamed yet is ignored", () => {
   const levels = levelTasks([task("b", ["a"])]);
   expect(levels?.get("b")).toBe(0);
 });
+
+test("a diamond keeps its join in the last column", () => {
+  const levels = levelTasks([
+    task("root"),
+    task("left", ["root"]),
+    task("right", ["root"]),
+    task("join", ["left", "right"]),
+  ]);
+  expect(levels?.get("join")).toBe(2);
+  expect(levels?.get("left")).toBe(levels?.get("right"));
+});
+
+test("a wide fan spreads evenly around the orchestrator row", () => {
+  const placed = layoutTasks([task("a"), task("b"), task("c")]);
+  expect(placed.map((node) => node.y)).toEqual([-ROW_HEIGHT, 0, ROW_HEIGHT]);
+});
+
+test("a task that joins two columns lands after the deeper one", () => {
+  const levels = levelTasks([
+    task("a"),
+    task("b", ["a"]),
+    task("c", ["b"]),
+    task("d", ["a", "c"]),
+  ]);
+  expect(levels?.get("d")).toBe(3);
+});
