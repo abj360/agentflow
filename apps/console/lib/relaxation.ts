@@ -3,6 +3,7 @@
  *
  * Contains:
  *   RELAXATION_TICKS: simulation ticks one relaxation pass runs
+ *   NODE_HEIGHT: rendered height a task node occupies on the canvas
  *   COLLIDE_RADIUS: minimum gap the simulation keeps between two node centres
  *   RelaxationNode: one placed task while the simulation is running
  *   toSimulationNodes(): turns deterministic placements into simulation nodes
@@ -20,7 +21,11 @@ import {
 import type { PositionedTask } from "./layout";
 
 export const RELAXATION_TICKS = 60;
-export const COLLIDE_RADIUS = 72;
+export const NODE_HEIGHT = 84;
+
+// Half the node height plus breathing room, so two nodes in one column never
+// visually touch even at the simulation's closest approach.
+export const COLLIDE_RADIUS = NODE_HEIGHT / 2 + 30;
 
 export interface RelaxationNode extends SimulationNodeDatum {
   id: string;
@@ -53,6 +58,9 @@ function toSimulationNodes(
  * readability comes from the topological skeleton, and the simulation is only
  * here to stop nodes in the same column from sitting on top of each other.
  *
+ * Alpha decay is switched off and the tick count fixed, so the same plan always
+ * relaxes to the same positions rather than drifting between renders.
+ *
  * @param placements - Deterministic positions the topological layout produced.
  * @returns relaxed - The same tasks, nudged apart within their columns.
  */
@@ -71,6 +79,7 @@ export function relaxPositions(
     )
     .force("row", forceY<RelaxationNode>((node) => node.anchorY).strength(0.12))
     .force("collide", forceCollide<RelaxationNode>(COLLIDE_RADIUS))
+    .alphaDecay(0)
     .stop()
     .tick(RELAXATION_TICKS);
 
