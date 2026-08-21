@@ -5,7 +5,6 @@
  *   RELAXATION_TICKS: simulation ticks one relaxation pass runs
  *   NODE_HEIGHT: rendered height a task node occupies on the canvas
  *   COLLIDE_RADIUS: minimum gap the simulation keeps between two node centres
- *   RelaxationNode: one placed task while the simulation is running
  *   toSimulationNodes(): turns deterministic placements into simulation nodes
  *   relaxPositions(): nudges nodes apart without leaving their topological column
  */
@@ -27,7 +26,7 @@ export const NODE_HEIGHT = 84;
 // visually touch even at the simulation's closest approach.
 export const COLLIDE_RADIUS = NODE_HEIGHT / 2 + 30;
 
-export interface RelaxationNode extends SimulationNodeDatum {
+interface RelaxationNode extends SimulationNodeDatum {
   id: string;
   anchorX: number;
   anchorY: number;
