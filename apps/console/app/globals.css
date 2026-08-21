@@ -486,7 +486,8 @@ code {
 }
 
 .canvas-node--awaiting-approval {
-  border-color: #f59e0b;
+  border-color: #b45309;
+  border-width: 2px;
   animation: awaiting-approval-pulse 1.6s ease-in-out infinite;
 }
 

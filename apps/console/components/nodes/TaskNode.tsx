@@ -116,7 +116,9 @@ export function TaskNode({
       <strong>{data.title}</strong>
       <span className="canvas-node__meta">{data.assignee}</span>
       {detail === undefined ? null : (
-        <span className="canvas-node__meta">{detail}</span>
+        <span className="canvas-node__meta" role="status">
+          {detail}
+        </span>
       )}
       <NodeCost tokens={data.tokens} toolCallCount={data.toolCallCount} />
       {data.retries === 0 ? null : (
