@@ -40,3 +40,9 @@ def test_a_whitespace_task_decomposes_into_no_work(client: TestClient) -> None:
     """Verifies a whitespace-only task is refused rather than planned empty."""
     response = client.post("/runs/run-3", json={"task": "   "})
     assert response.status_code == 422
+
+
+def test_starting_a_run_reports_a_terminal_status(client: TestClient) -> None:
+    """Verifies a started run always comes back in a terminal state."""
+    response = client.post("/runs/run-4", json={"task": "single step"})
+    assert response.json()["status"] in {"completed", "revision-bounded"}
