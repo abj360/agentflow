@@ -89,7 +89,7 @@ def create_app() -> FastAPI:
         planned = TaskPlanner().plan(body.task)
         if not planned:
             raise HTTPException(
-                status_code=422, detail="task decomposed into no work"
+                status_code=422, detail="task decomposed into no plannable work"
             )
         await hub.broadcast_batch(run_id, traced_events_for_plan(run_id, planned))
         transitions: list[tuple[str, TaskStatus]] = []
