@@ -107,13 +107,13 @@ test("task nodes carry a status dot", async ({ page }) => {
 });
 
 test("the old approvals route no longer exists", async ({ page }) => {
-  const response = await page.goto("/approvals");
-  expect(response?.status()).toBe(404);
+  const landed = await page.goto("/approvals");
+  expect(landed?.status()).toBe(404);
 });
 
 test("the old traces route no longer exists", async ({ page }) => {
-  const response = await page.goto("/traces");
-  expect(response?.status()).toBe(404);
+  const landed = await page.goto("/traces");
+  expect(landed?.status()).toBe(404);
 });
 
 test("the landing page points at the run screen", async ({ page }) => {
