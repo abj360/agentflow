@@ -64,3 +64,12 @@ test("the newest firing is recorded last", () => {
   const pulses = recordPulse(recordPulse([], "a", START), "b", START + 10);
   expect(pulses.at(-1)?.id).toBe("b");
 });
+
+test("nothing is lit before anything has fired", () => {
+  expect(activeEdges([], START).size).toBe(0);
+});
+
+test("an edge fired in the past is not resurrected", () => {
+  const pulses = recordPulse([], "a", START);
+  expect(activeEdges(pulses, START + PULSE_DURATION_MS * 3).size).toBe(0);
+});
