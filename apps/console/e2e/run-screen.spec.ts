@@ -87,6 +87,9 @@ test("an unknown run still renders the screen", async ({ page }) => {
 
 test("the canvas offers zoom controls", async ({ page }) => {
   await openRun(page);
+  // React Flow mounts its controls after the pane measures itself, so the
+  // locator has to wait rather than assert on the first paint.
+  await page.locator(".react-flow__controls").waitFor({ state: "visible" });
   await expect(page.locator(".react-flow__controls")).toBeVisible();
 });
 
