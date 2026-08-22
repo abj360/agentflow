@@ -74,7 +74,9 @@ def create_app() -> FastAPI:
         return {"status": "ok"}
 
     @app.post("/runs/{run_id}")
-    async def start_run(run_id: str, body: StartRunRequest) -> dict[str, object]:
+    async def start_run(
+        run_id: str, body: StartRunRequest
+    ) -> dict[str, str | int]:
         """Starts one run and streams its task graph to that run's viewers.
 
         Args:
@@ -106,7 +108,7 @@ def create_app() -> FastAPI:
             run_id,
             [node_status_changed(task_id, status) for task_id, status in transitions],
         )
-        return {"status": result["status"], "tasks": len(planned)}
+        return {"status": str(result["status"]), "tasks": len(planned)}
 
     @app.websocket("/ws/traces")
     async def trace_stream(socket: WebSocket, run_id: str = "default") -> None:
