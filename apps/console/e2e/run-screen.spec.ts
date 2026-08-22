@@ -121,3 +121,11 @@ test("the landing page points at the run screen", async ({ page }) => {
   await page.getByRole("link", { name: /open the live run/i }).click();
   await expect(page).toHaveURL(/\/run\//);
 });
+
+test("the chat composer clears after sending", async ({ page }) => {
+  await openRun(page);
+  const composer = page.getByLabel("Instruction");
+  await composer.fill("check the citations");
+  await page.getByRole("button", { name: "Send" }).click();
+  await expect(composer).toHaveValue("");
+});
