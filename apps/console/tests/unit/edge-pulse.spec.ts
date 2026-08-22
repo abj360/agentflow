@@ -52,3 +52,10 @@ test("edges fired in the same frame are all lit together", () => {
   const both = recordPulse(recordPulse([], "a", START), "b", START);
   expect(activeEdges(both, START).size).toBe(2);
 });
+
+test("pulses from separate frames stay lit on their own clocks", () => {
+  const first = recordPulse([], "a", START);
+  const both = recordPulse(first, "b", START + PULSE_DURATION_MS - 1);
+  expect(activeEdges(both, START + PULSE_DURATION_MS - 1).size).toBe(2);
+  expect(activeEdges(both, START + PULSE_DURATION_MS).size).toBe(1);
+});
