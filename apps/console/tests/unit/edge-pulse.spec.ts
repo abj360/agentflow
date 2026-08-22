@@ -59,3 +59,8 @@ test("pulses from separate frames stay lit on their own clocks", () => {
   expect(activeEdges(both, START + PULSE_DURATION_MS - 1).size).toBe(2);
   expect(activeEdges(both, START + PULSE_DURATION_MS).size).toBe(1);
 });
+
+test("the newest firing is recorded last", () => {
+  const pulses = recordPulse(recordPulse([], "a", START), "b", START + 10);
+  expect(pulses.at(-1)?.id).toBe("b");
+});
