@@ -8,7 +8,7 @@ Contains:
     app: module-level ASGI application instance
 """
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -85,6 +85,10 @@ def create_app() -> FastAPI:
             summary: The run's final status and how many tasks it planned.
         """
         planned = TaskPlanner().plan(body.task)
+        if not planned:
+            raise HTTPException(
+                status_code=422, detail="task decomposed into no work"
+            )
         await hub.broadcast_batch(run_id, traced_events_for_plan(run_id, planned))
         transitions: list[tuple[str, TaskStatus]] = []
         result = await run_session(

@@ -34,3 +34,9 @@ def test_starting_a_run_reports_its_plan_size(client: TestClient) -> None:
 def test_starting_a_run_rejects_an_empty_task(client: TestClient) -> None:
     """Verifies an empty task never reaches the planner."""
     assert client.post("/runs/run-2", json={"task": ""}).status_code == 422
+
+
+def test_a_whitespace_task_decomposes_into_no_work(client: TestClient) -> None:
+    """Verifies a whitespace-only task is refused rather than planned empty."""
+    response = client.post("/runs/run-3", json={"task": "   "})
+    assert response.status_code == 422
