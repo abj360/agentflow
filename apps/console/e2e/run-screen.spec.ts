@@ -96,9 +96,7 @@ test("the canvas offers zoom controls", async ({ page }) => {
 test("opening the raw log reveals the log list", async ({ page }) => {
   await openRun(page);
   await rawLogToggle(page).click();
-  await expect(
-    rawLogToggle(page),
-  ).toHaveAttribute("aria-expanded", "true");
+  await expect(rawLogToggle(page)).toHaveAttribute("aria-expanded", "true");
 });
 
 test("task nodes carry a status dot", async ({ page }) => {
