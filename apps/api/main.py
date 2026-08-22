@@ -91,11 +91,17 @@ def create_app() -> FastAPI:
             )
         await hub.broadcast_batch(run_id, traced_events_for_plan(run_id, planned))
         transitions: list[tuple[str, TaskStatus]] = []
-        result = await run_session(
-            run_id,
-            body.task,
-            on_status=lambda task_id, status: transitions.append((task_id, status)),
-        )
+
+        def record(task_id: str, status: TaskStatus) -> None:
+            """Records one status transition for the batch sent after the run.
+
+            Args:
+                task_id: Task whose status moved.
+                status: Lifecycle state the task moved into.
+            """
+            transitions.append((task_id, status))
+
+        result = await run_session(run_id, body.task, on_status=record)
         await hub.broadcast_batch(
             run_id,
             [node_status_changed(task_id, status) for task_id, status in transitions],
