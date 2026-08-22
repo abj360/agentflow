@@ -3,10 +3,11 @@
  *
  * Contains:
  *   openRun(): opens the unified run screen for the fixture run
+ *   rawLogToggle(): locates the raw trace log disclosure button
  *   run screen specs: chat, canvas, and raw-log surfaces on one route
  */
 
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const RUN_ID = "run-e2e-1";
 
@@ -17,6 +18,16 @@ const RUN_ID = "run-e2e-1";
  */
 async function openRun(page: Page): Promise<void> {
   await page.goto(`/run/${RUN_ID}`);
+}
+
+/**
+ * Locates the raw trace log disclosure button.
+ *
+ * @param page - Playwright page the test is driving.
+ * @returns toggle - Locator for the raw log button.
+ */
+function rawLogToggle(page: Page): Locator {
+  return page.getByRole("button", { name: /raw trace log/i });
 }
 
 test.describe("unified run screen", () => {
@@ -64,8 +75,7 @@ test("an empty instruction is not sent", async ({ page }) => {
 
 test("the raw trace log starts collapsed", async ({ page }) => {
   await openRun(page);
-  const rawLogToggle = page.getByRole("button", { name: /raw trace log/i });
-  await expect(rawLogToggle).toHaveAttribute("aria-expanded", "false");
+  await expect(rawLogToggle(page)).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator(".trace-list")).toHaveCount(0);
 });
 
@@ -82,9 +92,9 @@ test("the canvas offers zoom controls", async ({ page }) => {
 
 test("opening the raw log reveals the log list", async ({ page }) => {
   await openRun(page);
-  await page.getByRole("button", { name: /raw trace log/i }).click();
+  await rawLogToggle(page).click();
   await expect(
-    page.getByRole("button", { name: /raw trace log/i }),
+    rawLogToggle(page),
   ).toHaveAttribute("aria-expanded", "true");
 });
 
