@@ -74,9 +74,7 @@ def create_app() -> FastAPI:
         return {"status": "ok"}
 
     @app.post("/runs/{run_id}")
-    async def start_run(
-        run_id: str, body: StartRunRequest
-    ) -> dict[str, str | int]:
+    async def start_run(run_id: str, body: StartRunRequest) -> dict[str, str | int]:
         """Starts one run and streams its task graph to that run's viewers.
 
         Args:
@@ -88,9 +86,7 @@ def create_app() -> FastAPI:
         """
         planned = TaskPlanner().plan(body.task)
         if not planned:
-            raise HTTPException(
-                status_code=422, detail="task decomposed into no plannable work"
-            )
+            raise HTTPException(status_code=422, detail="task decomposed into no plannable work")
         await hub.broadcast_batch(run_id, traced_events_for_plan(run_id, planned))
         transitions: list[tuple[str, TaskStatus]] = []
 
