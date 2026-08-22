@@ -102,3 +102,9 @@ test("the old traces route no longer exists", async ({ page }) => {
   const response = await page.goto("/traces");
   expect(response?.status()).toBe(404);
 });
+
+test("the landing page points at the run screen", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: /open the live run/i }).click();
+  await expect(page).toHaveURL(/\/run\//);
+});
