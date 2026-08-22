@@ -16,7 +16,7 @@ const RUN_ID = "run-e2e-1";
  * @param page - Playwright page the test is driving.
  */
 async function openRun(page: Page): Promise<void> {
-  await openRun(page);
+  await page.goto(`/run/${RUN_ID}`);
 }
 
 test.describe("unified run screen", () => {
@@ -91,4 +91,14 @@ test("opening the raw log reveals the log list", async ({ page }) => {
 test("task nodes carry a status dot", async ({ page }) => {
   await openRun(page);
   await expect(page.locator(".canvas-node__status")).toHaveCount(0);
+});
+
+test("the old approvals route no longer exists", async ({ page }) => {
+  const response = await page.goto("/approvals");
+  expect(response?.status()).toBe(404);
+});
+
+test("the old traces route no longer exists", async ({ page }) => {
+  const response = await page.goto("/traces");
+  expect(response?.status()).toBe(404);
 });
