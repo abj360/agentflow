@@ -3,10 +3,11 @@
  *
  * Contains:
  *   openRun(): opens the unified run screen for the fixture run
+ *   rawLogToggle(): locates the raw trace log disclosure button
  *   run screen specs: chat, canvas, and raw-log surfaces on one route
  */
 
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const RUN_ID = "run-e2e-1";
 
@@ -16,7 +17,17 @@ const RUN_ID = "run-e2e-1";
  * @param page - Playwright page the test is driving.
  */
 async function openRun(page: Page): Promise<void> {
-  await openRun(page);
+  await page.goto(`/run/${RUN_ID}`);
+}
+
+/**
+ * Locates the raw trace log disclosure button.
+ *
+ * @param page - Playwright page the test is driving.
+ * @returns toggle - Locator for the raw log button.
+ */
+function rawLogToggle(page: Page): Locator {
+  return page.getByRole("button", { name: /raw trace log/i });
 }
 
 test.describe("unified run screen", () => {
@@ -64,8 +75,7 @@ test("an empty instruction is not sent", async ({ page }) => {
 
 test("the raw trace log starts collapsed", async ({ page }) => {
   await openRun(page);
-  const rawLogToggle = page.getByRole("button", { name: /raw trace log/i });
-  await expect(rawLogToggle).toHaveAttribute("aria-expanded", "false");
+  await expect(rawLogToggle(page)).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator(".trace-list")).toHaveCount(0);
 });
 
@@ -77,18 +87,43 @@ test("an unknown run still renders the screen", async ({ page }) => {
 
 test("the canvas offers zoom controls", async ({ page }) => {
   await openRun(page);
+  // React Flow mounts its controls after the pane measures itself, so the
+  // locator has to wait rather than assert on the first paint.
+  await page.locator(".react-flow__controls").waitFor({ state: "visible" });
   await expect(page.locator(".react-flow__controls")).toBeVisible();
 });
 
 test("opening the raw log reveals the log list", async ({ page }) => {
   await openRun(page);
-  await page.getByRole("button", { name: /raw trace log/i }).click();
-  await expect(
-    page.getByRole("button", { name: /raw trace log/i }),
-  ).toHaveAttribute("aria-expanded", "true");
+  await rawLogToggle(page).click();
+  await expect(rawLogToggle(page)).toHaveAttribute("aria-expanded", "true");
 });
 
 test("task nodes carry a status dot", async ({ page }) => {
   await openRun(page);
   await expect(page.locator(".canvas-node__status")).toHaveCount(0);
+});
+
+test("the old approvals route no longer exists", async ({ page }) => {
+  const landed = await page.goto("/approvals");
+  expect(landed?.status()).toBe(404);
+});
+
+test("the old traces route no longer exists", async ({ page }) => {
+  const landed = await page.goto("/traces");
+  expect(landed?.status()).toBe(404);
+});
+
+test("the landing page points at the run screen", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: /open the live run/i }).click();
+  await expect(page).toHaveURL(/\/run\//);
+});
+
+test("the chat composer clears after sending", async ({ page }) => {
+  await openRun(page);
+  const composer = page.getByLabel("Instruction");
+  await composer.fill("check the citations");
+  await page.getByRole("button", { name: "Send" }).click();
+  await expect(composer).toHaveValue("");
 });
