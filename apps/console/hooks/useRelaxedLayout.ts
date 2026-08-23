@@ -23,7 +23,9 @@ import { relaxPositions } from "../lib/relaxation";
  * @param tasks - Runtime-planned tasks streamed in for this run.
  * @returns signature - A string that changes only when the graph shape changes.
  */
-export function layoutSignature(tasks: readonly Readonly<RunViewerTask>[]): string {
+export function layoutSignature(
+  tasks: readonly Readonly<RunViewerTask>[],
+): string {
   return tasks
     .map((task) => `${task.id}:${task.dependsOn.join(",")}`)
     .join("|");
