@@ -89,7 +89,7 @@ export function relaxPositions(
 ): readonly PositionedTask[] {
   if (
     placements.length < 2 ||
-    placements.length > MAX_SIMULATION_NODES
+    placements.length >= MAX_SIMULATION_NODES
   ) {
     return [...placements];
   }
