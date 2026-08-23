@@ -13,6 +13,7 @@ Contains:
     test_gathering_work_goes_to_the_researcher(): verifies the assignee heuristic
     test_replan_leaves_finished_work_alone(): verifies a revise keeps done tasks
     test_replan_on_accept_changes_nothing(): verifies an accepted plan is untouched
+    test_usage_accumulates_across_steps(): verifies counters add rather than replace
 """
 
 from apps.api.orchestration.task_planner import (
@@ -96,3 +97,10 @@ def test_replan_on_accept_changes_nothing() -> None:
     """Verifies an accepted plan is handed back exactly as it came in."""
     tasks = (PlannedTask(id="task-1", title="a", status="running"),)
     assert TaskPlanner().replan(tasks, "accept") == tasks
+
+
+def test_usage_accumulates_across_steps() -> None:
+    """Verifies a task's counters add up rather than being overwritten."""
+    task = PlannedTask(id="task-1", title="a")
+    task = task.record_usage(120, 2).record_usage(80, 1)
+    assert (task.tokens, task.tool_call_count) == (200, 3)
