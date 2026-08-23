@@ -6,6 +6,8 @@ Contains:
     TaskWire: one planned task in the shape the console's graph model reads
     PlannedTask: one runtime-planned unit of work and what it waits on
     PlannedTask.to_wire(): renders the task in the shape the console consumes
+    PlannedTask.record_usage(): returns the task with one step's spend added
+    PlannedTask.record_retry(): returns the task with one more retry counted
     task_id(): builds the stable id for a task at a plan position
     assignee_for(): picks the role that should own a planned objective
     split_objectives(): splits a task description into separately planned objectives
@@ -81,6 +83,35 @@ class PlannedTask:
     tokens: int = 0
     retries: int = 0
     tool_call_count: int = 0
+
+    def record_usage(self, tokens: int, tool_calls: int) -> "PlannedTask":
+        """Returns the task with one step's token and tool-call spend added.
+
+        Args:
+            tokens: Model tokens the step consumed.
+            tool_calls: Governed tool calls the step made.
+
+        Returns:
+            task: A new task carrying the accumulated counters.
+
+        Raises:
+            ValueError: When either counter is negative.
+        """
+        if tokens < 0 or tool_calls < 0:
+            raise ValueError("usage counters only ever go up")
+        return replace(
+            self,
+            tokens=self.tokens + tokens,
+            tool_call_count=self.tool_call_count + tool_calls,
+        )
+
+    def record_retry(self) -> "PlannedTask":
+        """Returns the task with one more retry counted against it.
+
+        Returns:
+            task: A new task with its retry counter incremented.
+        """
+        return replace(self, retries=self.retries + 1)
 
     def to_wire(self) -> TaskWire:
         """Renders the task in the shape the console's graph model consumes.
