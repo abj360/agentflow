@@ -5,6 +5,7 @@
  *   RELAXATION_TICKS: simulation ticks a small plan's relaxation pass runs
  *   MIN_RELAXATION_TICKS: floor a large plan's relaxation pass settles for
  *   MAX_SIMULATION_NODES: plan size past which the skeleton is used untouched
+ *   isWorthSimulating(): whether a plan of a given size earns a simulation pass
  *   ticksFor(): the tick budget a plan of a given size is worth spending
  *   NODE_HEIGHT: rendered height a task node occupies on the canvas
  *   COLLIDE_RADIUS: minimum gap the simulation keeps between two node centres
@@ -35,6 +36,16 @@ interface RelaxationNode extends SimulationNodeDatum {
   id: string;
   anchorX: number;
   anchorY: number;
+}
+
+/**
+ * Reports whether a plan of a given size is worth running the simulation on.
+ *
+ * @param count - How many nodes the relaxation pass would have to settle.
+ * @returns worthwhile - False for a trivial plan and for one past the ceiling.
+ */
+function isWorthSimulating(count: number): boolean {
+  return count >= 2 && count < MAX_SIMULATION_NODES;
 }
 
 /**
@@ -87,10 +98,7 @@ function toSimulationNodes(
 export function relaxPositions(
   placements: readonly PositionedTask[],
 ): readonly PositionedTask[] {
-  if (
-    placements.length < 2 ||
-    placements.length >= MAX_SIMULATION_NODES
-  ) {
+  if (!isWorthSimulating(placements.length)) {
     return [...placements];
   }
   const nodes = toSimulationNodes(placements);
