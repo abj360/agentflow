@@ -11,6 +11,7 @@ import {
   APPROVE_KEY,
   REJECT_KEY,
   decisionForKey,
+  hasModifier,
   isTypingTarget,
 } from "../../hooks/useApprovalShortcuts";
 
@@ -37,4 +38,16 @@ test("a press inside a text field is never a decision", () => {
 
 test("a press with no target is not treated as typing", () => {
   expect(isTypingTarget(null)).toBe(false);
+});
+
+test("a modifier combination is never a decision", () => {
+  expect(
+    hasModifier({ metaKey: true, ctrlKey: false, altKey: false }),
+  ).toBe(true);
+});
+
+test("a bare key press carries no modifier", () => {
+  expect(
+    hasModifier({ metaKey: false, ctrlKey: false, altKey: false }),
+  ).toBe(false);
 });
