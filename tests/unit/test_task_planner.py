@@ -16,6 +16,8 @@ Contains:
     test_usage_accumulates_across_steps(): verifies counters add rather than replace
 """
 
+import pytest
+
 from apps.api.orchestration.task_planner import (
     MAX_TASKS_PER_PLAN,
     PlannedTask,
@@ -123,3 +125,9 @@ def test_zero_usage_is_a_no_op_not_an_error() -> None:
     """Verifies a step that spent nothing still records cleanly."""
     task = PlannedTask(id="task-1", title="a").record_usage(0, 0)
     assert (task.tokens, task.tool_call_count) == (0, 0)
+
+
+def test_negative_usage_is_refused() -> None:
+    """Verifies a negative counter fails closed instead of rewriting history."""
+    with pytest.raises(ValueError):
+        PlannedTask(id="task-1", title="a").record_usage(-1, 0)
