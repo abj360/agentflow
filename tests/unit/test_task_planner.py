@@ -104,3 +104,16 @@ def test_usage_accumulates_across_steps() -> None:
     task = PlannedTask(id="task-1", title="a")
     task = task.record_usage(120, 2).record_usage(80, 1)
     assert (task.tokens, task.tool_call_count) == (200, 3)
+
+
+def test_retries_count_up_one_at_a_time() -> None:
+    """Verifies each retry adds exactly one to the task's retry counter."""
+    task = PlannedTask(id="task-1", title="a").record_retry().record_retry()
+    assert task.retries == 2
+
+
+def test_a_recorded_task_stays_frozen() -> None:
+    """Verifies recording usage returns a new task rather than mutating one."""
+    original = PlannedTask(id="task-1", title="a")
+    assert original.record_usage(10, 1) is not original
+    assert original.tokens == 0
