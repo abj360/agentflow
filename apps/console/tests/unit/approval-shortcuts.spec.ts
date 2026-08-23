@@ -11,6 +11,7 @@ import {
   APPROVE_KEY,
   REJECT_KEY,
   decisionForKey,
+  isTypingTarget,
 } from "../../hooks/useApprovalShortcuts";
 
 test("the approve key records an approval", () => {
@@ -27,4 +28,13 @@ test("an unbound key records nothing", () => {
 
 test("the shortcuts do not collide with each other", () => {
   expect(APPROVE_KEY).not.toBe(REJECT_KEY);
+});
+
+test("a press inside a text field is never a decision", () => {
+  const field = { tagName: "INPUT" };
+  expect(isTypingTarget(field as unknown as EventTarget)).toBe(false);
+});
+
+test("a press with no target is not treated as typing", () => {
+  expect(isTypingTarget(null)).toBe(false);
 });
