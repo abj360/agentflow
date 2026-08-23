@@ -17,6 +17,8 @@ Contains:
     TaskPlanner.replan(): folds critic feedback into an existing task list
 """
 
+from __future__ import annotations
+
 from collections.abc import Sequence
 from dataclasses import dataclass, replace
 from typing import Literal, TypedDict
@@ -84,7 +86,7 @@ class PlannedTask:
     retries: int = 0
     tool_call_count: int = 0
 
-    def record_usage(self, tokens: int, tool_calls: int) -> "PlannedTask":
+    def record_usage(self, tokens: int, tool_calls: int) -> PlannedTask:
         """Returns the task with one step's token and tool-call spend added.
 
         Args:
@@ -105,7 +107,7 @@ class PlannedTask:
             tool_call_count=self.tool_call_count + tool_calls,
         )
 
-    def record_retry(self) -> "PlannedTask":
+    def record_retry(self) -> PlannedTask:
         """Returns the task with one more retry counted against it.
 
         Returns:
