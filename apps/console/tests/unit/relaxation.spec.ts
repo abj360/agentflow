@@ -8,7 +8,12 @@
 import { expect, test } from "@playwright/test";
 
 import { COLUMN_WIDTH } from "../../lib/layout";
-import { relaxPositions } from "../../lib/relaxation";
+import {
+  MIN_RELAXATION_TICKS,
+  RELAXATION_TICKS,
+  relaxPositions,
+  ticksFor,
+} from "../../lib/relaxation";
 
 test("a single node is handed back untouched", () => {
   const placed = [{ id: "a", x: 10, y: 20 }];
@@ -41,4 +46,21 @@ test("overlapping nodes are pushed apart", () => {
       (first?.y ?? 0) - (second?.y ?? 0),
     ),
   ).toBeGreaterThan(0);
+});
+
+test("a small plan gets the full tick budget", () => {
+  expect(ticksFor(4)).toBe(RELAXATION_TICKS);
+});
+
+test("a long run never drops below the tick floor", () => {
+  expect(ticksFor(4000)).toBe(MIN_RELAXATION_TICKS);
+});
+
+test("a plan past the ceiling keeps the skeleton untouched", () => {
+  const wide = Array.from({ length: 200 }, (unused, index) => ({
+    id: `task-${index}`,
+    x: COLUMN_WIDTH,
+    y: index,
+  }));
+  expect(relaxPositions(wide)).toEqual(wide);
 });

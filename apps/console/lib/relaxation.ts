@@ -2,7 +2,11 @@
  * relaxation.ts --- light force relaxation layered on the topological skeleton
  *
  * Contains:
- *   RELAXATION_TICKS: simulation ticks one relaxation pass runs
+ *   RELAXATION_TICKS: simulation ticks a small plan's relaxation pass runs
+ *   MIN_RELAXATION_TICKS: floor a large plan's relaxation pass settles for
+ *   MAX_SIMULATION_NODES: plan size past which the skeleton is used untouched
+ *   isWorthSimulating(): whether a plan of a given size earns a simulation pass
+ *   ticksFor(): the tick budget a plan of a given size is worth spending
  *   NODE_HEIGHT: rendered height a task node occupies on the canvas
  *   COLLIDE_RADIUS: minimum gap the simulation keeps between two node centres
  *   toSimulationNodes(): turns deterministic placements into simulation nodes
@@ -20,6 +24,8 @@ import {
 import type { PositionedTask } from "./layout";
 
 export const RELAXATION_TICKS = 60;
+export const MIN_RELAXATION_TICKS = 18;
+export const MAX_SIMULATION_NODES = 120;
 export const NODE_HEIGHT = 84;
 
 // Half the node height plus breathing room, so two nodes in one column never
@@ -30,6 +36,32 @@ interface RelaxationNode extends SimulationNodeDatum {
   id: string;
   anchorX: number;
   anchorY: number;
+}
+
+/**
+ * Reports whether a plan of a given size is worth running the simulation on.
+ *
+ * @param count - How many nodes the relaxation pass would have to settle.
+ * @returns worthwhile - False for a trivial plan and for one past the ceiling.
+ */
+function isWorthSimulating(count: number): boolean {
+  return count >= 2 && count < MAX_SIMULATION_NODES;
+}
+
+/**
+ * Returns the tick budget a plan of a given size is worth spending.
+ *
+ * Ticks are quadratic in node count once the collision force dominates, so a
+ * long run has to buy fewer of them or the canvas stalls every time it replans.
+ *
+ * @param count - How many nodes the relaxation pass has to settle.
+ * @returns ticks - Ticks to run, never below the floor that keeps nodes apart.
+ */
+export function ticksFor(count: number): number {
+  return Math.max(
+    MIN_RELAXATION_TICKS,
+    Math.round(RELAXATION_TICKS / Math.max(count / 8, 1)),
+  );
 }
 
 /**
@@ -66,7 +98,7 @@ function toSimulationNodes(
 export function relaxPositions(
   placements: readonly PositionedTask[],
 ): readonly PositionedTask[] {
-  if (placements.length < 2) {
+  if (!isWorthSimulating(placements.length)) {
     return [...placements];
   }
   const nodes = toSimulationNodes(placements);
@@ -80,7 +112,7 @@ export function relaxPositions(
     .force("collide", forceCollide<RelaxationNode>(COLLIDE_RADIUS))
     .alphaDecay(0)
     .stop()
-    .tick(RELAXATION_TICKS);
+    .tick(ticksFor(nodes.length));
 
   return nodes.map((node) => ({
     id: node.id,
