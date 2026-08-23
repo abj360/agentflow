@@ -4,6 +4,7 @@
  * Contains:
  *   RELAXATION_TICKS: simulation ticks a small plan's relaxation pass runs
  *   MIN_RELAXATION_TICKS: floor a large plan's relaxation pass settles for
+ *   MAX_SIMULATION_NODES: plan size past which the skeleton is used untouched
  *   ticksFor(): the tick budget a plan of a given size is worth spending
  *   NODE_HEIGHT: rendered height a task node occupies on the canvas
  *   COLLIDE_RADIUS: minimum gap the simulation keeps between two node centres
@@ -23,6 +24,7 @@ import type { PositionedTask } from "./layout";
 
 export const RELAXATION_TICKS = 60;
 export const MIN_RELAXATION_TICKS = 18;
+export const MAX_SIMULATION_NODES = 120;
 export const NODE_HEIGHT = 84;
 
 // Half the node height plus breathing room, so two nodes in one column never
@@ -85,7 +87,10 @@ function toSimulationNodes(
 export function relaxPositions(
   placements: readonly PositionedTask[],
 ): readonly PositionedTask[] {
-  if (placements.length < 2) {
+  if (
+    placements.length < 2 ||
+    placements.length > MAX_SIMULATION_NODES
+  ) {
     return [...placements];
   }
   const nodes = toSimulationNodes(placements);
