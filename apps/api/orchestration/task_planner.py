@@ -102,7 +102,9 @@ class PlannedTask:
         if tokens == 0 and tool_calls == 0:
             return self
         if tokens < 0 or tool_calls < 0:
-            raise ValueError(f"usage counters only ever go up: got {tokens} tokens and {tool_calls} tool calls")
+            raise ValueError(
+                f"usage counters only ever go up: got {tokens} tokens and {tool_calls} tool calls"
+            )
         return replace(
             self,
             tokens=self.tokens + tokens,
