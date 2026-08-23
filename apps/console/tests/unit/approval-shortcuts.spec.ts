@@ -41,13 +41,17 @@ test("a press with no target is not treated as typing", () => {
 });
 
 test("a modifier combination is never a decision", () => {
-  expect(
-    hasModifier({ metaKey: true, ctrlKey: false, altKey: false }),
-  ).toBe(true);
+  expect(hasModifier({ metaKey: true, ctrlKey: false, altKey: false })).toBe(
+    true,
+  );
 });
 
 test("a bare key press carries no modifier", () => {
-  expect(
-    hasModifier({ metaKey: false, ctrlKey: false, altKey: false }),
-  ).toBe(false);
+  expect(hasModifier({ metaKey: false, ctrlKey: false, altKey: false })).toBe(
+    false,
+  );
+});
+
+test("an uppercase press is not a shortcut", () => {
+  expect(decisionForKey(APPROVE_KEY.toUpperCase())).toBeNull();
 });

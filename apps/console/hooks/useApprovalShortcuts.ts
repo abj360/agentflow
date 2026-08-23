@@ -44,7 +44,9 @@ export function isTypingTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) {
     return false;
   }
-  return ["INPUT", "TEXTAREA"].includes(target.tagName) || target.isContentEditable;
+  return (
+    ["INPUT", "TEXTAREA"].includes(target.tagName) || target.isContentEditable
+  );
 }
 
 /**
