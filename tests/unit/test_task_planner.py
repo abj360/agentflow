@@ -13,7 +13,10 @@ Contains:
     test_gathering_work_goes_to_the_researcher(): verifies the assignee heuristic
     test_replan_leaves_finished_work_alone(): verifies a revise keeps done tasks
     test_replan_on_accept_changes_nothing(): verifies an accepted plan is untouched
+    test_usage_accumulates_across_steps(): verifies counters add rather than replace
 """
+
+import pytest
 
 from apps.api.orchestration.task_planner import (
     MAX_TASKS_PER_PLAN,
@@ -96,3 +99,35 @@ def test_replan_on_accept_changes_nothing() -> None:
     """Verifies an accepted plan is handed back exactly as it came in."""
     tasks = (PlannedTask(id="task-1", title="a", status="running"),)
     assert TaskPlanner().replan(tasks, "accept") == tasks
+
+
+def test_usage_accumulates_across_steps() -> None:
+    """Verifies a task's counters add up rather than being overwritten."""
+    task = PlannedTask(id="task-1", title="a")
+    task = task.record_usage(120, 2).record_usage(80, 1)
+    assert (task.tokens, task.tool_call_count) == (200, 3)
+
+
+def test_retries_count_up_one_at_a_time() -> None:
+    """Verifies each retry adds exactly one to the task's retry counter."""
+    task = PlannedTask(id="task-1", title="a").record_retry().record_retry()
+    assert task.retries == 2
+
+
+def test_a_recorded_task_stays_frozen() -> None:
+    """Verifies recording usage returns a new task rather than mutating one."""
+    original = PlannedTask(id="task-1", title="a")
+    assert original.record_usage(10, 1) is not original
+    assert original.tokens == 0
+
+
+def test_zero_usage_is_a_no_op_not_an_error() -> None:
+    """Verifies a step that spent nothing still records cleanly."""
+    task = PlannedTask(id="task-1", title="a").record_usage(0, 0)
+    assert (task.tokens, task.tool_call_count) == (0, 0)
+
+
+def test_negative_usage_is_refused() -> None:
+    """Verifies a negative counter fails closed instead of rewriting history."""
+    with pytest.raises(ValueError):
+        PlannedTask(id="task-1", title="a").record_usage(-1, 0)
