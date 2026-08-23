@@ -100,7 +100,7 @@ class PlannedTask:
             ValueError: When either counter is negative.
         """
         if tokens < 0 or tool_calls < 0:
-            raise ValueError("usage counters only ever go up")
+            raise ValueError(f"usage counters only ever go up: got {tokens} tokens and {tool_calls} tool calls")
         return replace(
             self,
             tokens=self.tokens + tokens,
