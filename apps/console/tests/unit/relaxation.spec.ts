@@ -55,3 +55,12 @@ test("a small plan gets the full tick budget", () => {
 test("a long run never drops below the tick floor", () => {
   expect(ticksFor(4000)).toBe(MIN_RELAXATION_TICKS);
 });
+
+test("a plan past the ceiling keeps the skeleton untouched", () => {
+  const wide = Array.from({ length: 200 }, (unused, index) => ({
+    id: `task-${index}`,
+    x: COLUMN_WIDTH,
+    y: index,
+  }));
+  expect(relaxPositions(wide)).toEqual(wide);
+});
