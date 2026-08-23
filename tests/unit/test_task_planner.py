@@ -117,3 +117,9 @@ def test_a_recorded_task_stays_frozen() -> None:
     original = PlannedTask(id="task-1", title="a")
     assert original.record_usage(10, 1) is not original
     assert original.tokens == 0
+
+
+def test_zero_usage_is_a_no_op_not_an_error() -> None:
+    """Verifies a step that spent nothing still records cleanly."""
+    task = PlannedTask(id="task-1", title="a").record_usage(0, 0)
+    assert (task.tokens, task.tool_call_count) == (0, 0)
