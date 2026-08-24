@@ -194,9 +194,7 @@ def bounded_branches(state: GraphState) -> tuple[str, ...]:
         bounded: Branch root ids that can no longer be sent back for revision.
     """
     counters = state.get("branch_revisions", {})
-    return tuple(
-        branch for branch in counters if counters[branch] >= MAX_REVISIONS
-    )
+    return tuple(branch for branch in counters if counters[branch] >= MAX_REVISIONS)
 
 
 def task_runner(task: PlannedTask, branch: str, on_status: StatusSink | None = None) -> TaskNode:
