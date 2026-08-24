@@ -7,10 +7,14 @@ Contains:
     test_recording_a_revision_only_charges_one_branch(): verifies budgets stay separate
     test_branch_under_its_bound_still_revises(): verifies routing while budget remains
     test_branch_at_its_bound_stops_revising(): verifies the bound ends that branch
+    test_a_fresh_branch_has_its_whole_budget(): verifies the starting budget
+    test_a_spent_branch_reports_no_budget_left(): verifies an exhausted branch
 """
 
 from apps.api.orchestration.state_machine import (
     MAX_REVISIONS,
+    bounded_branches,
+    branch_budget_remaining,
     branch_revision_count,
     record_branch_revision,
     route_after_critic,
@@ -85,3 +89,20 @@ def test_branch_roots_keep_independent_branches_apart() -> None:
     ]
     roots = branch_roots(tasks)
     assert roots["task-1"] != roots["task-3"]
+
+
+def test_a_fresh_branch_has_its_whole_budget() -> None:
+    """Verifies an untouched branch may still spend every revision."""
+    assert branch_budget_remaining(make_state(), "task-1") == MAX_REVISIONS
+
+
+def test_a_spent_branch_reports_no_budget_left() -> None:
+    """Verifies a branch at its bound reports nothing left to spend."""
+    state = make_state(branch_revisions={"task-1": MAX_REVISIONS})
+    assert branch_budget_remaining(state, "task-1") == 0
+    assert bounded_branches(state) == ("task-1",)
+
+
+def test_no_branch_is_bounded_before_any_revision() -> None:
+    """Verifies a run that has not revised anything bounds no branch."""
+    assert bounded_branches(make_state()) == ()

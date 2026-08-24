@@ -15,6 +15,7 @@ from apps.api.orchestration.state_machine import (
     MAX_REVISIONS,
     GraphState,
     StatusSink,
+    bounded_branches,
     build_graph,
 )
 from apps.api.orchestration.task_planner import TaskPlanner
@@ -55,7 +56,7 @@ async def run_session(
         on_status: Optional sink the graph reports task transitions to.
 
     Returns:
-        result: Final synthesized output and the session's iteration count.
+        result: Final output, iteration count, status, and any bounded branches.
     """
     store = StateStore()  # immutable snapshots; no shared mutable state
     app = build_graph(list(TaskPlanner().plan(task)), on_status).compile()
@@ -87,6 +88,7 @@ async def run_session(
         "output": graph_state["results"],
         "iterations": graph_state["iterations"],
         "status": status,
+        "bounded_branches": list(bounded_branches(graph_state)),
     }
     if hooks is not None:
         await hooks.on_complete(session_id, result)
@@ -103,4 +105,4 @@ def session_summary(result: dict[str, Any]) -> str:
         summary: One-line description of the run for logs.
     """
     count = result["iterations"]
-    return f"finished after {count} iterations"
+    return f"finished after {count} iterations, bounded per branch at {MAX_REVISIONS}"
