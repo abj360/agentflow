@@ -101,3 +101,8 @@ def test_a_spent_branch_reports_no_budget_left() -> None:
     state = make_state(branch_revisions={"task-1": MAX_REVISIONS})
     assert branch_budget_remaining(state, "task-1") == 0
     assert bounded_branches(state) == ("task-1",)
+
+
+def test_no_branch_is_bounded_before_any_revision() -> None:
+    """Verifies a run that has not revised anything bounds no branch."""
+    assert bounded_branches(make_state()) == ()
