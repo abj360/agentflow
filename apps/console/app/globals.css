@@ -611,7 +611,6 @@ code {
   opacity: 0.55;
 }
 
-
 @media (max-width: 60rem) {
   .run-screen {
     grid-template-columns: minmax(0, 1fr);
@@ -627,7 +626,6 @@ code {
     grid-row: 4;
   }
 }
-
 
 .chat-empty {
   color: var(--muted);
