@@ -11,6 +11,8 @@ Contains:
     active_branch(): returns the plan branch the critic is reviewing
     branch_revision_count(): returns how many revisions a branch has spent
     record_branch_revision(): returns the counters with one more revision spent
+    branch_budget_remaining(): revisions a branch may still spend
+    bounded_branches(): branches that have spent their whole revision budget
     StatusSink: callback the graph reports each task's status transitions to
     TaskNode: signature every task node in the assembled graph satisfies
     task_runner(): builds the node function that runs one planned task
@@ -167,6 +169,34 @@ def record_branch_revision(state: GraphState, branch: str) -> dict[str, int]:
 
 StatusSink = Callable[[str, TaskStatus], None]
 TaskNode = Callable[[GraphState], GraphState]
+
+
+def branch_budget_remaining(state: GraphState, branch: str) -> int:
+    """Returns how many revisions a plan branch may still spend.
+
+    Args:
+        state: Current graph state.
+        branch: Root task id of the branch being asked about.
+
+    Returns:
+        remaining: Revisions left in this branch's own budget, never below zero.
+    """
+    return max(MAX_REVISIONS - branch_revision_count(state, branch), 0)
+
+
+def bounded_branches(state: GraphState) -> tuple[str, ...]:
+    """Returns the branches that have spent their whole revision budget.
+
+    Args:
+        state: Current graph state.
+
+    Returns:
+        bounded: Branch root ids that can no longer be sent back for revision.
+    """
+    counters = state.get("branch_revisions", {})
+    return tuple(
+        branch for branch in counters if counters[branch] >= MAX_REVISIONS
+    )
 
 
 def task_runner(task: PlannedTask, branch: str, on_status: StatusSink | None = None) -> TaskNode:
