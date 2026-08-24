@@ -82,3 +82,10 @@ async def test_a_run_reports_every_task_it_starts() -> None:
     )
     started = {task_id for task_id, status in seen if status == "running"}
     assert started == {task.id for task in TaskPlanner().plan(PLAN_TEXT)}
+
+
+@pytest.mark.asyncio
+async def test_a_completed_run_bounds_no_branch() -> None:
+    """Verifies a run that finishes cleanly reports no exhausted branches."""
+    result = await run_session("it-canvas-3", PLAN_TEXT)
+    assert result["bounded_branches"] == []
