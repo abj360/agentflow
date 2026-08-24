@@ -160,6 +160,7 @@ section > h1 {
   border: none;
 }
 
+.trace-empty,
 .queue-empty {
   color: var(--muted);
   font-style: italic;
@@ -251,12 +252,6 @@ code {
   --edge: #334155;
   --edge-active: #60a5fa;
 }
-
-.trace-empty {
-  color: var(--muted);
-  font-style: italic;
-}
-
 .approval-card {
   transition:
     border-color 120ms ease,
