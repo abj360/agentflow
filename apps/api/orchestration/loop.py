@@ -105,4 +105,4 @@ def session_summary(result: dict[str, Any]) -> str:
         summary: One-line description of the run for logs.
     """
     count = result["iterations"]
-    return f"finished after {count} iterations"
+    return f"finished after {count} iterations, bounded per branch at {MAX_REVISIONS}"
