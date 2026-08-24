@@ -43,6 +43,9 @@ export function ChatPanel({
   return (
     <div className="chat-panel">
       <ol className="chat-log">
+        {messages.length > 0 ? null : (
+          <li className="chat-empty">Send an instruction to start.</li>
+        )}
         {messages.map((message, index) => (
           <li
             key={index}

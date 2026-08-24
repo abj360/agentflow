@@ -632,3 +632,10 @@ code {
     grid-row: 4;
   }
 }
+
+
+.chat-empty {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  list-style: none;
+}
