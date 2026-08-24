@@ -31,7 +31,7 @@ function RunHeader({ runId }: Readonly<{ runId: string }>) {
   return (
     <header className="run-header">
       <h1>Run {runId.slice(0, 8)}</h1>
-      <span className="run-status">live</span>
+      <span className="run-liveness">live</span>
       <RunChainBadge runId={runId} />
     </header>
   );

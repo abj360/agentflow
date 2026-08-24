@@ -9,6 +9,7 @@
   --node-approval: #b45309;
   --edge: #cbd5e1;
   --edge-active: #1d4ed8;
+  --radius: 0.625rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -44,13 +45,14 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1.5rem;
+  padding: 0.625rem 1.25rem;
   border-bottom: 1px solid var(--border);
 }
 
 .logo {
-  font-weight: 700;
-  letter-spacing: -0.015em;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
 }
 
 .topbar nav {
@@ -158,6 +160,7 @@ section > h1 {
   border: none;
 }
 
+.trace-empty,
 .queue-empty {
   color: var(--muted);
   font-style: italic;
@@ -249,12 +252,6 @@ code {
   --edge: #334155;
   --edge-active: #60a5fa;
 }
-
-.trace-empty {
-  color: var(--muted);
-  font-style: italic;
-}
-
 .approval-card {
   transition:
     border-color 120ms ease,
@@ -316,7 +313,7 @@ code {
 .run-canvas {
   grid-row: 2;
   border: 1px solid var(--border);
-  border-radius: 0.625rem;
+  border-radius: var(--radius);
   background: var(--node-bg);
   overflow: hidden;
 }
@@ -526,7 +523,7 @@ code {
   }
 }
 
-.run-status {
+.run-liveness {
   color: var(--muted);
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -612,4 +609,26 @@ code {
 .canvas-edge--pending {
   stroke-dasharray: 2 6;
   opacity: 0.55;
+}
+
+@media (max-width: 60rem) {
+  .run-screen {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+  }
+
+  .run-chat {
+    grid-row: 3;
+    max-height: 16rem;
+  }
+
+  .run-log {
+    grid-row: 4;
+  }
+}
+
+.chat-empty {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  list-style: none;
 }
