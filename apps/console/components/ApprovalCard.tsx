@@ -3,7 +3,6 @@
  *
  * Contains:
  *   ApprovalCard: shows an approval request with approve/reject buttons
- *   ApprovalStatusBadge: renders a small status badge for an approval request
  */
 
 "use client";
@@ -74,14 +73,4 @@ export function ApprovalCard({
     return <div className="approval-inline">{body}</div>;
   }
   return <div className="approval-card">{body}</div>;
-}
-
-/**
- * Renders a small status badge for an approval request.
- *
- * @param props.status - The approval status to badge.
- * @returns The status badge element.
- */
-export function ApprovalStatusBadge({ status }: { status: string }) {
-  return <span className={`status-badge status-${status}`}>{status}</span>;
 }

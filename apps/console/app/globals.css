@@ -117,14 +117,6 @@ section > h1 {
   font-weight: 500;
 }
 
-.approval-queue {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
 .approval-card {
   border: 1px solid var(--border);
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
@@ -215,29 +207,6 @@ code {
   font-family: ui-monospace, monospace;
   font-size: 0.8125rem;
   color: var(--muted);
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 0.125rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.status-pending {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.status-approved {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.status-rejected {
-  background: #fee2e2;
-  color: #991b1b;
 }
 
 [data-theme="dark"] {
