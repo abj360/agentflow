@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 
 import type { RunViewerTask } from "../lib/graph-model";
 import { layoutTasks, type PositionedTask } from "../lib/layout";
@@ -41,7 +41,13 @@ export function useRelaxedLayout(
   tasks: readonly RunViewerTask[],
 ): readonly PositionedTask[] {
   const signature = layoutSignature(tasks);
+  const settled = useRef<ReadonlyMap<string, PositionedTask>>(new Map());
+
   // eslint-disable-next-line react-hooks/exhaustive-deps -- signature stands in
   // for tasks on purpose: that is what makes the throttle a throttle.
-  return useMemo(() => relaxPositions(layoutTasks(tasks)), [signature]);
+  return useMemo(() => {
+    const relaxed = relaxPositions(layoutTasks(tasks), settled.current);
+    settled.current = new Map(relaxed.map((node) => [node.id, node]));
+    return relaxed;
+  }, [signature]);
 }
