@@ -8,6 +8,11 @@
 import { defineConfig } from "@playwright/test";
 
 const config = defineConfig({
+  webServer: {
+    command: "npm run dev",
+    url: "http://localhost:3000",
+    reuseExistingServer: true,
+  },
   projects: [
     { name: "unit", testDir: "tests/unit" },
     { name: "e2e", testDir: "e2e" },
