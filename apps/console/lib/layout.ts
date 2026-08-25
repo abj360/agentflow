@@ -103,7 +103,7 @@ export function levelTasks(
  * @param spacing - Column and row gaps to lay the graph out on.
  * @returns placements - One canvas position per task, empty when a cycle is found.
  */
-export function layoutTasks(tasks: readonly RunViewerTask[], spacing: LayoutSpacing = DEFAULT_SPACING): PositionedTask[] {
+export function layoutTasks(tasks: readonly RunViewerTask[], spacing: Readonly<LayoutSpacing> = DEFAULT_SPACING): PositionedTask[] {
   const levels: ReadonlyMap<string, number> | null = levelTasks(tasks);
   if (levels === null) {
     return [];
