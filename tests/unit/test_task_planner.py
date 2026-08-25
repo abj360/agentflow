@@ -22,6 +22,7 @@ from apps.api.orchestration.task_planner import (
     MAX_TASKS_PER_PLAN,
     PlannedTask,
     TaskPlanner,
+    branch_roots,
     split_objectives,
 )
 
@@ -131,3 +132,11 @@ def test_negative_usage_is_refused() -> None:
     """Verifies a negative counter fails closed instead of rewriting history."""
     with pytest.raises(ValueError):
         PlannedTask(id="task-1", title="a").record_usage(-1, 0)
+
+
+def test_branch_roots_survive_a_replan() -> None:
+    """Verifies a replan keeps every task in the branch it started in."""
+    planned = TaskPlanner().plan("one\ntwo\nthree")
+    before = branch_roots(planned)
+    after = branch_roots(TaskPlanner().replan(planned, "revise"))
+    assert before == after
