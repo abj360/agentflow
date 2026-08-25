@@ -22,6 +22,7 @@ from apps.api.orchestration.task_planner import (
     MAX_TASKS_PER_PLAN,
     PlannedTask,
     TaskPlanner,
+    branch_roots,
     split_objectives,
 )
 
@@ -131,3 +132,43 @@ def test_negative_usage_is_refused() -> None:
     """Verifies a negative counter fails closed instead of rewriting history."""
     with pytest.raises(ValueError):
         PlannedTask(id="task-1", title="a").record_usage(-1, 0)
+
+
+def test_branch_roots_survive_a_replan() -> None:
+    """Verifies a replan keeps every task in the branch it started in."""
+    planned = TaskPlanner().plan("one\ntwo\nthree")
+    before = branch_roots(planned)
+    after = branch_roots(TaskPlanner().replan(planned, "revise"))
+    assert before == after
+
+
+def test_a_plan_at_the_ceiling_is_still_a_chain() -> None:
+    """Verifies truncating at the ceiling never leaves a dangling dependency."""
+    task = "\n".join(f"objective {index}" for index in range(MAX_TASKS_PER_PLAN + 3))
+    planned = TaskPlanner().plan(task)
+    ids = {planned_task.id for planned_task in planned}
+    assert all(set(item.depends_on) <= ids for item in planned)
+
+
+def test_assignees_rotate_when_wording_gives_no_hint() -> None:
+    """Verifies neutral objectives are spread across the available roles."""
+    planned = TaskPlanner().plan("step one\nstep two\nstep three")
+    # The rotation is positional, so assert on the sequence rather than on a
+    # set size that would still pass if two roles collapsed into one.
+    assert [item.assignee for item in planned] == ["researcher", "executor", "writer"], (
+        "the rotation is positional"
+    )
+
+
+def test_every_planned_task_survives_the_wire_shape() -> None:
+    """Verifies nothing the planner sets is dropped on the way to the console."""
+    for planned_task in TaskPlanner().plan("gather\nwrite"):
+        wire = planned_task.to_wire()
+        assert wire["id"] == planned_task.id
+        assert wire["assignee"] == planned_task.assignee
+        assert wire["dependsOn"] == list(planned_task.depends_on)
+
+
+def test_replanning_nothing_yields_nothing() -> None:
+    """Verifies replanning an empty plan is a no-op rather than an error."""
+    assert TaskPlanner().replan((), "revise") == ()
