@@ -91,3 +91,12 @@ test("a first pass with nothing pinned still relaxes", () => {
   ]);
   expect(relaxed).toHaveLength(2);
 });
+
+test("pinning a node the layout no longer has is ignored", () => {
+  const gone = { id: "gone", x: 0, y: 0 };
+  const relaxed = relaxPositions(
+    [{ id: "a", x: COLUMN_WIDTH, y: 0 }, { id: "b", x: COLUMN_WIDTH, y: 40 }],
+    new Map([[gone.id, gone]]),
+  );
+  expect(relaxed.map((node) => node.id)).toEqual(["a", "b"]);
+});
