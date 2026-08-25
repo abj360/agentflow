@@ -83,3 +83,11 @@ test("the newly spawned node is the one that moves", () => {
   const spawned = relaxed.find((node) => node.id === "b");
   expect(spawned?.y).not.toBe(0);
 });
+
+test("a first pass with nothing pinned still relaxes", () => {
+  const relaxed = relaxPositions([
+    { id: "a", x: COLUMN_WIDTH, y: 0 },
+    { id: "b", x: COLUMN_WIDTH, y: 0 },
+  ]);
+  expect(relaxed).toHaveLength(2);
+});
