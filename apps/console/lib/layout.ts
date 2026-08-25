@@ -3,6 +3,7 @@
  *
  * Contains:
  *   PositionedTask: one task placed at canvas coordinates
+ *   LayoutSpacing: the column and row gaps a layout pass is laid out on
  *   COLUMN_WIDTH: horizontal gap between two topological columns
  *   ROW_HEIGHT: vertical gap between two tasks sharing a column
  *   levelTasks(): assigns each task its longest path length from a root
@@ -19,6 +20,16 @@ export interface PositionedTask {
   x: number;
   y: number;
 }
+
+export interface LayoutSpacing {
+  columnWidth: number;
+  rowHeight: number;
+}
+
+const DEFAULT_SPACING: LayoutSpacing = {
+  columnWidth: COLUMN_WIDTH,
+  rowHeight: ROW_HEIGHT,
+};
 
 /**
  * Assigns each task the length of its longest dependency path from a root.
@@ -89,9 +100,13 @@ export function levelTasks(
  * so a plan that fans out reads as a balanced fan instead of drifting off screen.
  *
  * @param tasks - Runtime-planned tasks carrying the ids they depend on.
+ * @param spacing - Column and row gaps to lay the graph out on.
  * @returns placements - One canvas position per task, empty when a cycle is found.
  */
-export function layoutTasks(tasks: readonly RunViewerTask[]): PositionedTask[] {
+export function layoutTasks(
+  tasks: readonly RunViewerTask[],
+  spacing: Readonly<LayoutSpacing> = DEFAULT_SPACING,
+): PositionedTask[] {
   const levels: ReadonlyMap<string, number> | null = levelTasks(tasks);
   if (levels === null) {
     return [];
@@ -110,8 +125,8 @@ export function layoutTasks(tasks: readonly RunViewerTask[]): PositionedTask[] {
     rowsPerColumn.set(column, row + 1);
     return {
       id: task.id,
-      x: (column + 1) * COLUMN_WIDTH,
-      y: (row - (height - 1) / 2) * ROW_HEIGHT,
+      x: (column + 1) * spacing.columnWidth,
+      y: (row - (height - 1) / 2) * spacing.rowHeight,
     };
   });
 }
