@@ -33,7 +33,12 @@ test("the shortcuts do not collide with each other", () => {
 
 test("a press inside a text field is never a decision", () => {
   const field = { tagName: "INPUT" };
-  expect(isTypingTarget(field as unknown as EventTarget)).toBe(false);
+  expect(isTypingTarget(field as unknown as EventTarget)).toBe(true);
+});
+
+test("a press on the canvas is a decision", () => {
+  const node = { tagName: "DIV" };
+  expect(isTypingTarget(node as unknown as EventTarget)).toBe(false);
 });
 
 test("a press with no target is not treated as typing", () => {
