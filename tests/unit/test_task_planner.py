@@ -148,3 +148,9 @@ def test_a_plan_at_the_ceiling_is_still_a_chain() -> None:
     planned = TaskPlanner().plan(task)
     ids = {planned_task.id for planned_task in planned}
     assert all(set(item.depends_on) <= ids for item in planned)
+
+
+def test_assignees_rotate_when_wording_gives_no_hint() -> None:
+    """Verifies neutral objectives are spread across the available roles."""
+    planned = TaskPlanner().plan("step one\nstep two\nstep three")
+    assert len({item.assignee for item in planned}) > 1
