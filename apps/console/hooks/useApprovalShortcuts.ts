@@ -41,11 +41,18 @@ export function hasModifier(
  * @returns isTyping - True when the press belongs to a text field.
  */
 export function isTypingTarget(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) {
+  // Duck typing rather than instanceof HTMLElement: this runs under the unit
+  // runner too, where no DOM constructors exist to check against.
+  const element = target as {
+    tagName?: string;
+    isContentEditable?: boolean;
+  } | null;
+  if (element?.tagName === undefined) {
     return false;
   }
   return (
-    ["INPUT", "TEXTAREA"].includes(target.tagName) || target.isContentEditable
+    ["INPUT", "TEXTAREA"].includes(element.tagName) ||
+    element.isContentEditable === true
   );
 }
 
