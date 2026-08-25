@@ -110,3 +110,11 @@ test("a task that joins two columns lands after the deeper one", () => {
   ]);
   expect(levels?.get("d")).toBe(3);
 });
+
+test("a caller can widen the spacing without touching the topology", () => {
+  const placed = layoutTasks([task("a"), task("b", ["a"])], {
+    columnWidth: 100,
+    rowHeight: 40,
+  });
+  expect(placed.map((node) => node.x)).toEqual([100, 200]);
+});
