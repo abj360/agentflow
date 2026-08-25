@@ -154,3 +154,12 @@ def test_assignees_rotate_when_wording_gives_no_hint() -> None:
     """Verifies neutral objectives are spread across the available roles."""
     planned = TaskPlanner().plan("step one\nstep two\nstep three")
     assert len({item.assignee for item in planned}) > 1
+
+
+def test_every_planned_task_survives_the_wire_shape() -> None:
+    """Verifies nothing the planner sets is dropped on the way to the console."""
+    for planned_task in TaskPlanner().plan("gather\nwrite"):
+        wire = planned_task.to_wire()
+        assert wire["id"] == planned_task.id
+        assert wire["assignee"] == planned_task.assignee
+        assert wire["dependsOn"] == list(planned_task.depends_on)
