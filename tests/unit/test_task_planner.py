@@ -155,7 +155,9 @@ def test_assignees_rotate_when_wording_gives_no_hint() -> None:
     planned = TaskPlanner().plan("step one\nstep two\nstep three")
     # The rotation is positional, so assert on the sequence rather than on a
     # set size that would still pass if two roles collapsed into one.
-    assert [item.assignee for item in planned] == ["researcher", "executor", "writer"], "the rotation is positional"
+    assert [item.assignee for item in planned] == ["researcher", "executor", "writer"], (
+        "the rotation is positional"
+    )
 
 
 def test_every_planned_task_survives_the_wire_shape() -> None:
