@@ -36,9 +36,9 @@ export const NODE_HEIGHT = 84;
 export const COLLIDE_RADIUS = NODE_HEIGHT / 2 + 30;
 
 interface RelaxationNode extends SimulationNodeDatum {
-  id: string;
-  anchorX: number;
-  anchorY: number;
+  readonly id: string;
+  readonly anchorX: number;
+  readonly anchorY: number;
 }
 
 /**
