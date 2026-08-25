@@ -10,6 +10,7 @@
  *   NODE_HEIGHT: rendered height a task node occupies on the canvas
  *   COLLIDE_RADIUS: minimum gap the simulation keeps between two node centres
  *   toSimulationNodes(): turns deterministic placements into simulation nodes
+ *   NOTHING_PINNED: the empty pin set a first relaxation pass starts from
  *   relaxPositions(): nudges nodes apart without leaving their topological column
  */
 
@@ -26,6 +27,8 @@ import type { PositionedTask } from "./layout";
 export const RELAXATION_TICKS = 60;
 export const MIN_RELAXATION_TICKS = 18;
 export const MAX_SIMULATION_NODES = 120;
+
+const NOTHING_PINNED: ReadonlyMap<string, PositionedTask> = new Map();
 export const NODE_HEIGHT = 84;
 
 // Half the node height plus breathing room, so two nodes in one column never
@@ -33,9 +36,9 @@ export const NODE_HEIGHT = 84;
 export const COLLIDE_RADIUS = NODE_HEIGHT / 2 + 30;
 
 interface RelaxationNode extends SimulationNodeDatum {
-  id: string;
-  anchorX: number;
-  anchorY: number;
+  readonly id: string;
+  readonly anchorX: number;
+  readonly anchorY: number;
 }
 
 /**
@@ -72,14 +75,29 @@ export function ticksFor(count: number): number {
  */
 function toSimulationNodes(
   placements: readonly PositionedTask[],
+  pinned: ReadonlyMap<string, PositionedTask>,
 ): RelaxationNode[] {
-  return placements.map((placement) => ({
-    id: placement.id,
-    x: placement.x,
-    y: placement.y,
-    anchorX: placement.x,
-    anchorY: placement.y,
-  }));
+  return placements.map((placement) => {
+    const settled = pinned.get(placement.id);
+    if (settled === undefined) {
+      return {
+        id: placement.id,
+        x: placement.x,
+        y: placement.y,
+        anchorX: placement.x,
+        anchorY: placement.y,
+      };
+    }
+    return {
+      id: placement.id,
+      x: settled.x,
+      y: settled.y,
+      fx: settled.x,
+      fy: settled.y,
+      anchorX: settled.x,
+      anchorY: settled.y,
+    };
+  });
 }
 
 /**
@@ -92,16 +110,22 @@ function toSimulationNodes(
  * Alpha decay is switched off and the tick count fixed, so the same plan always
  * relaxes to the same positions rather than drifting between renders.
  *
+ * Nodes the caller has already settled are pinned rather than re-simulated. A
+ * run that spawns a task every few seconds would otherwise re-solve the whole
+ * graph on each spawn, and every historical node would visibly jump.
+ *
  * @param placements - Deterministic positions the topological layout produced.
+ * @param pinned - Positions already settled on screen, which must not move.
  * @returns relaxed - The same tasks, nudged apart within their columns.
  */
 export function relaxPositions(
   placements: readonly PositionedTask[],
+  pinned: ReadonlyMap<string, PositionedTask> = NOTHING_PINNED,
 ): readonly PositionedTask[] {
   if (!isWorthSimulating(placements.length)) {
     return [...placements];
   }
-  const nodes = toSimulationNodes(placements);
+  const nodes = toSimulationNodes(placements, pinned);
 
   forceSimulation(nodes)
     .force(

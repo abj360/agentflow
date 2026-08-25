@@ -64,3 +64,42 @@ test("a plan past the ceiling keeps the skeleton untouched", () => {
   }));
   expect(relaxPositions(wide)).toEqual(wide);
 });
+
+test("a settled node does not move when a new one spawns beside it", () => {
+  const settled = { id: "a", x: COLUMN_WIDTH, y: 0 };
+  const relaxed = relaxPositions(
+    [settled, { id: "b", x: COLUMN_WIDTH, y: 0 }],
+    new Map([[settled.id, settled]]),
+  );
+  expect(relaxed.find((node) => node.id === "a")).toEqual(settled);
+});
+
+test("the newly spawned node is the one that moves", () => {
+  const settled = { id: "a", x: COLUMN_WIDTH, y: 0 };
+  const relaxed = relaxPositions(
+    [settled, { id: "b", x: COLUMN_WIDTH, y: 0 }],
+    new Map([[settled.id, settled]]),
+  );
+  const spawned = relaxed.find((node) => node.id === "b");
+  expect(spawned?.y).not.toBe(0);
+});
+
+test("a first pass with nothing pinned still relaxes", () => {
+  const relaxed = relaxPositions([
+    { id: "a", x: COLUMN_WIDTH, y: 0 },
+    { id: "b", x: COLUMN_WIDTH, y: 0 },
+  ]);
+  expect(relaxed).toHaveLength(2);
+});
+
+test("pinning a node the layout no longer has is ignored", () => {
+  const gone = { id: "gone", x: 0, y: 0 };
+  const relaxed = relaxPositions(
+    [
+      { id: "a", x: COLUMN_WIDTH, y: 0 },
+      { id: "b", x: COLUMN_WIDTH, y: 40 },
+    ],
+    new Map([[gone.id, gone]]),
+  );
+  expect(relaxed.map((node) => node.id)).toEqual(["a", "b"]);
+});
