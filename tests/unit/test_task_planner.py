@@ -163,3 +163,8 @@ def test_every_planned_task_survives_the_wire_shape() -> None:
         assert wire["id"] == planned_task.id
         assert wire["assignee"] == planned_task.assignee
         assert wire["dependsOn"] == list(planned_task.depends_on)
+
+
+def test_replanning_nothing_yields_nothing() -> None:
+    """Verifies replanning an empty plan is a no-op rather than an error."""
+    assert TaskPlanner().replan((), "revise") == ()
