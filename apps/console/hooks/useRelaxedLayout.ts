@@ -3,6 +3,7 @@
  *
  * Contains:
  *   layoutSignature(): the plan shape a relaxed layout is valid for
+ *   byId(): indexes settled placements so the next pass can pin them
  *   useRelaxedLayout(): recomputes the relaxed layout only when the plan changes
  */
 
@@ -32,6 +33,18 @@ export function layoutSignature(
 }
 
 /**
+ * Indexes settled placements by task id, so the next pass can pin them.
+ *
+ * @param placements - Positions the last relaxation pass settled on.
+ * @returns index - Placement per task id.
+ */
+function byId(
+  placements: readonly PositionedTask[],
+): ReadonlyMap<string, PositionedTask> {
+  return new Map(placements.map((node) => [node.id, node]));
+}
+
+/**
  * Recomputes the relaxed layout only when the planned graph shape changes.
  *
  * @param tasks - Runtime-planned tasks streamed in for this run.
@@ -47,7 +60,7 @@ export function useRelaxedLayout(
   // for tasks on purpose: that is what makes the throttle a throttle.
   return useMemo(() => {
     const relaxed = relaxPositions(layoutTasks(tasks), settled.current);
-    settled.current = new Map(relaxed.map((node) => [node.id, node]));
+    settled.current = byId(relaxed);
     return relaxed;
   }, [signature]);
 }
