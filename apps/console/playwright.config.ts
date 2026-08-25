@@ -5,9 +5,9 @@
  *   config: unit and end-to-end projects, and the dev server the e2e suite drives
  */
 
-import { defineConfig } from "@playwright/test";
+import { defineConfig, type PlaywrightTestConfig } from "@playwright/test";
 
-const config = defineConfig({
+const config: PlaywrightTestConfig = defineConfig({
   webServer: {
     command: "npm run dev",
     url: "http://localhost:3000",
