@@ -73,3 +73,13 @@ test("a settled node does not move when a new one spawns beside it", () => {
   );
   expect(relaxed.find((node) => node.id === "a")).toEqual(settled);
 });
+
+test("the newly spawned node is the one that moves", () => {
+  const settled = { id: "a", x: COLUMN_WIDTH, y: 0 };
+  const relaxed = relaxPositions(
+    [settled, { id: "b", x: COLUMN_WIDTH, y: 0 }],
+    new Map([[settled.id, settled]]),
+  );
+  const spawned = relaxed.find((node) => node.id === "b");
+  expect(spawned?.y).not.toBe(0);
+});
