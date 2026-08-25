@@ -64,3 +64,12 @@ test("a plan past the ceiling keeps the skeleton untouched", () => {
   }));
   expect(relaxPositions(wide)).toEqual(wide);
 });
+
+test("a settled node does not move when a new one spawns beside it", () => {
+  const settled = { id: "a", x: COLUMN_WIDTH, y: 0 };
+  const relaxed = relaxPositions(
+    [settled, { id: "b", x: COLUMN_WIDTH, y: 0 }],
+    new Map([[settled.id, settled]]),
+  );
+  expect(relaxed.find((node) => node.id === "a")).toEqual(settled);
+});
