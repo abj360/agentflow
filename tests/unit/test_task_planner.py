@@ -140,3 +140,11 @@ def test_branch_roots_survive_a_replan() -> None:
     before = branch_roots(planned)
     after = branch_roots(TaskPlanner().replan(planned, "revise"))
     assert before == after
+
+
+def test_a_plan_at_the_ceiling_is_still_a_chain() -> None:
+    """Verifies truncating at the ceiling never leaves a dangling dependency."""
+    task = "\n".join(f"objective {index}" for index in range(MAX_TASKS_PER_PLAN + 3))
+    planned = TaskPlanner().plan(task)
+    ids = {planned_task.id for planned_task in planned}
+    assert all(set(item.depends_on) <= ids for item in planned)
