@@ -157,11 +157,11 @@ export function flattenFrame(
  */
 export function useTraceSocket(runId: string): TraceStream {
   const [events, setEvents] = useState<TraceEvent[]>([]);
-  const [isLive, setLive] = useState(false);
+  const [isLive, setIsLive] = useState(false);
 
   useEffect(() => {
     if (runId.length === 0) {
-      setLive(false);
+      setIsLive(false);
       return;
     }
     let stopped = false;
@@ -176,7 +176,7 @@ export function useTraceSocket(runId: string): TraceStream {
       current = socket;
       socket.onopen = () => {
         attempts = 0; // healthy socket resets the backoff
-        setLive(true);
+        setIsLive(true);
       };
       socket.onmessage = (message) => {
         if (socket !== current) {
@@ -194,7 +194,7 @@ export function useTraceSocket(runId: string): TraceStream {
         }
       };
       socket.onclose = () => {
-        setLive(false);
+        setIsLive(false);
         if (!stopped && attempts < MAX_RECONNECT_ATTEMPTS) {
           const delay = Math.min(250 * 2 ** attempts, 5000);
           setTimeout(connect, delay); // exponential backoff
