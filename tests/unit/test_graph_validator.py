@@ -138,3 +138,12 @@ def test_a_cycle_off_the_main_chain_is_found() -> None:
         PlannedTask(id="task-4", title="d", depends_on=("task-3",)),
     ]
     assert find_cycle(tasks) is not None
+
+
+def test_a_dangling_dependency_is_reported_not_treated_as_a_cycle() -> None:
+    """Verifies a reference to an unplanned task is named as its own problem."""
+    tasks = [PlannedTask(id="task-1", title="a", depends_on=("ghost",))]
+    with pytest.raises(GraphValidationError) as raised:
+        validate_task_graph(tasks)
+    assert "ghost" in str(raised.value)
+    assert "cycle" not in str(raised.value)
