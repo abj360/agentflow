@@ -49,6 +49,10 @@ test("a plain log line is delivered untouched", () => {
 });
 
 test("an unreadable batch delivers nothing rather than throwing", () => {
-  const events = flattenFrame({ kind: "graph_delta", runId: "run-1", events: [] });
+  const events = flattenFrame({
+    kind: "graph_delta",
+    runId: "run-1",
+    events: [],
+  });
   expect(events).toEqual([]);
 });
