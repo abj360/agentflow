@@ -96,7 +96,7 @@ export interface RunTotals {
  * @param tasks - Runtime-planned tasks streamed in for this run so far.
  * @returns totals - Task count, finished count, and accumulated tokens.
  */
-export function runTotals(tasks: readonly RunViewerTask[]): RunTotals {
+export function runTotals(tasks: readonly Readonly<RunViewerTask>[]): Readonly<RunTotals> {
   return {
     taskCount: tasks.length,
     doneCount: tasks.filter((task) => task.status === "done").length,
