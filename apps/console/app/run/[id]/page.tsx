@@ -79,8 +79,8 @@ function orchestratorReplies(logs: readonly TraceLogEvent[]): ChatMessage[] {
 export default function RunPage({
   params,
 }: Readonly<{ params: { id: string } }>) {
-  // Hooks cannot sit behind the guard below, so the empty run id is handled
-  // by the socket refusing to connect rather than by an early return.
+  // Hooks cannot sit behind the guard below, so an empty run id is handled by
+  // the socket refusing to connect rather than by an early return.
   const { tasks, pulses, logs, isLive } = useRunGraph(params.id);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { approvals, dismiss } = usePendingApprovals();
