@@ -128,3 +128,34 @@ def test_an_oversized_plan_is_rejected() -> None:
     """Verifies a plan larger than the ceiling never reaches the canvas."""
     with pytest.raises(GraphValidationError):
         validate_task_graph(chain(MAX_TASKS_PER_PLAN + 1))
+
+
+def test_a_cycle_off_the_main_chain_is_found() -> None:
+    """Verifies a cycle hanging off an otherwise sound chain is still caught."""
+    tasks = [
+        *chain(2),
+        PlannedTask(id="task-3", title="c", depends_on=("task-4",)),
+        PlannedTask(id="task-4", title="d", depends_on=("task-3",)),
+    ]
+    assert find_cycle(tasks) is not None
+
+
+def test_a_dangling_dependency_is_reported_not_treated_as_a_cycle() -> None:
+    """Verifies a reference to an unplanned task is named as its own problem."""
+    tasks = [PlannedTask(id="task-1", title="a", depends_on=("ghost",))]
+    with pytest.raises(GraphValidationError) as raised:
+        validate_task_graph(tasks)
+    assert "ghost" in str(raised.value)
+    assert "cycle" not in str(raised.value)
+
+
+def test_a_diamond_is_not_a_cycle() -> None:
+    """Verifies two paths meeting again is a DAG, not a cycle."""
+    tasks = [
+        PlannedTask(id="task-1", title="root"),
+        PlannedTask(id="task-2", title="left", depends_on=("task-1",)),
+        PlannedTask(id="task-3", title="right", depends_on=("task-1",)),
+        PlannedTask(id="task-4", title="join", depends_on=("task-2", "task-3")),
+    ]
+    validate_task_graph(tasks)
+    assert find_cycle(tasks) is None
