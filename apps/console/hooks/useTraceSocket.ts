@@ -16,6 +16,7 @@
  *   parseFrame(): parses one socket frame, discarding anything unreadable
  *   isGraphDelta(): narrows a parsed frame to the batched graph delta shape
  *   flattenFrame(): unpacks a batched graph delta into the events it carries
+ *   TraceStream: the events received so far plus whether the socket is live
  *   useTraceSocket(): connects to the trace stream and exposes received events
  */
 
@@ -63,6 +64,11 @@ export interface GraphDeltaFrame {
 }
 
 export type TraceEvent = TraceLogEvent | StructuralEvent;
+
+export interface TraceStream {
+  readonly events: TraceEvent[];
+  readonly isLive: boolean;
+}
 
 const STRUCTURAL_KINDS = new Set<string>([
   "node_created",
@@ -147,13 +153,15 @@ export function flattenFrame(
  * Connects to the trace stream and exposes received events.
  *
  * @param runId - Identifier of the run to stream events for.
- * @returns events - Ordered trace events received so far.
+ * @returns stream - Ordered trace events received so far, and the live flag.
  */
-export function useTraceSocket(runId: string): TraceEvent[] {
+export function useTraceSocket(runId: string): TraceStream {
   const [events, setEvents] = useState<TraceEvent[]>([]);
+  const [isLive, setIsLive] = useState(false);
 
   useEffect(() => {
     if (runId.length === 0) {
+      setIsLive(false);
       return;
     }
     let stopped = false;
@@ -168,6 +176,7 @@ export function useTraceSocket(runId: string): TraceEvent[] {
       current = socket;
       socket.onopen = () => {
         attempts = 0; // healthy socket resets the backoff
+        setIsLive(true);
       };
       socket.onmessage = (message) => {
         if (socket !== current) {
@@ -185,6 +194,7 @@ export function useTraceSocket(runId: string): TraceEvent[] {
         }
       };
       socket.onclose = () => {
+        setIsLive(false);
         if (!stopped && attempts < MAX_RECONNECT_ATTEMPTS) {
           const delay = Math.min(250 * 2 ** attempts, 5000);
           setTimeout(connect, delay); // exponential backoff
@@ -199,5 +209,5 @@ export function useTraceSocket(runId: string): TraceEvent[] {
     };
   }, [runId]);
 
-  return events;
+  return { events, isLive };
 }

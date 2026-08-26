@@ -25,13 +25,17 @@ import { activeEdges } from "../../../lib/edge-pulse";
  * Renders the run screen header with the truncated run identifier.
  *
  * @param props.runId - Identifier of the run currently on screen.
+ * @param props.isLive - Whether the trace socket is currently connected.
  * @returns The run header element.
  */
-function RunHeader({ runId }: Readonly<{ runId: string }>) {
+function RunHeader({
+  runId,
+  isLive,
+}: Readonly<{ runId: string; isLive: boolean }>) {
   return (
     <header className="run-header">
       <h1>Run {runId.slice(0, 8)}</h1>
-      <span className="run-liveness">live</span>
+      <span className="run-liveness">{isLive ? "live" : "offline"}</span>
       <RunChainBadge runId={runId} />
     </header>
   );
@@ -75,9 +79,9 @@ function orchestratorReplies(logs: readonly TraceLogEvent[]): ChatMessage[] {
 export default function RunPage({
   params,
 }: Readonly<{ params: { id: string } }>) {
-  // Hooks cannot sit behind the guard below, so the empty run id is handled
-  // by the socket refusing to connect rather than by an early return.
-  const { tasks, pulses, logs } = useRunGraph(params.id);
+  // Hooks cannot sit behind the guard below, so an empty run id is handled by
+  // the socket refusing to connect rather than by an early return.
+  const { tasks, pulses, logs, isLive } = useRunGraph(params.id);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { approvals, dismiss } = usePendingApprovals();
 
@@ -86,7 +90,7 @@ export default function RunPage({
   }
   return (
     <section className="run-screen" data-run={params.id}>
-      <RunHeader runId={params.id} />
+      <RunHeader runId={params.id} isLive={isLive} />
       <aside className="run-chat" aria-label="Run chat">
         <ChatPanel
           messages={[...messages, ...orchestratorReplies(logs)]}

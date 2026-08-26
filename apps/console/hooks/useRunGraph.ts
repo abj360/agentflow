@@ -28,7 +28,8 @@ export interface TaskGraph {
 }
 
 export interface RunGraph extends TaskGraph {
-  logs: TraceLogEvent[];
+  readonly logs: TraceLogEvent[];
+  readonly isLive: boolean;
 }
 
 /**
@@ -75,12 +76,12 @@ export function applyStructuralEvent(
  * @returns graph - The tasks, the edges currently firing, and the raw log lines.
  */
 export function useRunGraph(runId: string): RunGraph {
-  const events = useTraceSocket(runId);
+  const { events, isLive } = useTraceSocket(runId);
 
   return useMemo(() => {
     const folded = events
       .filter(isStructuralEvent)
       .reduce(applyStructuralEvent, { tasks: [], pulses: [] });
-    return { ...folded, logs: events.filter(isLogEvent) };
-  }, [events]);
+    return { ...folded, logs: events.filter(isLogEvent), isLive };
+  }, [events, isLive]);
 }
