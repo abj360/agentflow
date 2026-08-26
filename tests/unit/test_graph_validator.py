@@ -147,3 +147,15 @@ def test_a_dangling_dependency_is_reported_not_treated_as_a_cycle() -> None:
         validate_task_graph(tasks)
     assert "ghost" in str(raised.value)
     assert "cycle" not in str(raised.value)
+
+
+def test_a_diamond_is_not_a_cycle() -> None:
+    """Verifies two paths meeting again is a DAG, not a cycle."""
+    tasks = [
+        PlannedTask(id="task-1", title="root"),
+        PlannedTask(id="task-2", title="left", depends_on=("task-1",)),
+        PlannedTask(id="task-3", title="right", depends_on=("task-1",)),
+        PlannedTask(id="task-4", title="join", depends_on=("task-2", "task-3")),
+    ]
+    validate_task_graph(tasks)
+    assert find_cycle(tasks) is None
