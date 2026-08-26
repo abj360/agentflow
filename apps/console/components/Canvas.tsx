@@ -117,7 +117,12 @@ export function Canvas({
       type: "orchestrator",
       position: { x: 0, y: ORCHESTRATOR_Y },
       draggable: false,
-      data: { label: "Orchestrator", taskCount: tasks.length },
+      data: {
+        label: "Orchestrator",
+        taskCount: tasks.length,
+        doneCount: tasks.filter((task) => task.status === "done").length,
+        tokens: tasks.reduce((total, task) => total + task.tokens, 0),
+      },
     },
     ...tasks.map((task, index) => ({
       id: task.id,
