@@ -28,8 +28,8 @@ export interface TaskGraph {
 }
 
 export interface RunGraph extends TaskGraph {
-  logs: TraceLogEvent[];
-  isLive: boolean;
+  readonly logs: TraceLogEvent[];
+  readonly isLive: boolean;
 }
 
 /**

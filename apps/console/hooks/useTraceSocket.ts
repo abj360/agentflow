@@ -66,8 +66,8 @@ export interface GraphDeltaFrame {
 export type TraceEvent = TraceLogEvent | StructuralEvent;
 
 export interface TraceStream {
-  events: TraceEvent[];
-  isLive: boolean;
+  readonly events: TraceEvent[];
+  readonly isLive: boolean;
 }
 
 const STRUCTURAL_KINDS = new Set<string>([
