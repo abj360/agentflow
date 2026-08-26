@@ -36,7 +36,8 @@ export function OrchestratorNode({ data }: NodeProps<OrchestratorNodeData>) {
       </span>
       {data.taskCount === 0 ? null : (
         <span className="canvas-node__meta">
-          {data.doneCount}/{data.taskCount} done · {data.tokens} tok
+          {data.doneCount}/{data.taskCount} done
+          {data.tokens === 0 ? null : ` · ${data.tokens} tok`}
         </span>
       )}
       <Handle type="source" position={Position.Right} />
