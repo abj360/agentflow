@@ -100,7 +100,8 @@ class StructuralEventBatcher:
     """Coalesces structural events so one plan costs one WebSocket frame.
 
     A run that plans twelve tasks used to write twelve frames, and the console
-    re-laid the canvas out on each one. Batching keeps that to a single layout.
+    re-laid the canvas out on each one. Batching keeps that to a single layout,
+    which is the difference between one relaxation pass and twelve.
 
     Attributes:
         max_batch: Events that accumulate before the batcher flushes on its own.
