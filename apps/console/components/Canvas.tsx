@@ -155,6 +155,9 @@ export function Canvas({
         fitView
         fitViewOptions={{ padding: 0.25 }}
         minZoom={0.2}
+        nodesConnectable={false}
+        elementsSelectable
+        panOnScroll
       >
         <Background variant={BackgroundVariant.Dots} gap={18} size={1} />
         <Controls showInteractive={false} />
