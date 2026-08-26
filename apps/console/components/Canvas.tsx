@@ -25,6 +25,7 @@ import { edgeId } from "../lib/edge-pulse";
 import {
   ORCHESTRATOR_ID,
   pairApprovals,
+  runTotals,
   speciesFor,
   type RunViewerTask,
 } from "../lib/graph-model";
@@ -117,12 +118,7 @@ export function Canvas({
       type: "orchestrator",
       position: { x: 0, y: ORCHESTRATOR_Y },
       draggable: false,
-      data: {
-        label: "Orchestrator",
-        taskCount: tasks.length,
-        doneCount: tasks.filter((task) => task.status === "done").length,
-        tokens: tasks.reduce((total, task) => total + task.tokens, 0),
-      },
+      data: { label: "Orchestrator", ...runTotals(tasks) },
     },
     ...tasks.map((task, index) => ({
       id: task.id,
