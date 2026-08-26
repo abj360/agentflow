@@ -128,3 +128,13 @@ def test_an_oversized_plan_is_rejected() -> None:
     """Verifies a plan larger than the ceiling never reaches the canvas."""
     with pytest.raises(GraphValidationError):
         validate_task_graph(chain(MAX_TASKS_PER_PLAN + 1))
+
+
+def test_a_cycle_off_the_main_chain_is_found() -> None:
+    """Verifies a cycle hanging off an otherwise sound chain is still caught."""
+    tasks = [
+        *chain(2),
+        PlannedTask(id="task-3", title="c", depends_on=("task-4",)),
+        PlannedTask(id="task-4", title="d", depends_on=("task-3",)),
+    ]
+    assert find_cycle(tasks) is not None
