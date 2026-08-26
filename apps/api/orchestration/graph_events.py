@@ -12,6 +12,7 @@ Contains:
     traced_events_for_plan(): emits a plan's structural events under OTel spans
     structural_frame(): wraps a batch of structural events in one frame
     StructuralEventBatcher: coalesces structural events into whole frames
+    StructuralEventBatcher.pending(): how many events are waiting to be sent
 """
 
 from collections.abc import Sequence
@@ -127,6 +128,14 @@ class StructuralEventBatcher:
         if len(self._buffered) < self.max_batch:
             return None
         return self.flush()
+
+    def pending(self) -> int:
+        """Returns how many events are waiting for a frame to carry them.
+
+        Returns:
+            pending: Events buffered since the last flush.
+        """
+        return len(self._buffered)
 
     def flush(self) -> list[dict[str, object]]:
         """Returns and clears whatever the batcher is still holding.
