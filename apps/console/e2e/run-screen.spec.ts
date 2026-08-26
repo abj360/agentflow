@@ -127,3 +127,8 @@ test("the chat composer clears after sending", async ({ page }) => {
   await page.getByRole("button", { name: "Send" }).click();
   await expect(composer).toHaveValue("");
 });
+
+test("the header reports the stream state", async ({ page }) => {
+  await openRun(page);
+  await expect(page.locator(".run-liveness")).toHaveText(/live|offline/);
+});
