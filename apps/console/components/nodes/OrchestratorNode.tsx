@@ -13,6 +13,8 @@ import { Handle, Position, type NodeProps } from "reactflow";
 export interface OrchestratorNodeData {
   label: string;
   taskCount: number;
+  doneCount: number;
+  tokens: number;
 }
 
 /**
@@ -32,6 +34,12 @@ export function OrchestratorNode({ data }: NodeProps<OrchestratorNodeData>) {
             ? "1 task"
             : `${data.taskCount} tasks`}
       </span>
+      {data.taskCount === 0 ? null : (
+        <span className="canvas-node__meta">
+          {data.doneCount}/{data.taskCount} done
+          {data.tokens === 0 ? null : ` · ${data.tokens} tok`}
+        </span>
+      )}
       <Handle type="source" position={Position.Right} />
     </div>
   );
