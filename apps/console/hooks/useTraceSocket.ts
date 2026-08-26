@@ -161,6 +161,7 @@ export function useTraceSocket(runId: string): TraceStream {
 
   useEffect(() => {
     if (runId.length === 0) {
+      setLive(false);
       return;
     }
     let stopped = false;
