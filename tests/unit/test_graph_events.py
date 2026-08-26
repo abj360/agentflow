@@ -115,3 +115,13 @@ def test_traced_events_match_the_untraced_ones() -> None:
     """Verifies tracing a plan changes nothing about the frames it emits."""
     planned = TaskPlanner().plan("first\nsecond")
     assert traced_events_for_plan("run-7", planned) == events_for_plan(planned)
+
+
+def test_a_batcher_reports_what_it_is_holding() -> None:
+    """Verifies the batcher can be asked how much is still unsent."""
+    batcher = StructuralEventBatcher(max_batch=4)
+    assert batcher.pending() == 0
+    batcher.add(node_status_changed("task-1", "running"))
+    assert batcher.pending() == 1
+    batcher.flush()
+    assert batcher.pending() == 0
