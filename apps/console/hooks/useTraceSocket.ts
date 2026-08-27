@@ -37,7 +37,7 @@ export interface TraceLogEvent {
 
 export interface NodeCreatedEvent {
   kind: "node_created";
-  task: RunViewerTask;
+  task: Readonly<RunViewerTask>;
 }
 
 export interface EdgeCreatedEvent {
