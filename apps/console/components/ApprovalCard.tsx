@@ -38,7 +38,9 @@ export function ApprovalCard({
   const body = (
     <>
       <header>
-        <strong title={approval.tool_name}>{approval.tool_name}</strong>
+        <strong title={approval.tool_name}>
+          {approval.tool_name || "unnamed tool"}
+        </strong>
         <span className="approval-trace">
           trace {approval.trace_id.slice(0, 8)}…
         </span>
@@ -70,7 +72,11 @@ export function ApprovalCard({
   );
 
   if (expanded) {
-    return <div className="approval-inline">{body}</div>;
+    return (
+      <div className="approval-inline" role="group" aria-label="Approval">
+        {body}
+      </div>
+    );
   }
   return <div className="approval-card">{body}</div>;
 }
