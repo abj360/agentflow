@@ -70,7 +70,11 @@ export function ApprovalCard({
   );
 
   if (expanded) {
-    return <div className="approval-inline">{body}</div>;
+    return (
+      <div className="approval-inline" role="group" aria-label="Approval">
+        {body}
+      </div>
+    );
   }
   return <div className="approval-card">{body}</div>;
 }
