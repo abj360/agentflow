@@ -587,6 +587,7 @@ code {
 
 @media (prefers-reduced-motion: reduce) {
   .canvas-node--done,
+  .canvas-node--running,
   .canvas-node--spawning {
     animation: none;
   }
