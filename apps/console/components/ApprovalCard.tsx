@@ -38,7 +38,7 @@ export function ApprovalCard({
   const body = (
     <>
       <header>
-        <strong title={approval.tool_name}>{approval.tool_name}</strong>
+        <strong title={approval.tool_name}>{approval.tool_name || "unnamed tool"}</strong>
         <span className="approval-trace">
           trace {approval.trace_id.slice(0, 8)}…
         </span>
