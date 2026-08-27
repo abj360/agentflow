@@ -2,6 +2,7 @@
  * Canvas.tsx --- live React Flow rendering layer for one run's task graph
  *
  * Contains:
+ *   NO_ACTIVE_EDGES: the empty lit-edge set a canvas with no traffic uses
  *   buildEdges(): turns a plan's dependencies into React Flow edges
  *   Canvas: renders a run's planned tasks as a positioned, live-updating graph
  */

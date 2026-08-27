@@ -1,5 +1,6 @@
 /**
- * useRelaxedLayout.ts --- keeps the relaxed canvas layout off the render path
+ * useRelaxedLayout.ts --- keeps the relaxed canvas layout off the render path,
+ * pinning what has already settled
  *
  * Contains:
  *   layoutSignature(): the plan shape a relaxed layout is valid for
