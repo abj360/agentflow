@@ -105,10 +105,7 @@ export function TaskNode({
   children?: ReactNode;
 }) {
   return (
-    <div
-      className={shellClass(species, data.status)}
-      style={spawnStyle(data.spawnDelay)}
-    >
+    <div className={shellClass(species, data.status)} style={spawnStyle(data.spawnDelay)} data-status={data.status}>
       <Handle type="target" position={Position.Left} />
       <span
         className={`canvas-node__status canvas-node__status--${data.status}`}

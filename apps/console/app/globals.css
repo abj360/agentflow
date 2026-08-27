@@ -618,3 +618,18 @@ code {
   font-size: 0.8125rem;
   list-style: none;
 }
+
+
+@keyframes node-working {
+  0%,
+  100% {
+    border-color: var(--border);
+  }
+  50% {
+    border-color: var(--accent);
+  }
+}
+
+.canvas-node--running {
+  animation: node-working 1.4s ease-in-out infinite;
+}
