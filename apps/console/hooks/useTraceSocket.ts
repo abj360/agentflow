@@ -196,8 +196,10 @@ export function useTraceSocket(runId: string): TraceStream {
       socket.onclose = () => {
         setIsLive(false);
         if (!stopped && attempts < MAX_RECONNECT_ATTEMPTS) {
+          // Jitter keeps a room full of viewers from reconnecting in lockstep
+          // and hammering the hub the moment it comes back.
           const delay = Math.min(250 * 2 ** attempts, 5000);
-          setTimeout(connect, delay); // exponential backoff
+          setTimeout(connect, delay * (0.5 + Math.random() / 2));
         }
       };
     };
