@@ -13,6 +13,7 @@ from typing import Any
 
 from fastapi import WebSocket
 
+from apps.api.observability.tracing import batch_span
 from apps.api.orchestration.graph_events import structural_frame
 
 MAX_CONNECTIONS_PER_RUN = 8
@@ -83,4 +84,5 @@ class TraceHub:
         """
         if not events:
             return
-        await self.broadcast(run_id, structural_frame(run_id, list(events)))
+        with batch_span(run_id, len(events)):
+            await self.broadcast(run_id, structural_frame(run_id, list(events)))
