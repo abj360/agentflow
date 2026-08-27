@@ -16,8 +16,8 @@
 export const PULSE_DURATION_MS = 900;
 
 export interface EdgePulse {
-  id: string;
-  firedAt: number;
+  readonly id: string;
+  readonly firedAt: number;
 }
 
 /**
