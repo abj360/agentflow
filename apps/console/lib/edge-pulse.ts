@@ -1,6 +1,10 @@
 /**
  * edge-pulse.ts --- how long a dependency edge stays lit after a trace event fires
  *
+ * The window is deliberately shorter than the slowest plausible gap between two
+ * events on one edge, so a busy edge reads as repeated flashes rather than as a
+ * stroke that never goes dark.
+ *
  * Contains:
  *   PULSE_DURATION_MS: how long an edge stays active after it fires
  *   EdgePulse: one edge firing, with the moment it started
@@ -12,8 +16,8 @@
 export const PULSE_DURATION_MS = 900;
 
 export interface EdgePulse {
-  id: string;
-  firedAt: number;
+  readonly id: string;
+  readonly firedAt: number;
 }
 
 /**
