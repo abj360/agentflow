@@ -52,9 +52,9 @@ function shellClass(species: TaskSpecies, status: TaskStatus): string {
  * @param spawnDelay - Milliseconds this node waits before it animates in.
  * @returns style - The animation delay React Flow applies to the node shell.
  */
-const SPAWN_STYLES = new Map<number, CSSProperties>();
+const SPAWN_STYLES = new Map<number, Readonly<CSSProperties>>();
 
-function spawnStyle(spawnDelay: number): CSSProperties {
+function spawnStyle(spawnDelay: number): Readonly<CSSProperties> {
   const cached = SPAWN_STYLES.get(spawnDelay);
   if (cached !== undefined) {
     return cached;
