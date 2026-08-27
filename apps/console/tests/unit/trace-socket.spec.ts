@@ -56,3 +56,28 @@ test("an unreadable batch delivers nothing rather than throwing", () => {
   });
   expect(events).toEqual([]);
 });
+
+test("a node frame carries the task the canvas will render", () => {
+  const [event] = flattenFrame({
+    kind: "graph_delta",
+    runId: "run-1",
+    events: [
+      {
+        kind: "node_created",
+        task: {
+          id: "task-1",
+          title: "gather",
+          assignee: "researcher",
+          status: "pending",
+          dependsOn: [],
+          startedAt: null,
+          finishedAt: null,
+          tokens: 0,
+          retries: 0,
+          toolCallCount: 0,
+        },
+      },
+    ],
+  });
+  expect(event?.kind).toBe("node_created");
+});
