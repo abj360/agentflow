@@ -18,9 +18,10 @@ from apps.api.orchestration.graph_events import (
     events_for_plan,
     structural_frame,
 )
+from apps.api.orchestration.graph_validator import GraphValidationError
 from apps.api.orchestration.loop import run_session
 from apps.api.orchestration.state_machine import build_graph
-from apps.api.orchestration.task_planner import TaskPlanner
+from apps.api.orchestration.task_planner import PlannedTask, TaskPlanner
 
 PLAN_TEXT = "gather the sources\ndraft the summary\ncheck the citations"
 
@@ -89,3 +90,23 @@ async def test_a_completed_run_bounds_no_branch() -> None:
     """Verifies a run that finishes cleanly reports no exhausted branches."""
     result = await run_session("it-canvas-3", PLAN_TEXT)
     assert result["bounded_branches"] == []
+
+
+def test_a_batched_plan_reaches_the_canvas_in_one_frame() -> None:
+    """Verifies a whole plan is announced in a single graph_delta frame."""
+    frames = events_for_plan(TaskPlanner().plan(PLAN_TEXT))
+    frame = structural_frame("run-9", frames)
+    assert frame["kind"] == "graph_delta"
+    assert len(frame["events"]) == len(frames), (
+        "the whole plan has to travel to the console inside a single frame"
+    )
+
+
+def test_a_cyclic_plan_never_produces_a_frame() -> None:
+    """Verifies validation runs before anything is rendered as a frame."""
+    tasks = [
+        PlannedTask(id="task-1", title="a", depends_on=("task-2",)),
+        PlannedTask(id="task-2", title="b", depends_on=("task-1",)),
+    ]
+    with pytest.raises(GraphValidationError):
+        events_for_plan(tasks)
