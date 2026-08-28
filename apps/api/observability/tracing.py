@@ -128,7 +128,10 @@ def batch_span(run_id: str, event_count: int) -> Iterator[trace.Span]:
     Yields:
         span: The started span, already carrying the batch size.
     """
-    span_attributes: dict[str, str | int] = {"graph.run_id": run_id, "graph.event_count": event_count}
+    span_attributes: dict[str, str | int] = {
+        "graph.run_id": run_id,
+        "graph.event_count": event_count,
+    }
     with traced_section("graph.batch", **span_attributes) as span:
         yield span
 
