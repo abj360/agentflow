@@ -89,3 +89,11 @@ async def test_a_completed_run_bounds_no_branch() -> None:
     """Verifies a run that finishes cleanly reports no exhausted branches."""
     result = await run_session("it-canvas-3", PLAN_TEXT)
     assert result["bounded_branches"] == []
+
+
+def test_a_batched_plan_reaches_the_canvas_in_one_frame() -> None:
+    """Verifies a whole plan is announced in a single graph_delta frame."""
+    frames = events_for_plan(TaskPlanner().plan(PLAN_TEXT))
+    frame = structural_frame("run-9", frames)
+    assert frame["kind"] == "graph_delta"
+    assert len(frame["events"]) == len(frames), "the whole plan has to travel to the console inside a single frame"
