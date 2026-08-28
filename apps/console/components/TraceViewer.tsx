@@ -41,6 +41,11 @@ export function TraceViewer({
       >
         Raw trace log <TraceEventCount count={events.length} />
       </button>
+      {!isRawLogOpen || events.length <= MAX_VISIBLE_LINES ? null : (
+        <p className="trace-truncated">
+          showing the last {MAX_VISIBLE_LINES} lines
+        </p>
+      )}
       {!isRawLogOpen || events.length > 0 ? null : <TraceEmptyState />}
       {!isRawLogOpen || events.length === 0 ? null : (
         <TraceLogList events={recent} />
