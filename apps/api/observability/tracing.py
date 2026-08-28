@@ -9,6 +9,7 @@ Contains:
     set_span_attribute(): sets an attribute on the current span
     traced_section(): wraps a block in a manual span
     structural_span(): wraps the emission of one structural graph event
+    batch_span(): wraps the emission of one batched graph_delta frame
     instrument_redis(): instruments an async Redis client
     shutdown_tracing(): flushes and shuts down the tracer provider
 """
@@ -113,6 +114,25 @@ def structural_span(kind: str, run_id: str) -> Iterator[trace.Span]:
         span: The started span, so callers can attach the node or edge ids.
     """
     with traced_section(f"graph.{kind}", **{"graph.run_id": run_id}) as span:
+        yield span
+
+
+@contextmanager
+def batch_span(run_id: str, event_count: int) -> Iterator[trace.Span]:
+    """Wraps the emission of one batched graph_delta frame in a span.
+
+    Args:
+        run_id: Run whose canvas the batch is being sent to.
+        event_count: Structural events the frame carries.
+
+    Yields:
+        span: The started span, already carrying the batch size.
+    """
+    span_attributes: dict[str, str | int] = {
+        "graph.run_id": run_id,
+        "graph.event_count": event_count,
+    }
+    with traced_section("graph.batch", **span_attributes) as span:
         yield span
 
 
