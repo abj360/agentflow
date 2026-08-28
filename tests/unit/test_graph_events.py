@@ -130,3 +130,12 @@ def test_a_batcher_reports_what_it_is_holding() -> None:
 def test_tracing_an_empty_plan_emits_no_spans() -> None:
     """Verifies an empty plan is traced as nothing rather than as one span."""
     assert traced_events_for_plan("run-7", ()) == []
+
+
+def test_every_traced_frame_keeps_its_kind() -> None:
+    """Verifies tracing never rewrites the frames it passes through."""
+    frames = traced_events_for_plan("run-7", TaskPlanner().plan("a\nb"))
+    assert {str(frame["kind"]) for frame in frames} == {
+        "node_created",
+        "edge_created",
+    }
