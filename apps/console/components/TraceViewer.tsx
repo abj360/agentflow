@@ -5,6 +5,7 @@
  *   MAX_VISIBLE_LINES: how many log lines the panel keeps on screen at once
  *   TraceViewer: renders a run's raw log events behind a disclosure toggle
  *   TraceLogList: renders the ordered list of raw log lines
+ *   TraceTruncationNote: says how much of a long log the panel is showing
  *   TraceEmptyState: renders the empty state shown before the first event arrives
  *   TraceEventCount: renders the running event count badge
  */
@@ -41,16 +42,31 @@ export function TraceViewer({
       >
         Raw trace log <TraceEventCount count={events.length} />
       </button>
-      {!isRawLogOpen || events.length <= MAX_VISIBLE_LINES ? null : (
-        <p className="trace-truncated">
-          showing the last {MAX_VISIBLE_LINES} lines
-        </p>
+      {!isRawLogOpen ? null : (
+        <TraceTruncationNote total={events.length} />
       )}
       {!isRawLogOpen || events.length > 0 ? null : <TraceEmptyState />}
       {!isRawLogOpen || events.length === 0 ? null : (
         <TraceLogList events={recent} />
       )}
     </div>
+  );
+}
+
+/**
+ * Says how much of a long log the panel is currently showing.
+ *
+ * @param props.total - Log lines received for this run so far.
+ * @returns The truncation note, or nothing while the whole log fits.
+ */
+function TraceTruncationNote({ total }: Readonly<{ total: number }>) {
+  if (total <= MAX_VISIBLE_LINES) {
+    return null;
+  }
+  return (
+    <p className="trace-truncated">
+      showing the last {MAX_VISIBLE_LINES} of {total} lines
+    </p>
   );
 }
 
