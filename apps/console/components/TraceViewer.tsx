@@ -28,7 +28,7 @@ export function TraceViewer({
   events,
 }: Readonly<{ events: readonly TraceLogEvent[] }>) {
   const [isRawLogOpen, setRawLogOpen] = useState(false);
-  const recent =
+  const visible =
     events.length > MAX_VISIBLE_LINES
       ? events.slice(-MAX_VISIBLE_LINES)
       : events;
@@ -47,7 +47,7 @@ export function TraceViewer({
       )}
       {!isRawLogOpen || events.length > 0 ? null : <TraceEmptyState />}
       {!isRawLogOpen || events.length === 0 ? null : (
-        <TraceLogList events={recent} />
+        <TraceLogList events={visible} />
       )}
     </div>
   );
