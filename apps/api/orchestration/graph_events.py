@@ -16,7 +16,7 @@ Contains:
     StructuralEventBatcher.pending(): how many events are waiting to be sent
 """
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 from apps.api.observability.tracing import set_span_attribute, structural_span
 from apps.api.orchestration.graph_validator import validate_task_graph
@@ -166,7 +166,7 @@ def traced_events_for_plan(run_id: str, tasks: Sequence[PlannedTask]) -> list[di
     return frames
 
 
-def _trace_frame(run_id: str, frame: dict[str, object]) -> None:
+def _trace_frame(run_id: str, frame: Mapping[str, object]) -> None:
     """Records one structural frame as its own span.
 
     Args:
