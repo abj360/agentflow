@@ -11,8 +11,8 @@
 import { getBezierPath, type EdgeProps } from "reactflow";
 
 export interface PulseEdgeData {
-  active: boolean;
-  pending: boolean;
+  readonly active: boolean;
+  readonly pending: boolean;
 }
 
 /**
