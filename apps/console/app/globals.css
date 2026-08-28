@@ -633,3 +633,10 @@ code {
 .canvas-node--running {
   animation: node-working 1.4s ease-in-out infinite;
 }
+
+
+.trace-truncated {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin: 0.25rem 0;
+}

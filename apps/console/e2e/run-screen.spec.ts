@@ -132,3 +132,9 @@ test("the header reports the stream state", async ({ page }) => {
   await openRun(page);
   await expect(page.locator(".run-liveness")).toHaveText(/live|offline/);
 });
+
+test("a short log shows no truncation note", async ({ page }) => {
+  await openRun(page);
+  await rawLogToggle(page).click();
+  await expect(page.locator(".trace-truncated")).toHaveCount(0);
+});
