@@ -481,6 +481,7 @@ code {
   stroke-width: 2;
   stroke-dasharray: 6 8;
   animation: edge-sweep 700ms linear infinite;
+  filter: drop-shadow(0 0 2px var(--edge-active));
 }
 
 @keyframes edge-sweep {
@@ -496,6 +497,7 @@ code {
   .canvas-edge--active {
     animation: none;
     stroke-dasharray: none;
+    filter: none;
   }
 }
 
@@ -633,7 +635,6 @@ code {
 .canvas-node--running {
   animation: node-working 1.4s ease-in-out infinite;
 }
-
 
 .trace-truncated {
   color: var(--muted);
