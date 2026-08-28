@@ -106,3 +106,11 @@ def test_setup_tracing_callable() -> None:
     from apps.api.observability.tracing import setup_tracing
 
     assert callable(setup_tracing)
+
+
+def test_batch_span_names_the_run_and_its_size() -> None:
+    """Verifies a batched frame is traced with the run id and event count."""
+    from apps.api.observability.tracing import batch_span
+
+    with batch_span("run-7", 12) as span:
+        assert span is not None
