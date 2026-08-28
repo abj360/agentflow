@@ -27,7 +27,10 @@ export function TraceViewer({
   events,
 }: Readonly<{ events: readonly TraceLogEvent[] }>) {
   const [isRawLogOpen, setRawLogOpen] = useState(false);
-  const recent = events.length > MAX_VISIBLE_LINES ? events.slice(-MAX_VISIBLE_LINES) : events;
+  const recent =
+    events.length > MAX_VISIBLE_LINES
+      ? events.slice(-MAX_VISIBLE_LINES)
+      : events;
 
   return (
     <div className="trace-panel">
