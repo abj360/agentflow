@@ -97,7 +97,9 @@ def test_a_batched_plan_reaches_the_canvas_in_one_frame() -> None:
     frames = events_for_plan(TaskPlanner().plan(PLAN_TEXT))
     frame = structural_frame("run-9", frames)
     assert frame["kind"] == "graph_delta"
-    assert len(frame["events"]) == len(frames), "the whole plan has to travel to the console inside a single frame"
+    assert len(frame["events"]) == len(frames), (
+        "the whole plan has to travel to the console inside a single frame"
+    )
 
 
 def test_a_cyclic_plan_never_produces_a_frame() -> None:
