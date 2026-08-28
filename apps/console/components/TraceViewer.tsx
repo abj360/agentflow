@@ -109,7 +109,7 @@ export function TraceEmptyState() {
  * @param props.count - Number of events received so far.
  * @returns The count badge element.
  */
-export function TraceEventCount({ count }: { count: number }) {
+export function TraceEventCount({ count }: Readonly<{ count: number }>) {
   return (
     <span className="trace-count">
       {count} {count === 1 ? "event" : "events"}
