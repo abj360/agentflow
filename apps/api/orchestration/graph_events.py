@@ -10,6 +10,7 @@ Contains:
     MAX_EVENTS_PER_FRAME: structural events one WebSocket frame may carry
     events_for_plan(): renders a validated task list as ordered structural events
     traced_events_for_plan(): emits a plan's structural events under OTel spans
+    _trace_frame(): records one structural frame as its own span
     structural_frame(): wraps a batch of structural events in one frame
     StructuralEventBatcher: coalesces structural events into whole frames
     StructuralEventBatcher.pending(): how many events are waiting to be sent
@@ -161,7 +162,17 @@ def traced_events_for_plan(run_id: str, tasks: Sequence[PlannedTask]) -> list[di
     """
     frames = events_for_plan(tasks)
     for frame in frames:
-        kind = str(frame["kind"])
-        with structural_span(kind, run_id):
-            set_span_attribute("graph.event_kind", kind)
+        _trace_frame(run_id, frame)
     return frames
+
+
+def _trace_frame(run_id: str, frame: dict[str, object]) -> None:
+    """Records one structural frame as its own span.
+
+    Args:
+        run_id: Run whose canvas the frame is being emitted to.
+        frame: The structural frame being emitted.
+    """
+    kind = str(frame["kind"])
+    with structural_span(kind, run_id):
+        set_span_attribute("graph.event_kind", kind)
