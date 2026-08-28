@@ -110,5 +110,9 @@ export function TraceEmptyState() {
  * @returns The count badge element.
  */
 export function TraceEventCount({ count }: { count: number }) {
-  return <span className="trace-count">{count} events</span>;
+  return (
+    <span className="trace-count">
+      {count} {count === 1 ? "event" : "events"}
+    </span>
+  );
 }
