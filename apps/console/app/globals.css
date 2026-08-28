@@ -497,6 +497,7 @@ code {
   .canvas-edge--active {
     animation: none;
     stroke-dasharray: none;
+    filter: none;
   }
 }
 
