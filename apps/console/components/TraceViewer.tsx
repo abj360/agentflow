@@ -2,6 +2,7 @@
  * TraceViewer.tsx --- raw trace log, tucked behind a debug toggle under the canvas
  *
  * Contains:
+ *   MAX_VISIBLE_LINES: how many log lines the panel keeps on screen at once
  *   TraceViewer: renders a run's raw log events behind a disclosure toggle
  *   TraceLogList: renders the ordered list of raw log lines
  *   TraceEmptyState: renders the empty state shown before the first event arrives
@@ -11,6 +12,8 @@
 "use client";
 
 import { useState } from "react";
+
+const MAX_VISIBLE_LINES = 200;
 
 import type { TraceLogEvent } from "../hooks/useTraceSocket";
 
@@ -24,6 +27,7 @@ export function TraceViewer({
   events,
 }: Readonly<{ events: readonly TraceLogEvent[] }>) {
   const [isRawLogOpen, setRawLogOpen] = useState(false);
+  const recent = events.length > MAX_VISIBLE_LINES ? events.slice(-MAX_VISIBLE_LINES) : events;
 
   return (
     <div className="trace-panel">
@@ -36,7 +40,7 @@ export function TraceViewer({
       </button>
       {!isRawLogOpen || events.length > 0 ? null : <TraceEmptyState />}
       {!isRawLogOpen || events.length === 0 ? null : (
-        <TraceLogList events={events} />
+        <TraceLogList events={recent} />
       )}
     </div>
   );
