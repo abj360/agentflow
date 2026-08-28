@@ -1,5 +1,5 @@
 /**
- * TraceViewer.tsx --- raw trace log, tucked behind a debug toggle under the canvas
+ * TraceViewer.tsx --- raw trace log, behind a debug toggle under the canvas
  *
  * Contains:
  *   MAX_VISIBLE_LINES: how many log lines the panel keeps on screen at once
