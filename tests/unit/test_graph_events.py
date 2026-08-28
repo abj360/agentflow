@@ -125,3 +125,8 @@ def test_a_batcher_reports_what_it_is_holding() -> None:
     assert batcher.pending() == 1
     batcher.flush()
     assert batcher.pending() == 0
+
+
+def test_tracing_an_empty_plan_emits_no_spans() -> None:
+    """Verifies an empty plan is traced as nothing rather than as one span."""
+    assert traced_events_for_plan("run-7", ()) == []
