@@ -9,6 +9,8 @@
  *   ticksFor(): the tick budget a plan of a given size is worth spending
  *   NODE_HEIGHT: rendered height a task node occupies on the canvas
  *   COLLIDE_RADIUS: minimum gap the simulation keeps between two node centres
+ *   COLUMN_STRENGTH: how hard a node is pulled back to its topological column
+ *   ROW_STRENGTH: how hard a node is pulled back to its starting row
  *   toSimulationNodes(): turns deterministic placements into simulation nodes
  *   NOTHING_PINNED: the empty pin set a first relaxation pass starts from
  *   relaxPositions(): nudges nodes apart without leaving their topological column
@@ -27,6 +29,11 @@ import type { PositionedTask } from "./layout";
 export const RELAXATION_TICKS = 60;
 export const MIN_RELAXATION_TICKS = 18;
 export const MAX_SIMULATION_NODES = 120;
+
+// The column force has to dominate: the topological skeleton is what makes the
+// graph readable, and the simulation only breaks ties inside a column.
+export const COLUMN_STRENGTH = 0.9;
+export const ROW_STRENGTH = 0.12;
 
 const NOTHING_PINNED: ReadonlyMap<string, PositionedTask> = new Map();
 export const NODE_HEIGHT = 84;
@@ -130,9 +137,12 @@ export function relaxPositions(
   forceSimulation(nodes)
     .force(
       "column",
-      forceX<RelaxationNode>((node) => node.anchorX).strength(0.9),
+      forceX<RelaxationNode>((node) => node.anchorX).strength(COLUMN_STRENGTH),
     )
-    .force("row", forceY<RelaxationNode>((node) => node.anchorY).strength(0.12))
+    .force(
+      "row",
+      forceY<RelaxationNode>((node) => node.anchorY).strength(ROW_STRENGTH),
+    )
     .force("collide", forceCollide<RelaxationNode>(COLLIDE_RADIUS))
     .alphaDecay(0)
     .stop()
