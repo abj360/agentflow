@@ -15,6 +15,7 @@ Contains:
     TaskPlanner: turns a task description into a dependency-linked task list
     TaskPlanner.plan(): builds the task list for one run
     TaskPlanner.replan(): folds critic feedback into an existing task list
+    TaskPlanner.fan_out(): plans independent objectives as parallel branches
 """
 
 from __future__ import annotations
@@ -262,4 +263,25 @@ class TaskPlanner:
             return tuple(tasks)
         return tuple(
             task if task.status == "done" else replace(task, status="pending") for task in tasks
+        )
+
+    def fan_out(self, objectives: Sequence[str]) -> tuple[PlannedTask, ...]:
+        """Plans independent objectives as parallel branches off the orchestrator.
+
+        A chained plan serialises work that has no reason to be serial, and the
+        canvas then draws one long line instead of the shape of the actual work.
+
+        Args:
+            objectives: Objectives that do not depend on one another.
+
+        Returns:
+            planned_tasks: One root task per objective, none depending on another.
+        """
+        return tuple(
+            PlannedTask(
+                id=task_id(index),
+                title=objective,
+                assignee=assignee_for(objective, index),
+            )
+            for index, objective in enumerate(objectives[: self.max_tasks])
         )
