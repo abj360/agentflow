@@ -1,5 +1,5 @@
 /**
- * ChatPanel.tsx --- instruction input and the orchestrator's streamed replies
+ * ChatPanel.tsx --- instruction input and the orchestrator's replies
  *
  * Contains:
  *   ChatMessage: one turn in a run's conversation
