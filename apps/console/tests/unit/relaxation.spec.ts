@@ -9,7 +9,9 @@ import { expect, test } from "@playwright/test";
 
 import { COLUMN_WIDTH } from "../../lib/layout";
 import {
+  COLUMN_STRENGTH,
   MIN_RELAXATION_TICKS,
+  ROW_STRENGTH,
   RELAXATION_TICKS,
   relaxPositions,
   ticksFor,
@@ -102,4 +104,8 @@ test("pinning a node the layout no longer has is ignored", () => {
     new Map([[gone.id, gone]]),
   );
   expect(relaxed.map((node) => node.id)).toEqual(["a", "b"]);
+});
+
+test("the column force is the stronger of the two", () => {
+  expect(COLUMN_STRENGTH).toBeGreaterThan(ROW_STRENGTH);
 });
