@@ -178,3 +178,8 @@ def test_fanned_out_objectives_are_all_roots() -> None:
     """Verifies parallel planning leaves every task depending on nothing."""
     planned = TaskPlanner().fan_out(("first", "second", "third"))
     assert all(task.depends_on == () for task in planned)
+
+
+def test_fanning_out_nothing_plans_nothing() -> None:
+    """Verifies an empty objective list fans out to an empty plan."""
+    assert TaskPlanner().fan_out(()) == ()
