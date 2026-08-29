@@ -144,6 +144,7 @@ export function relaxPositions(
       forceY<RelaxationNode>((node) => node.anchorY).strength(ROW_STRENGTH),
     )
     .force("collide", forceCollide<RelaxationNode>(COLLIDE_RADIUS))
+    .alpha(1)
     .alphaDecay(0)
     .stop()
     .tick(ticksFor(nodes.length));
