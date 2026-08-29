@@ -183,3 +183,9 @@ def test_fanned_out_objectives_are_all_roots() -> None:
 def test_fanning_out_nothing_plans_nothing() -> None:
     """Verifies an empty objective list fans out to an empty plan."""
     assert TaskPlanner().fan_out(()) == ()
+
+
+def test_fan_out_respects_the_plan_ceiling() -> None:
+    """Verifies fanning out is bounded by the same ceiling as chaining."""
+    objectives = tuple(f"objective {index}" for index in range(MAX_TASKS_PER_PLAN + 4))
+    assert len(TaskPlanner().fan_out(objectives)) == MAX_TASKS_PER_PLAN, "fan-out shares the chained ceiling"
