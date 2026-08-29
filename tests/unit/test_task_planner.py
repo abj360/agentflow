@@ -172,3 +172,29 @@ def test_every_planned_task_survives_the_wire_shape() -> None:
 def test_replanning_nothing_yields_nothing() -> None:
     """Verifies replanning an empty plan is a no-op rather than an error."""
     assert TaskPlanner().replan((), "revise") == ()
+
+
+def test_fanned_out_objectives_are_all_roots() -> None:
+    """Verifies parallel planning leaves every task depending on nothing."""
+    planned = TaskPlanner().fan_out(("first", "second", "third"))
+    assert all(task.depends_on == () for task in planned)
+
+
+def test_fanning_out_nothing_plans_nothing() -> None:
+    """Verifies an empty objective list fans out to an empty plan."""
+    assert TaskPlanner().fan_out(()) == ()
+
+
+def test_fan_out_respects_the_plan_ceiling() -> None:
+    """Verifies fanning out is bounded by the same ceiling as chaining."""
+    objectives = tuple(f"objective {index}" for index in range(MAX_TASKS_PER_PLAN + 4))
+    assert len(TaskPlanner().fan_out(objectives)) == MAX_TASKS_PER_PLAN, (
+        "fan-out shares the chained ceiling"
+    )
+
+
+def test_fanned_out_tasks_still_group_under_themselves() -> None:
+    """Verifies each fanned-out task is its own branch for budgeting."""
+    planned = TaskPlanner().fan_out(("a", "b"))
+    roots = branch_roots(planned)
+    assert roots == {task.id: task.id for task in planned}
