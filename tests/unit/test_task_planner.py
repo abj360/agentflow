@@ -191,3 +191,10 @@ def test_fan_out_respects_the_plan_ceiling() -> None:
     assert len(TaskPlanner().fan_out(objectives)) == MAX_TASKS_PER_PLAN, (
         "fan-out shares the chained ceiling"
     )
+
+
+def test_fanned_out_tasks_still_group_under_themselves() -> None:
+    """Verifies each fanned-out task is its own branch for budgeting."""
+    planned = TaskPlanner().fan_out(("a", "b"))
+    roots = branch_roots(planned)
+    assert roots == {task.id: task.id for task in planned}
