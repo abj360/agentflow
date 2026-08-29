@@ -228,7 +228,7 @@ class TaskPlanner:
         """
         self.max_tasks = max_tasks
 
-    def plan(self, task: str) -> tuple[PlannedTask, ...]:
+    def plan(self, task: str, /) -> tuple[PlannedTask, ...]:
         """Builds the task list for one run.
 
         Args:
