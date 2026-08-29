@@ -11,8 +11,8 @@
 import { useState } from "react";
 
 export interface ChatMessage {
-  author: "you" | "orchestrator";
-  text: string;
+  readonly author: "you" | "orchestrator";
+  readonly text: string;
 }
 
 /**
