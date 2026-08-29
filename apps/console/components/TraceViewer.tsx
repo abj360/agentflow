@@ -42,9 +42,7 @@ export function TraceViewer({
       >
         Raw trace log <TraceEventCount count={events.length} />
       </button>
-      {!isRawLogOpen ? null : (
-        <TraceTruncationNote total={events.length} />
-      )}
+      {!isRawLogOpen ? null : <TraceTruncationNote total={events.length} />}
       {!isRawLogOpen || events.length > 0 ? null : <TraceEmptyState />}
       {!isRawLogOpen || events.length === 0 ? null : (
         <TraceLogList events={visible} />

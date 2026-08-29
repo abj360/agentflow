@@ -67,7 +67,8 @@ function orchestratorReplies(logs: readonly TraceLogEvent[]): ChatMessage[] {
     .map((log) => ({
       author: "orchestrator" as const,
       text: String(log.payload.text ?? ""),
-    }));
+    }))
+    .filter((message) => message.text.length > 0);
 }
 
 /**

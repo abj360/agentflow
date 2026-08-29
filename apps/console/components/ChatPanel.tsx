@@ -1,5 +1,5 @@
 /**
- * ChatPanel.tsx --- instruction input and the orchestrator's streamed replies
+ * ChatPanel.tsx --- instruction input and the orchestrator's replies
  *
  * Contains:
  *   ChatMessage: one turn in a run's conversation
@@ -11,8 +11,8 @@
 import { useState } from "react";
 
 export interface ChatMessage {
-  author: "you" | "orchestrator";
-  text: string;
+  readonly author: "you" | "orchestrator";
+  readonly text: string;
 }
 
 /**
@@ -42,7 +42,7 @@ export function ChatPanel({
 
   return (
     <div className="chat-panel">
-      <ol className="chat-log">
+      <ol className="chat-log" aria-live="polite">
         {messages.length > 0 ? null : (
           <li className="chat-empty">Send an instruction to start.</li>
         )}
@@ -66,10 +66,13 @@ export function ChatPanel({
         <input
           aria-label="Instruction"
           placeholder="Send an instruction…"
+          autoComplete="off"
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
         />
-        <button type="submit">Send</button>
+        <button type="submit" disabled={draft.trim().length === 0}>
+          Send
+        </button>
       </form>
     </div>
   );

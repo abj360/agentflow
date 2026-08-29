@@ -138,3 +138,13 @@ test("a short log shows no truncation note", async ({ page }) => {
   await rawLogToggle(page).click();
   await expect(page.locator(".trace-truncated")).toHaveCount(0);
 });
+
+test("the send button is disabled until something is typed", async ({
+  page,
+}) => {
+  await openRun(page);
+  const send = page.getByRole("button", { name: "Send" });
+  await expect(send).toBeDisabled();
+  await page.getByLabel("Instruction").fill("go");
+  await expect(send).toBeEnabled();
+});
