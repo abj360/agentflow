@@ -66,6 +66,7 @@ export function ChatPanel({
         <input
           aria-label="Instruction"
           placeholder="Send an instruction…"
+          autoComplete="off"
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
         />
