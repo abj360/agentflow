@@ -172,3 +172,9 @@ def test_every_planned_task_survives_the_wire_shape() -> None:
 def test_replanning_nothing_yields_nothing() -> None:
     """Verifies replanning an empty plan is a no-op rather than an error."""
     assert TaskPlanner().replan((), "revise") == ()
+
+
+def test_fanned_out_objectives_are_all_roots() -> None:
+    """Verifies parallel planning leaves every task depending on nothing."""
+    planned = TaskPlanner().fan_out(("first", "second", "third"))
+    assert all(task.depends_on == () for task in planned)
