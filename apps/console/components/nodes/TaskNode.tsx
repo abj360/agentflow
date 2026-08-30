@@ -114,7 +114,7 @@ export function TaskNode({
       <span
         className={`canvas-node__status canvas-node__status--${data.status}`}
       />
-      <strong>{data.title}</strong>
+      <strong title={`${species}: ${data.title}`}>{data.title}</strong>
       <span className="canvas-node__meta">{data.assignee}</span>
       {detail === undefined ? null : (
         <span className="canvas-node__meta" role="status">
