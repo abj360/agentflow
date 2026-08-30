@@ -121,8 +121,8 @@ section > h1 {
 
 .approval-card {
   border: 1px solid var(--border);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
-  border-radius: 0.5rem;
+  box-shadow: var(--node-shadow);
+  border-radius: var(--radius);
   padding: 0.875rem;
 }
 
