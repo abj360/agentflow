@@ -634,3 +634,13 @@ code {
   font-size: 0.75rem;
   margin: 0.25rem 0;
 }
+
+
+.canvas-node strong {
+  display: block;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 11rem;
+}
