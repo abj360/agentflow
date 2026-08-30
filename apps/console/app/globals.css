@@ -9,6 +9,7 @@
   --node-approval: #b45309;
   --edge: #cbd5e1;
   --edge-active: #1d4ed8;
+  --node-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
   --radius: 0.625rem;
 }
 
@@ -370,7 +371,7 @@ code {
 
 .canvas-node--orchestrator {
   border-color: var(--node-orchestrator);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
+  box-shadow: var(--node-shadow);
   border-width: 2px;
   padding: 0.875rem 1.25rem;
   font-size: 0.9375rem;
