@@ -157,3 +157,11 @@ def test_independent_objectives_become_parallel_branches() -> None:
 
     planned = plan_for("gather sources\ncheck licences\ndraft notes")
     assert all(task.depends_on == () for task in planned)
+
+
+def test_a_then_step_keeps_the_plan_sequential() -> None:
+    """Verifies wording that implies order still plans as a chain."""
+    from apps.api.orchestration.state_machine import plan_for
+
+    planned = plan_for("gather sources\nthen draft notes")
+    assert planned[1].depends_on == (planned[0].id,)
