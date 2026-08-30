@@ -149,3 +149,11 @@ def test_task_nodes_run_without_a_status_sink() -> None:
 
     node = task_runner(PlannedTask(id="task-1", title="a"), "task-1")
     assert node(make_state())["results"] == ["done: a"]
+
+
+def test_independent_objectives_become_parallel_branches() -> None:
+    """Verifies a list of independent objectives is not planned as a chain."""
+    from apps.api.orchestration.state_machine import plan_for
+
+    planned = plan_for("gather sources\ncheck licences\ndraft notes")
+    assert all(task.depends_on == () for task in planned)
