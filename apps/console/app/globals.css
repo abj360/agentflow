@@ -346,6 +346,7 @@ code {
 .canvas-node {
   position: relative;
   border: 1px solid var(--border);
+  box-shadow: var(--node-shadow);
   border-radius: 0.5rem;
   background: var(--node-bg);
   color: var(--fg);
