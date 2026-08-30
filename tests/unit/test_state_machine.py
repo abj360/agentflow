@@ -172,3 +172,12 @@ def test_a_single_objective_plans_one_task() -> None:
     from apps.api.orchestration.state_machine import plan_for
 
     assert len(plan_for("just ship it")) == 1
+
+
+def test_a_fanned_out_plan_still_wires_a_graph() -> None:
+    """Verifies parallel branches all hang off the orchestrator node."""
+    from apps.api.orchestration.state_machine import plan_for
+
+    planned = plan_for("gather sources\ncheck licences")
+    graph = build_graph(list(planned))
+    assert {task.id for task in planned} <= set(graph.nodes)
