@@ -165,3 +165,10 @@ def test_a_then_step_keeps_the_plan_sequential() -> None:
 
     planned = plan_for("gather sources\nthen draft notes")
     assert planned[1].depends_on == (planned[0].id,)
+
+
+def test_a_single_objective_plans_one_task() -> None:
+    """Verifies a one-line task never goes down the fan-out path."""
+    from apps.api.orchestration.state_machine import plan_for
+
+    assert len(plan_for("just ship it")) == 1
