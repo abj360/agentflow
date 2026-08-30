@@ -82,7 +82,9 @@ def plan_for(task: str) -> tuple[PlannedTask, ...]:
     """
     planner = TaskPlanner()
     objectives = split_objectives(task)
-    if len(objectives) > 1 and all(not objective.lower().startswith("then") for objective in objectives):
+    if len(objectives) > 1 and all(
+        not objective.lower().startswith("then") for objective in objectives
+    ):
         return planner.fan_out(objectives)
     return planner.plan(task)
 
