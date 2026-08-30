@@ -224,17 +224,6 @@ code {
   --edge-active: #60a5fa;
   --node-shadow: 0 1px 2px rgb(0 0 0 / 0.4);
 }
-.approval-card {
-  transition:
-    border-color 120ms ease,
-    box-shadow 120ms ease;
-}
-
-.approval-card:hover {
-  border-color: var(--muted);
-  box-shadow: 0 2px 4px rgb(0 0 0 / 0.08);
-}
-
 @media (prefers-color-scheme: dark) {
   .status-pending {
     background: #451a03;
