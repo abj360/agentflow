@@ -7,8 +7,9 @@
   --node-bg: #ffffff;
   --node-orchestrator: #1d4ed8;
   --node-approval: #b45309;
-  --edge: #cbd5e1;
+  --edge: #d5dbe4;
   --edge-active: #1d4ed8;
+  --node-elevation: 0 1px 2px rgb(0 0 0 / 0.06);
   --radius: 0.625rem;
 }
 
@@ -24,6 +25,7 @@
     --node-approval: #fbbf24;
     --edge: #334155;
     --edge-active: #60a5fa;
+    --node-elevation: 0 1px 2px rgb(0 0 0 / 0.4);
   }
 }
 
@@ -119,8 +121,8 @@ section > h1 {
 
 .approval-card {
   border: 1px solid var(--border);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
-  border-radius: 0.5rem;
+  box-shadow: var(--node-elevation);
+  border-radius: var(--radius);
   padding: 0.875rem;
 }
 
@@ -220,18 +222,8 @@ code {
   --node-approval: #fbbf24;
   --edge: #334155;
   --edge-active: #60a5fa;
+  --node-elevation: 0 1px 2px rgb(0 0 0 / 0.4);
 }
-.approval-card {
-  transition:
-    border-color 120ms ease,
-    box-shadow 120ms ease;
-}
-
-.approval-card:hover {
-  border-color: var(--muted);
-  box-shadow: 0 2px 4px rgb(0 0 0 / 0.08);
-}
-
 @media (prefers-color-scheme: dark) {
   .status-pending {
     background: #451a03;
@@ -354,6 +346,7 @@ code {
 .canvas-node {
   position: relative;
   border: 1px solid var(--border);
+  box-shadow: var(--node-elevation);
   border-radius: 0.5rem;
   background: var(--node-bg);
   color: var(--fg);
@@ -370,7 +363,7 @@ code {
 
 .canvas-node--orchestrator {
   border-color: var(--node-orchestrator);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
+  box-shadow: var(--node-elevation);
   border-width: 2px;
   padding: 0.875rem 1.25rem;
   font-size: 0.9375rem;
@@ -622,7 +615,7 @@ code {
   list-style: none;
 }
 
-@keyframes node-working {
+@keyframes node-running {
   0%,
   100% {
     border-color: var(--border);
@@ -633,7 +626,7 @@ code {
 }
 
 .canvas-node--running {
-  animation: node-working 1.4s ease-in-out infinite;
+  animation: node-running 1.4s ease-in-out infinite;
 }
 
 .trace-truncated {
