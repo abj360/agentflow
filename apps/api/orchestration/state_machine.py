@@ -4,6 +4,7 @@ state_machine.py --- LangGraph state machine assembled from a runtime task plan
 
 Contains:
     GraphState: typed state flowing through the orchestration graph
+    plan_for(): plans a task, fanning independent objectives into branches
     planner_node(): drafts the runtime task plan the graph is wired from
     executor_node(): runs the current plan steps and collects their outputs
     MAX_REVISIONS: revisions one plan branch may spend before it is stopped
@@ -36,6 +37,7 @@ from apps.api.orchestration.task_planner import (
     TaskStatus,
     TaskWire,
     branch_roots,
+    split_objectives,
 )
 
 ORCHESTRATOR_NODE = "orchestrator"
@@ -69,6 +71,22 @@ class GraphState(TypedDict):
     branch_revisions: NotRequired[dict[str, int]]
 
 
+def plan_for(task: str) -> tuple[PlannedTask, ...]:
+    """Plans a task, fanning independent objectives out into parallel branches.
+
+    Args:
+        task: The user's task description.
+
+    Returns:
+        planned_tasks: The plan the graph is wired from.
+    """
+    planner = TaskPlanner()
+    objectives = split_objectives(task)
+    if len(objectives) > 1 and all(not objective.lower().startswith("then") for objective in objectives):
+        return planner.fan_out(objectives)
+    return planner.plan(task)
+
+
 def planner_node(state: GraphState) -> GraphState:
     """Drafts the runtime task plan the graph is wired from.
 
@@ -85,7 +103,7 @@ def planner_node(state: GraphState) -> GraphState:
     Raises:
         GraphValidationError: When the plan is not a graph the canvas can draw.
     """
-    planned = TaskPlanner().plan(state["task"])
+    planned = plan_for(state["task"])
     validate_task_graph(planned)
     return {
         **state,
