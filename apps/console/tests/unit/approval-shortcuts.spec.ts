@@ -2,7 +2,7 @@
  * approval-shortcuts.spec.ts --- regression tests for the approval keyboard shortcuts
  *
  * Contains:
- *   decisionForKey specs: which key press maps to which reviewer decision
+ *   shortcut specs: which press is a decision, and which press is just typing
  */
 
 import { expect, test } from "@playwright/test";
@@ -59,4 +59,27 @@ test("a bare key press carries no modifier", () => {
 
 test("an uppercase press is not a shortcut", () => {
   expect(decisionForKey(APPROVE_KEY.toUpperCase())).toBeNull();
+});
+
+test("a content-editable surface counts as typing", () => {
+  const editor = { tagName: "DIV", isContentEditable: true };
+  expect(isTypingTarget(editor as unknown as EventTarget)).toBe(true);
+});
+
+test("a textarea counts as typing", () => {
+  const field = { tagName: "TEXTAREA" };
+  expect(isTypingTarget(field as unknown as EventTarget)).toBe(true);
+});
+
+test("ctrl and alt are both treated as modifiers", () => {
+  expect(hasModifier({ metaKey: false, ctrlKey: true, altKey: false })).toBe(
+    true,
+  );
+  expect(hasModifier({ metaKey: false, ctrlKey: false, altKey: true })).toBe(
+    true,
+  );
+});
+
+test("the two shortcuts map to opposite decisions", () => {
+  expect(decisionForKey(APPROVE_KEY)).not.toBe(decisionForKey(REJECT_KEY));
 });
