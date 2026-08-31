@@ -124,3 +124,7 @@ test("levels are stable no matter what order tasks arrive in", () => {
   const backwards = levelTasks([task("c", ["b"]), task("b", ["a"]), task("a")]);
   expect(forwards?.get("c")).toBe(backwards?.get("c"));
 });
+
+test("a task depending on itself lays out nothing", () => {
+  expect(layoutTasks([task("a", ["a"])])).toEqual([]);
+});
