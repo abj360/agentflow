@@ -173,4 +173,6 @@ def test_the_planner_only_assigns_roles_that_exist() -> None:
     from apps.api.orchestration.task_planner import TaskPlanner
 
     planned = TaskPlanner().plan("gather sources\nrun the tool\nwrite it up")
-    assert find_unknown_assignees(planned) == (), "the planner only assigns roles the registry knows"
+    assert find_unknown_assignees(planned) == (), (
+        "the planner only assigns roles the registry knows"
+    )
