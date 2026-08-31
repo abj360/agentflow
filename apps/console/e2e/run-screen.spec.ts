@@ -157,3 +157,9 @@ test("the canvas keeps the orchestrator pinned while panning", async ({
   await orchestrator.waitFor({ state: "attached" });
   await expect(orchestrator).toBeVisible();
 });
+
+test("the run screen survives a reload", async ({ page }) => {
+  await openRun(page);
+  await page.reload();
+  await expect(page.getByLabel("Run canvas")).toBeVisible();
+});
