@@ -128,3 +128,8 @@ test("levels are stable no matter what order tasks arrive in", () => {
 test("a task depending on itself lays out nothing", () => {
   expect(layoutTasks([task("a", ["a"])])).toEqual([]);
 });
+
+test("a duplicate dependency does not shift the column", () => {
+  const levels = levelTasks([task("a"), task("b", ["a", "a"])]);
+  expect(levels?.get("b")).toBe(1);
+});
