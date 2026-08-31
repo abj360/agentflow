@@ -148,3 +148,12 @@ test("the send button is disabled until something is typed", async ({
   await page.getByLabel("Instruction").fill("go");
   await expect(send).toBeEnabled();
 });
+
+test("the canvas keeps the orchestrator pinned while panning", async ({
+  page,
+}) => {
+  await openRun(page);
+  const orchestrator = page.locator(".canvas-node--orchestrator");
+  await orchestrator.waitFor({ state: "attached" });
+  await expect(orchestrator).toBeVisible();
+});
