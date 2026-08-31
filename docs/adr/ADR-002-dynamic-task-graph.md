@@ -51,6 +51,13 @@ batch before folding it, so nothing downstream knows the difference.
 and leaves `running`. The graph stays ignorant of transport; the API layer is
 what turns those calls into `node_status_changed` frames.
 
+## Parallel branches, not one long chain
+
+A plan whose objectives do not reference one another is fanned out into
+independent roots rather than chained. Chaining is easy to emit and wrong to
+look at: the canvas would draw a single line, and the revision budget would be
+shared by steps that have nothing to do with each other.
+
 ## Alternatives considered
 
 - **Keep the fixed topology and attach node metadata to it.** Rejected: the
