@@ -118,3 +118,9 @@ test("a caller can widen the spacing without touching the topology", () => {
   });
   expect(placed.map((node) => node.x)).toEqual([100, 200]);
 });
+
+test("levels are stable no matter what order tasks arrive in", () => {
+  const forwards = levelTasks([task("a"), task("b", ["a"]), task("c", ["b"])]);
+  const backwards = levelTasks([task("c", ["b"]), task("b", ["a"]), task("a")]);
+  expect(forwards?.get("c")).toBe(backwards?.get("c"));
+});
