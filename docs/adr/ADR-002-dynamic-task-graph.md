@@ -29,7 +29,8 @@ representations that can drift.
 The four roles stay. The `MAX_REVISIONS = 3` bound stays, but it now applies per
 branch of the plan rather than once per session: a plan with three independent
 branches would otherwise make them share a single revision budget, and the
-branch that happened to run last would get none of it.
+branch that happened to run last would get none of it. The bound itself stays
+at three: raising it was never the problem, sharing it was.
 
 ## Validating before rendering
 
