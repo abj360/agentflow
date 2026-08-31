@@ -455,6 +455,7 @@ code {
   border-color: var(--node-approval);
   border-width: 2px;
   animation: approval-ring 1.6s ease-in-out infinite;
+  z-index: 2;
 }
 
 @media (prefers-reduced-motion: reduce) {
