@@ -70,3 +70,12 @@ test("a textarea counts as typing", () => {
   const field = { tagName: "TEXTAREA" };
   expect(isTypingTarget(field as unknown as EventTarget)).toBe(true);
 });
+
+test("ctrl and alt are both treated as modifiers", () => {
+  expect(
+    hasModifier({ metaKey: false, ctrlKey: true, altKey: false }),
+  ).toBe(true);
+  expect(
+    hasModifier({ metaKey: false, ctrlKey: false, altKey: true }),
+  ).toBe(true);
+});
