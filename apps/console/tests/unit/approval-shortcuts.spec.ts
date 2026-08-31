@@ -2,7 +2,7 @@
  * approval-shortcuts.spec.ts --- regression tests for the approval keyboard shortcuts
  *
  * Contains:
- *   decisionForKey specs: which key press maps to which reviewer decision
+ *   shortcut specs: which press is a decision, and which press is just typing
  */
 
 import { expect, test } from "@playwright/test";
@@ -72,12 +72,12 @@ test("a textarea counts as typing", () => {
 });
 
 test("ctrl and alt are both treated as modifiers", () => {
-  expect(
-    hasModifier({ metaKey: false, ctrlKey: true, altKey: false }),
-  ).toBe(true);
-  expect(
-    hasModifier({ metaKey: false, ctrlKey: false, altKey: true }),
-  ).toBe(true);
+  expect(hasModifier({ metaKey: false, ctrlKey: true, altKey: false })).toBe(
+    true,
+  );
+  expect(hasModifier({ metaKey: false, ctrlKey: false, altKey: true })).toBe(
+    true,
+  );
 });
 
 test("the two shortcuts map to opposite decisions", () => {
