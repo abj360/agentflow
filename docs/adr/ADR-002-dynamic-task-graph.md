@@ -72,7 +72,9 @@ shared by steps that have nothing to do with each other.
   cycle that reaches the browser is already a frame we should not have sent.
   Validating in one place turned out to be too few places: the first version
   checked only the initial plan, and a mid-run replan emptied the canvas until
-  `planner_node()` and `build_graph()` both started validating too.
+  `planner_node()` and `build_graph()` both started validating too. The error
+  now says which stage rejected the plan, because the first incident cost an
+  hour working out which one had not.
 
 ## What the console is allowed to decide
 
