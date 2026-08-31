@@ -95,6 +95,11 @@ they arrive as `dependsOn` and are drawn as given.
   `/run/[id]` screen, because an approval is now a state a node is in rather
   than a queue somewhere else.
 
+## Out of scope
+
+The audit schema, the policy engine, and the budget tracker are untouched. The
+graph changed shape; what it records about itself did not.
+
 ## References
 
 - ADR-001: orchestration pattern — the roles, and the revision bound this keeps.
