@@ -36,7 +36,9 @@ branch that happened to run last would get none of it.
 A planner that replans mid-run can emit a `dependsOn` cycle. `graph_validator.py`
 runs before any structural event is written to a WebSocket frame, so a cyclic,
 duplicated, or dangling dependency raises server-side instead of reaching the
-canvas, where a cycle would hang the topological layout.
+canvas, where a cycle would empty it. Validation runs in three places on
+purpose: `planner_node()` on every replan, `build_graph()` before wiring, and
+`events_for_plan()` before emitting.
 
 ## One frame per plan, not one per node
 
