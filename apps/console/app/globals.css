@@ -444,10 +444,10 @@ code {
 @keyframes approval-ring {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgb(245 158 11 / 0.55);
+    box-shadow: 0 0 0 0 rgb(180 83 9 / 0.5);
   }
   50% {
-    box-shadow: 0 0 0 8px rgb(245 158 11 / 0);
+    box-shadow: 0 0 0 7px rgb(180 83 9 / 0);
   }
 }
 
@@ -455,6 +455,7 @@ code {
   border-color: var(--node-approval);
   border-width: 2px;
   animation: approval-ring 1.6s ease-in-out infinite;
+  z-index: 2;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -642,4 +643,10 @@ code {
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 11rem;
+}
+
+
+.canvas-node--approval:focus-within {
+  outline: 2px solid var(--node-approval);
+  outline-offset: 2px;
 }
