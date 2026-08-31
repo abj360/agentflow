@@ -444,10 +444,10 @@ code {
 @keyframes approval-ring {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgb(245 158 11 / 0.55);
+    box-shadow: 0 0 0 0 rgb(180 83 9 / 0.5);
   }
   50% {
-    box-shadow: 0 0 0 8px rgb(245 158 11 / 0);
+    box-shadow: 0 0 0 7px rgb(180 83 9 / 0);
   }
 }
 
