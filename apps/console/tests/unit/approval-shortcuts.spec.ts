@@ -79,3 +79,7 @@ test("ctrl and alt are both treated as modifiers", () => {
     hasModifier({ metaKey: false, ctrlKey: false, altKey: true }),
   ).toBe(true);
 });
+
+test("the two shortcuts map to opposite decisions", () => {
+  expect(decisionForKey(APPROVE_KEY)).not.toBe(decisionForKey(REJECT_KEY));
+});
