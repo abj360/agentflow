@@ -72,6 +72,13 @@ shared by steps that have nothing to do with each other.
   checked only the initial plan, and a mid-run replan emptied the canvas until
   `planner_node()` and `build_graph()` both started validating too.
 
+## What the console is allowed to decide
+
+Layout, animation, and node species are the console's business; structure is
+not. The species a node draws as is derived from its assignee client-side,
+because it is a rendering choice. Its dependencies are not derived anywhere:
+they arrive as `dependsOn` and are drawn as given.
+
 ## Consequences
 
 - `build_graph()` takes the planned task list as an argument, so every caller
