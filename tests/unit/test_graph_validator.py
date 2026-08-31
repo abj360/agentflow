@@ -19,6 +19,7 @@ import pytest
 from apps.api.orchestration.graph_validator import (
     GraphValidationError,
     find_cycle,
+    find_unknown_assignees,
     validate_task_graph,
 )
 from apps.api.orchestration.state_machine import build_graph, planner_node
@@ -159,3 +160,19 @@ def test_a_diamond_is_not_a_cycle() -> None:
     ]
     validate_task_graph(tasks)
     assert find_cycle(tasks) is None
+
+
+def test_a_role_nobody_registered_is_reported() -> None:
+    """Verifies a task assigned to a non-existent role is caught before render."""
+    tasks = [PlannedTask(id="task-1", title="a", assignee="oracle")]
+    assert find_unknown_assignees(tasks) == ("oracle",)
+
+
+def test_the_planner_only_assigns_roles_that_exist() -> None:
+    """Verifies every role the planner picks is one the registry can resolve."""
+    from apps.api.orchestration.task_planner import TaskPlanner
+
+    planned = TaskPlanner().plan("gather sources\nrun the tool\nwrite it up")
+    assert find_unknown_assignees(planned) == (), (
+        "the planner only assigns roles the registry knows"
+    )

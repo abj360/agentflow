@@ -5,7 +5,9 @@ roles.py --- Planner/Executor/Synthesizer/Critic role interfaces
 Contains:
     AgentRole: protocol every orchestration role implements
     Planner: breaks the task into an ordered plan
+    Researcher: gathers the sources a plan step needs
     Executor: runs plan steps through governed tools
+    Writer: records a plan step's output where the run can cite it
     Synthesizer: merges step outputs into the final answer
     Critic: reviews plans and outputs, requesting revisions
     LLMClient: completion interface roles use to call a model
@@ -54,10 +56,12 @@ class RoleRegistry:
     """
 
     def __init__(self) -> None:
-        """Initializes the registry with the four default roles."""
+        """Initializes the registry with every role the planner can assign."""
         self.roles: dict[str, AgentRole] = {
             "planner": Planner(),
+            "researcher": Researcher(),
             "executor": Executor(),
+            "writer": Writer(),
             "synthesizer": Synthesizer(),
             "critic": Critic(),
         }
@@ -106,6 +110,36 @@ class Planner:
         prompt = f"Plan: {task}"
         draft = await self.llm.complete(prompt)
         return {"plan": [line for line in draft.splitlines() if line.strip()]}
+
+
+class Researcher:
+    """Gathers the sources a plan step needs before it can run."""
+
+    async def run(self, state: dict[str, Any]) -> dict[str, Any]:
+        """Collects the material the current plan step depends on.
+
+        Args:
+            state: Current shared orchestration state.
+
+        Returns:
+            update: State update carrying one gathered source per plan step.
+        """
+        return {"results": [f"gathered: {step}" for step in state["plan"]]}
+
+
+class Writer:
+    """Records a plan step's output where the rest of the run can cite it."""
+
+    async def run(self, state: dict[str, Any]) -> dict[str, Any]:
+        """Records the collected outputs against the run.
+
+        Args:
+            state: Current shared orchestration state.
+
+        Returns:
+            update: State update carrying one written record per result.
+        """
+        return {"results": [f"wrote: {item}" for item in state["results"]]}
 
 
 class Executor:

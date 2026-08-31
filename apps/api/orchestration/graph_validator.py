@@ -4,6 +4,7 @@ graph_validator.py --- rejects an unsound task graph before it reaches the canva
 
 Contains:
     GraphValidationError: raised when a task list cannot be rendered as a DAG
+    find_unknown_assignees(): returns assignees no role in the registry answers to
     find_duplicate_ids(): returns task ids the plan declares more than once
     find_dangling_dependencies(): returns dependsOn ids naming no task in the plan
     find_cycle(): returns the first dependency cycle found in a task list
@@ -13,6 +14,7 @@ Contains:
 
 from collections.abc import Sequence
 
+from apps.api.orchestration.roles import RoleRegistry
 from apps.api.orchestration.task_planner import MAX_TASKS_PER_PLAN, PlannedTask
 
 
@@ -31,6 +33,26 @@ class GraphValidationError(ValueError):
         """
         self.problems = tuple(problems)
         super().__init__("task graph rejected before emit: " + "; ".join(problems))
+
+
+def find_unknown_assignees(tasks: Sequence[PlannedTask]) -> tuple[str, ...]:
+    """Returns the assignees that no registered role answers to.
+
+    A task assigned to a role that does not exist fails at execution time, long
+    after the console has drawn it. Catching it here keeps the canvas honest.
+
+    Args:
+        tasks: Planned tasks carrying the role each one is assigned to.
+
+    Returns:
+        unknown: Assignee names with no matching role, in first-seen order.
+    """
+    known = set(RoleRegistry().roles)
+    unknown: list[str] = []
+    for task in tasks:
+        if task.assignee not in known and task.assignee not in unknown:
+            unknown.append(task.assignee)
+    return tuple(unknown)
 
 
 def find_duplicate_ids(tasks: Sequence[PlannedTask]) -> tuple[str, ...]:
