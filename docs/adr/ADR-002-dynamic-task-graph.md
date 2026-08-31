@@ -41,7 +41,7 @@ canvas, where a cycle would empty it. Validation runs in three places on
 purpose: `planner_node()` on every replan, `build_graph()` before wiring, and
 `events_for_plan()` before emitting.
 
-## One frame per plan, not one per node
+## One frame per plan, not one frame per node
 
 A twelve-task plan used to mean twelve WebSocket frames, and the console laid
 the canvas out again on each one. Structural events are batched into a single
