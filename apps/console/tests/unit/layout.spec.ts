@@ -8,13 +8,13 @@
 
 import { expect, test } from "@playwright/test";
 
+import type { RunViewerTask } from "../../lib/graph-model";
 import {
   COLUMN_WIDTH,
   ROW_HEIGHT,
   layoutTasks,
   levelTasks,
 } from "../../lib/layout";
-import type { RunViewerTask } from "../../lib/graph-model";
 
 /**
  * Builds one runtime-planned task for a layout fixture.
