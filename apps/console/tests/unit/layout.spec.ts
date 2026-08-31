@@ -8,13 +8,13 @@
 
 import { expect, test } from "@playwright/test";
 
+import type { RunViewerTask } from "../../lib/graph-model";
 import {
   COLUMN_WIDTH,
   ROW_HEIGHT,
   layoutTasks,
   levelTasks,
 } from "../../lib/layout";
-import type { RunViewerTask } from "../../lib/graph-model";
 
 /**
  * Builds one runtime-planned task for a layout fixture.
@@ -117,4 +117,19 @@ test("a caller can widen the spacing without touching the topology", () => {
     rowHeight: 40,
   });
   expect(placed.map((node) => node.x)).toEqual([100, 200]);
+});
+
+test("levels are stable no matter what order tasks arrive in", () => {
+  const forwards = levelTasks([task("a"), task("b", ["a"]), task("c", ["b"])]);
+  const backwards = levelTasks([task("c", ["b"]), task("b", ["a"]), task("a")]);
+  expect(forwards?.get("c")).toBe(backwards?.get("c"));
+});
+
+test("a task depending on itself lays out nothing", () => {
+  expect(layoutTasks([task("a", ["a"])])).toEqual([]);
+});
+
+test("a duplicate dependency does not shift the column", () => {
+  const levels = levelTasks([task("a"), task("b", ["a", "a"])]);
+  expect(levels?.get("b")).toBe(1);
 });
