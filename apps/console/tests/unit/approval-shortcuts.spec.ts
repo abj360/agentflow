@@ -60,3 +60,8 @@ test("a bare key press carries no modifier", () => {
 test("an uppercase press is not a shortcut", () => {
   expect(decisionForKey(APPROVE_KEY.toUpperCase())).toBeNull();
 });
+
+test("a content-editable surface counts as typing", () => {
+  const editor = { tagName: "DIV", isContentEditable: true };
+  expect(isTypingTarget(editor as unknown as EventTarget)).toBe(true);
+});
