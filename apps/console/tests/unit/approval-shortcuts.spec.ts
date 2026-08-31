@@ -65,3 +65,8 @@ test("a content-editable surface counts as typing", () => {
   const editor = { tagName: "DIV", isContentEditable: true };
   expect(isTypingTarget(editor as unknown as EventTarget)).toBe(true);
 });
+
+test("a textarea counts as typing", () => {
+  const field = { tagName: "TEXTAREA" };
+  expect(isTypingTarget(field as unknown as EventTarget)).toBe(true);
+});
