@@ -643,3 +643,9 @@ code {
   white-space: nowrap;
   max-width: 11rem;
 }
+
+
+.canvas-node--approval:focus-within {
+  outline: 2px solid var(--node-approval);
+  outline-offset: 2px;
+}
