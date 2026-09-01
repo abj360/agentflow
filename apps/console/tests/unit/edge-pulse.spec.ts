@@ -73,3 +73,11 @@ test("an edge fired in the past is not resurrected", () => {
   const pulses = recordPulse([], "a", START);
   expect(activeEdges(pulses, START + PULSE_DURATION_MS * 3).size).toBe(0);
 });
+
+test("a burst of firings on one edge collapses to one pulse", () => {
+  const pulses = [0, 100, 200, 300].reduce(
+    (carried, offset) => recordPulse(carried, "e", START + offset),
+    [] as ReturnType<typeof recordPulse>,
+  );
+  expect(pulses).toHaveLength(1);
+});
