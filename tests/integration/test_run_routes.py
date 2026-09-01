@@ -46,3 +46,9 @@ def test_starting_a_run_reports_a_terminal_status(client: TestClient) -> None:
     """Verifies a started run always comes back in a terminal state."""
     response = client.post("/runs/run-4", json={"task": "single step"})
     assert response.json()["status"] in {"completed", "revision-bounded"}
+
+
+def test_a_run_with_no_viewers_still_finishes(client: TestClient) -> None:
+    """Verifies broadcasting to an empty room never blocks the run."""
+    response = client.post("/runs/run-5", json={"task": "nobody watching"})
+    assert response.status_code == 200
