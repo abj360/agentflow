@@ -245,9 +245,9 @@ code {
 }
 
 .footer {
-  padding: 0.875rem 1.25rem;
+  padding: 0.5rem 1.25rem;
   color: var(--muted);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   border-top: 1px solid var(--border);
 }
 
