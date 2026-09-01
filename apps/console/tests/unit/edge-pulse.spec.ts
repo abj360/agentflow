@@ -2,7 +2,7 @@
  * edge-pulse.spec.ts --- golden-output tests for edge animation timing
  *
  * Contains:
- *   edge pulse specs: how long an edge stays lit, and when it goes dark again
+ *   pulse specs: how long an edge stays lit, when it goes dark, and refiring
  */
 
 import { expect, test } from "@playwright/test";
@@ -72,4 +72,23 @@ test("nothing is lit before anything has fired", () => {
 test("an edge fired in the past is not resurrected", () => {
   const pulses = recordPulse([], "a", START);
   expect(activeEdges(pulses, START + PULSE_DURATION_MS * 3).size).toBe(0);
+});
+
+test("a burst of firings on one edge collapses to one pulse", () => {
+  const pulses = [0, 100, 200, 300].reduce(
+    (carried, offset) => recordPulse(carried, "e", START + offset),
+    [] as ReturnType<typeof recordPulse>,
+  );
+  expect(pulses).toHaveLength(1);
+});
+
+test("the pulse window is the same for every edge", () => {
+  const pulses = recordPulse(recordPulse([], "a", START), "b", START);
+  expect(activeEdges(pulses, START + PULSE_DURATION_MS - 1).size).toBe(2);
+  expect(activeEdges(pulses, START + PULSE_DURATION_MS).size).toBe(0);
+});
+
+test("an edge id round-trips through the pulse list", () => {
+  const id = edgeId("orchestrator", "task-1");
+  expect([...activeEdges(recordPulse([], id, START), START)]).toEqual([id]);
 });
