@@ -150,7 +150,7 @@ export function Canvas({
   return (
     <div className="canvas">
       {tasks.length > 0 ? null : (
-        <p className="canvas-empty">Waiting for the planner…</p>
+        <p className="canvas-placeholder">Waiting for the planner…</p>
       )}
       <ReactFlow
         nodes={[...nodes]}

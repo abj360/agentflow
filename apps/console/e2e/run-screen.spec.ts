@@ -82,7 +82,7 @@ test("the raw trace log starts collapsed", async ({ page }) => {
 test("an unknown run still renders the screen", async ({ page }) => {
   await page.goto("/run/does-not-exist");
   await expect(page.getByLabel("Run canvas")).toBeVisible();
-  await expect(page.locator(".canvas-empty")).toBeVisible();
+  await expect(page.locator(".canvas-placeholder")).toBeVisible();
 });
 
 test("the canvas offers zoom controls", async ({ page }) => {
