@@ -7,14 +7,14 @@
  *   hasModifier(): whether a key press carried a modifier the shortcuts ignore
  *   isTypingTarget(): whether a key press landed in a field the user is typing in
  *   decisionForKey(): maps one key press to the decision it records, if any
- *   useApprovalShortcuts(): binds the approve and reject shortcuts for the queue
+ *   useApprovalShortcuts(): binds the shortcuts to the approval node in focus
  */
 
 "use client";
 
 import { useEffect } from "react";
 
-import type { Approval, ApprovalDecision } from "../lib/api";
+import type { ApprovalDecision } from "../lib/api";
 
 export const APPROVE_KEY = "a";
 export const REJECT_KEY = "r";
@@ -73,30 +73,35 @@ export function decisionForKey(key: string): ApprovalDecision | null {
 }
 
 /**
- * Binds the approve and reject shortcuts while approvals are pending.
+ * Binds the approve and reject shortcuts to the approval node currently focused.
  *
- * @param approvals - Pending approvals in the order the queue lists them.
+ * These shortcuts were written against a full-page queue, where "the approval"
+ * unambiguously meant the first row. Once approvals moved into canvas nodes that
+ * stopped being true: several can be on screen at once, and acting on the first
+ * one in the list resolves whichever the reviewer happens not to be looking at.
+ * The focused node is now the only thing a key press can act on.
+ *
+ * @param focusedApprovalId - Approval on the node in focus, or null when none is.
  * @param onDecide - Called with the approval id and the decision the key maps to.
  */
 export function useApprovalShortcuts(
-  approvals: Approval[],
+  focusedApprovalId: string | null,
   onDecide: (approvalId: string, status: ApprovalDecision) => void,
 ): void {
   useEffect(() => {
+    if (focusedApprovalId === null) {
+      return;
+    }
     const onKeyDown = (event: KeyboardEvent) => {
-      const [first] = approvals;
-      if (first === undefined) {
-        return;
-      }
       if (isTypingTarget(event.target) || hasModifier(event)) {
         return;
       }
       const decision = decisionForKey(event.key);
       if (decision !== null) {
-        onDecide(first.approval_id, decision);
+        onDecide(focusedApprovalId, decision);
       }
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [approvals, onDecide]);
+  }, [focusedApprovalId, onDecide]);
 }
