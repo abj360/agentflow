@@ -81,3 +81,9 @@ test("a burst of firings on one edge collapses to one pulse", () => {
   );
   expect(pulses).toHaveLength(1);
 });
+
+test("the pulse window is the same for every edge", () => {
+  const pulses = recordPulse(recordPulse([], "a", START), "b", START);
+  expect(activeEdges(pulses, START + PULSE_DURATION_MS - 1).size).toBe(2);
+  expect(activeEdges(pulses, START + PULSE_DURATION_MS).size).toBe(0);
+});
