@@ -6,6 +6,8 @@ Contains:
     TaskWire: one planned task in the shape the console's graph model reads
     PlannedTask: one runtime-planned unit of work and what it waits on
     PlannedTask.to_wire(): renders the task in the shape the console consumes
+    PlannedTask.start(): returns the task marked running from a given moment
+    PlannedTask.finish(): returns the task marked done at a given moment
     PlannedTask.record_usage(): returns the task with one step's spend added
     PlannedTask.record_retry(): returns the task with one more retry counted
     task_id(): builds the stable id for a task at a plan position
@@ -111,6 +113,28 @@ class PlannedTask:
             tokens=self.tokens + tokens,
             tool_call_count=self.tool_call_count + tool_calls,
         )
+
+    def start(self, at: float) -> PlannedTask:
+        """Returns the task marked as running from a given moment.
+
+        Args:
+            at: Epoch seconds the task began running.
+
+        Returns:
+            task: A new task in the running state with its start time set.
+        """
+        return replace(self, status="running", started_at=at)
+
+    def finish(self, at: float) -> PlannedTask:
+        """Returns the task marked as done at a given moment.
+
+        Args:
+            at: Epoch seconds the task settled.
+
+        Returns:
+            task: A new task in the done state with its finish time set.
+        """
+        return replace(self, status="done", finished_at=at)
 
     def record_retry(self) -> PlannedTask:
         """Returns the task with one more retry counted against it.

@@ -198,3 +198,26 @@ def test_fanned_out_tasks_still_group_under_themselves() -> None:
     planned = TaskPlanner().fan_out(("a", "b"))
     roots = branch_roots(planned)
     assert roots == {task.id: task.id for task in planned}
+
+
+def test_a_task_records_when_it_ran() -> None:
+    """Verifies start and finish stamp the timings the canvas renders."""
+    task = PlannedTask(id="task-1", title="a").start(10.0).finish(12.5)
+    assert (task.started_at, task.finished_at) == (10.0, 12.5)
+    assert task.status == "done"
+
+
+def test_timings_reach_the_wire_shape() -> None:
+    """Verifies the console receives the timings, not just the status."""
+    wire = PlannedTask(id="task-1", title="a").start(1.0).to_wire()
+    assert wire["startedAt"] == 1.0
+    assert wire["finishedAt"] is None
+
+
+def test_finishing_without_starting_still_stamps_the_end() -> None:
+    """Verifies a task that was never marked running can still settle."""
+    task = PlannedTask(id="task-1", title="a").finish(4.0)
+    assert task.started_at is None, (
+        "finishing a task must never invent a start time that nothing actually recorded"
+    )
+    assert task.finished_at == 4.0
