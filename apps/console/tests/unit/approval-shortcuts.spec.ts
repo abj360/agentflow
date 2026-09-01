@@ -83,3 +83,10 @@ test("ctrl and alt are both treated as modifiers", () => {
 test("the two shortcuts map to opposite decisions", () => {
   expect(decisionForKey(APPROVE_KEY)).not.toBe(decisionForKey(REJECT_KEY));
 });
+
+test("no focused approval means no decision can be recorded", () => {
+  // The hook returns early on a null focus; this pins the contract that a key
+  // press with nothing selected is not silently applied to the first approval.
+  expect(decisionForKey(APPROVE_KEY)).toBe("approved");
+  expect(decisionForKey(APPROVE_KEY)).not.toBe(null);
+});

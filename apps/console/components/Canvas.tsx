@@ -90,6 +90,7 @@ function buildEdges(
  * @param props.approvals - Approval requests currently waiting on a reviewer.
  * @param props.onResolve - Called with the approval a reviewer has decided.
  * @param props.activeEdgeIds - Edges currently lit by a trace event.
+ * @param props.onFocusTask - Called with the task id a reviewer selects.
  * @returns The canvas element.
  */
 export function Canvas({
@@ -97,11 +98,13 @@ export function Canvas({
   approvals = [],
   onResolve,
   activeEdgeIds,
+  onFocusTask,
 }: Readonly<{
   tasks: readonly RunViewerTask[];
   approvals?: readonly Approval[];
   onResolve?: (approvalId: string) => void;
   activeEdgeIds?: ReadonlySet<string>;
+  onFocusTask?: (taskId: string | null) => void;
 }>) {
   // A stable identity matters: an inline empty Set would rebuild every edge on
   // each render and undo the memo below.
@@ -160,6 +163,8 @@ export function Canvas({
         nodesConnectable={false}
         elementsSelectable
         panOnScroll
+        onNodeClick={(unused, node) => onFocusTask?.(node.id)}
+        onPaneClick={() => onFocusTask?.(null)}
       >
         <Background variant={BackgroundVariant.Dots} gap={18} size={1} />
         <Controls showInteractive={false} />

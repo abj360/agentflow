@@ -16,10 +16,12 @@ import { Canvas } from "../../../components/Canvas";
 import { ChatPanel, type ChatMessage } from "../../../components/ChatPanel";
 import { RunChainBadge } from "../../../components/RunChainBadge";
 import { TraceViewer } from "../../../components/TraceViewer";
+import { useApprovalShortcuts } from "../../../hooks/useApprovalShortcuts";
 import { usePendingApprovals } from "../../../hooks/usePendingApprovals";
 import { useRunGraph } from "../../../hooks/useRunGraph";
 import type { TraceLogEvent } from "../../../hooks/useTraceSocket";
 import { activeEdges } from "../../../lib/edge-pulse";
+import { pairApprovals } from "../../../lib/graph-model";
 
 /**
  * Renders the run screen header with the truncated run identifier.
@@ -85,6 +87,13 @@ export default function RunPage({
   const { tasks, pulses, logs, isLive } = useRunGraph(params.id);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { approvals, dismiss } = usePendingApprovals();
+  const [focusedTaskId, setFocusedTaskId] = useState<string | null>(null);
+  const focusedApproval =
+    focusedTaskId === null
+      ? null
+      : pairApprovals(tasks, approvals).get(focusedTaskId) ?? null;
+
+  useApprovalShortcuts(focusedApproval?.approval_id ?? null, dismiss);
 
   if (!params.id) {
     return <p className="run-empty">No run selected.</p>;
@@ -106,6 +115,7 @@ export default function RunPage({
           approvals={approvals}
           onResolve={dismiss}
           activeEdgeIds={activeEdges(pulses, Date.now())}
+          onFocusTask={setFocusedTaskId}
         />
       </div>
       <aside className="run-log" aria-label="Raw trace log">
