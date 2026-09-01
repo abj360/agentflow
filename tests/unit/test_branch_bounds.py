@@ -106,3 +106,26 @@ def test_a_spent_branch_reports_no_budget_left() -> None:
 def test_no_branch_is_bounded_before_any_revision() -> None:
     """Verifies a run that has not revised anything bounds no branch."""
     assert bounded_branches(make_state()) == ()
+
+
+def test_a_clean_run_summary_mentions_no_branches() -> None:
+    """Verifies a run that finished cleanly reads as a plain summary."""
+    from apps.api.orchestration.loop import session_summary
+
+    summary = session_summary({"iterations": 2, "bounded_branches": []})
+    assert summary == "finished after 2 iterations"
+
+
+def test_a_bounded_run_summary_counts_the_branches() -> None:
+    """Verifies a bounded run says how many branches ran out of budget."""
+    from apps.api.orchestration.loop import session_summary
+
+    summary = session_summary({"iterations": 3, "bounded_branches": ["task-1", "task-2"]})
+    assert "2 branch(es) bounded" in summary
+
+
+def test_a_summary_without_the_key_still_reads() -> None:
+    """Verifies an older result dict does not break the summary line."""
+    from apps.api.orchestration.loop import session_summary
+
+    assert session_summary({"iterations": 1}) == "finished after 1 iterations"
