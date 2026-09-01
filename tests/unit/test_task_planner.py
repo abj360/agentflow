@@ -212,3 +212,10 @@ def test_timings_reach_the_wire_shape() -> None:
     wire = PlannedTask(id="task-1", title="a").start(1.0).to_wire()
     assert wire["startedAt"] == 1.0
     assert wire["finishedAt"] is None
+
+
+def test_finishing_without_starting_still_stamps_the_end() -> None:
+    """Verifies a task that was never marked running can still settle."""
+    task = PlannedTask(id="task-1", title="a").finish(4.0)
+    assert task.started_at is None, "finishing a task must never invent a start time that nothing actually recorded"
+    assert task.finished_at == 4.0
