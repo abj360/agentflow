@@ -28,9 +28,9 @@ import { relaxPositions } from "../lib/relaxation";
 export function layoutSignature(
   tasks: readonly Readonly<RunViewerTask>[],
 ): string {
-  return tasks
-    .map((task) => `${task.id}:${task.dependsOn.join(",")}`)
-    .join("|");
+  // Length first: a spawn is by far the most common shape change, and comparing
+  // one number rules most re-renders out before any string is built.
+  return `${tasks.length}|${tasks.map((task) => `${task.id}:${task.dependsOn.join(",")}`).join("|")}`;
 }
 
 /**
