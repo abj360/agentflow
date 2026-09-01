@@ -102,7 +102,11 @@ def session_summary(result: dict[str, Any]) -> str:
         result: The dict returned by run_session.
 
     Returns:
-        summary: One-line description of the run for logs.
+        summary: One-line description of the run for logs, naming any branch
+            that ran out of revisions rather than finishing on its own.
     """
     count = result["iterations"]
-    return f"finished after {count} iterations, bounded per branch at {MAX_REVISIONS}"
+    bounded = result.get("bounded_branches", [])
+    if not bounded:
+        return f"finished after {count} iterations"
+    return f"finished after {count} iterations, {len(bounded)} branch(es) bounded"
