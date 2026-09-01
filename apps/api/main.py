@@ -104,6 +104,14 @@ def create_app() -> FastAPI:
             run_id,
             [node_status_changed(task_id, status) for task_id, status in transitions],
         )
+        await hub.broadcast(
+            run_id,
+            {
+                "kind": "run_finished",
+                "role": "orchestrator",
+                "payload": {"status": result["status"], "tasks": len(planned)},
+            },
+        )
         return {"status": str(result["status"]), "tasks": len(planned)}
 
     @app.websocket("/ws/traces")
