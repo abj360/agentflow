@@ -514,7 +514,7 @@ code {
   background: currentColor;
 }
 
-.canvas-empty {
+.canvas-placeholder {
   position: absolute;
   inset: 0;
   display: grid;
