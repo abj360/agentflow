@@ -109,7 +109,7 @@ def create_app() -> FastAPI:
             {
                 "kind": "run_finished",
                 "role": "orchestrator",
-                "payload": {"status": result["status"], "tasks": len(planned)},
+                "payload": {"status": str(result["status"]), "tasks": len(planned)},
             },
         )
         return {"status": str(result["status"]), "tasks": len(planned)}
