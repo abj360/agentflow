@@ -81,9 +81,9 @@ main {
   margin: 0 auto;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 40rem) {
   main {
-    padding: 1rem;
+    padding: 0.75rem;
   }
 }
 
