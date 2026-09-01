@@ -2,7 +2,7 @@
  * edge-pulse.spec.ts --- golden-output tests for edge animation timing
  *
  * Contains:
- *   edge pulse specs: how long an edge stays lit, and when it goes dark again
+ *   pulse specs: how long an edge stays lit, when it goes dark, and refiring
  */
 
 import { expect, test } from "@playwright/test";
