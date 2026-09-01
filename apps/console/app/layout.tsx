@@ -11,7 +11,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "agentflow console",
-  description: "Admin console for the agentflow orchestrator",
+  description: "Live task graph and approvals for one agentflow run",
 };
 
 export default function RootLayout({
