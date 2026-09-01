@@ -1,5 +1,5 @@
 /**
- * ApprovalCard.tsx --- one approval request, as a queue row or an expanded node body
+ * ApprovalCard.tsx --- one approval request, rendered inside its canvas node
  *
  * Contains:
  *   ApprovalCard: shows an approval request with approve/reject buttons
@@ -18,25 +18,22 @@ import type { Approval } from "../lib/api";
  *
  * @param props.approval - The approval request to display.
  * @param props.onResolve - Called with the recorded decision once the API accepts it.
- * @param props.expanded - True when rendering inside a canvas node instead of a queue.
  * @returns The approval card element.
  */
 export function ApprovalCard({
   approval,
   onResolve,
-  expanded = false,
 }: Readonly<{
   approval: Approval;
   onResolve: (status: ApprovalDecision) => void;
-  expanded?: boolean;
 }>) {
   const { decide, pending, error } = useApprovalDecision(
     approval.approval_id,
     onResolve,
   );
 
-  const body = (
-    <>
+  return (
+    <div className="approval-inline" role="group" aria-label="Approval">
       <header>
         <strong title={approval.tool_name}>
           {approval.tool_name || "unnamed tool"}
@@ -68,15 +65,6 @@ export function ApprovalCard({
           {error}
         </p>
       )}
-    </>
+    </div>
   );
-
-  if (expanded) {
-    return (
-      <div className="approval-inline" role="group" aria-label="Approval">
-        {body}
-      </div>
-    );
-  }
-  return <div className="approval-card">{body}</div>;
 }

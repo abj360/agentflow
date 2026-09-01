@@ -121,20 +121,6 @@ section > h1 {
   font-weight: 500;
 }
 
-.approval-card {
-  border: 1px solid var(--border);
-  box-shadow: var(--node-elevation);
-  border-radius: var(--radius);
-  padding: 0.875rem;
-}
-
-.approval-card header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 0.625rem;
-}
-
 .approval-trace {
   color: var(--muted);
   font-size: 0.8125rem;
@@ -195,11 +181,6 @@ button {
 
 button:hover {
   border-color: var(--muted);
-}
-
-.approval-card footer {
-  display: flex;
-  justify-content: flex-end;
 }
 
 .run-loading {

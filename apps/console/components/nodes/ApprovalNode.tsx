@@ -34,7 +34,6 @@ export function ApprovalNode(props: NodeProps<TaskNodeData>) {
       <ApprovalCard
         approval={approval}
         onResolve={() => onResolve(approval.approval_id)}
-        expanded
       />
     </TaskNode>
   );
