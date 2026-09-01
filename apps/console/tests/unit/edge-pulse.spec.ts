@@ -87,3 +87,8 @@ test("the pulse window is the same for every edge", () => {
   expect(activeEdges(pulses, START + PULSE_DURATION_MS - 1).size).toBe(2);
   expect(activeEdges(pulses, START + PULSE_DURATION_MS).size).toBe(0);
 });
+
+test("an edge id round-trips through the pulse list", () => {
+  const id = edgeId("orchestrator", "task-1");
+  expect([...activeEdges(recordPulse([], id, START), START)]).toEqual([id]);
+});
