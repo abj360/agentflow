@@ -124,3 +124,10 @@ def test_a_bounded_run_summary_counts_the_branches() -> None:
         {"iterations": 3, "bounded_branches": ["task-1", "task-2"]}
     )
     assert "2 branch(es) bounded" in summary
+
+
+def test_a_summary_without_the_key_still_reads() -> None:
+    """Verifies an older result dict does not break the summary line."""
+    from apps.api.orchestration.loop import session_summary
+
+    assert session_summary({"iterations": 1}) == "finished after 1 iterations"
