@@ -114,3 +114,13 @@ def test_a_clean_run_summary_mentions_no_branches() -> None:
 
     summary = session_summary({"iterations": 2, "bounded_branches": []})
     assert summary == "finished after 2 iterations"
+
+
+def test_a_bounded_run_summary_counts_the_branches() -> None:
+    """Verifies a bounded run says how many branches ran out of budget."""
+    from apps.api.orchestration.loop import session_summary
+
+    summary = session_summary(
+        {"iterations": 3, "bounded_branches": ["task-1", "task-2"]}
+    )
+    assert "2 branch(es) bounded" in summary
