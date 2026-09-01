@@ -41,6 +41,8 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
 }
 
 .topbar {
