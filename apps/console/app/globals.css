@@ -632,3 +632,14 @@ code {
   outline: 2px solid var(--node-approval);
   outline-offset: 2px;
 }
+
+.canvas-hint {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  pointer-events: none;
+  z-index: 1;
+}

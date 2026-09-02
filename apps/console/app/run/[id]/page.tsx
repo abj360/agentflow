@@ -1,5 +1,5 @@
 /**
- * page.tsx --- unified single-screen view of one orchestration run
+ * page.tsx --- the single screen one orchestration run is watched from
  *
  * Contains:
  *   RunHeader: renders the run screen header with the truncated run id
@@ -110,6 +110,11 @@ export default function RunPage({
         />
       </aside>
       <div className="run-canvas" aria-label="Run canvas">
+        {tasks.length === 0 ||
+        focusedTaskId !== null ||
+        approvals.length === 0 ? null : (
+          <p className="canvas-hint">Select a node to act on it (a / r)</p>
+        )}
         <Canvas
           tasks={tasks}
           approvals={approvals}
