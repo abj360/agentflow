@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-test_task_planner.py --- unit tests for the runtime planner's dependsOn emission
+test_task_planner.py --- unit tests for the runtime planner and its wire shape
 
 Contains:
     test_single_objective_plans_one_root_task(): verifies a one-line task has no deps
@@ -221,3 +221,23 @@ def test_finishing_without_starting_still_stamps_the_end() -> None:
         "finishing a task must never invent a start time that nothing actually recorded"
     )
     assert task.finished_at == 4.0
+
+
+def test_the_wire_shape_is_json_serialisable() -> None:
+    """Verifies a planned task survives the trip through a WebSocket frame."""
+    import json
+
+    wire = TaskPlanner().plan("gather sources")[0].to_wire()
+    assert json.loads(json.dumps(wire))["dependsOn"] == []
+
+
+def test_task_ids_are_stable_across_identical_plans() -> None:
+    """Verifies replanning the same task yields the ids the canvas already has."""
+    first = TaskPlanner().plan("one\ntwo")
+    second = TaskPlanner().plan("one\ntwo")
+    assert [task.id for task in first] == [task.id for task in second]
+
+
+def test_a_trailing_blank_line_plans_nothing_extra() -> None:
+    """Verifies trailing whitespace never becomes a task of its own."""
+    assert len(TaskPlanner().plan("one\ntwo\n\n")) == 2
