@@ -10,6 +10,7 @@
     "lint": "next lint --dir app --dir components --dir hooks --dir lib --dir tests",
     "start": "next start",
     "test": "playwright test",
+    "test:ci": "playwright test --project unit",
     "test:e2e": "playwright test --project e2e",
     "test:unit": "playwright test --project unit",
     "typecheck": "tsc --noEmit"
