@@ -229,3 +229,10 @@ def test_the_wire_shape_is_json_serialisable() -> None:
 
     wire = TaskPlanner().plan("gather sources")[0].to_wire()
     assert json.loads(json.dumps(wire))["dependsOn"] == []
+
+
+def test_task_ids_are_stable_across_identical_plans() -> None:
+    """Verifies replanning the same task yields the ids the canvas already has."""
+    first = TaskPlanner().plan("one\ntwo")
+    second = TaskPlanner().plan("one\ntwo")
+    assert [task.id for task in first] == [task.id for task in second]
