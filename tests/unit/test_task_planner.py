@@ -236,3 +236,8 @@ def test_task_ids_are_stable_across_identical_plans() -> None:
     first = TaskPlanner().plan("one\ntwo")
     second = TaskPlanner().plan("one\ntwo")
     assert [task.id for task in first] == [task.id for task in second]
+
+
+def test_a_trailing_blank_line_plans_nothing_extra() -> None:
+    """Verifies trailing whitespace never becomes a task of its own."""
+    assert len(TaskPlanner().plan("one\ntwo\n\n")) == 2
