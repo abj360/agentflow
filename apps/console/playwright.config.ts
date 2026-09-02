@@ -2,7 +2,7 @@
  * playwright.config.ts --- test runner configuration for the console suites
  *
  * Contains:
- *   config: unit and end-to-end projects, the retry budget, and the dev server
+ *   config: the unit and end-to-end projects, and the dev server e2e drives
  */
 
 import { defineConfig, type PlaywrightTestConfig } from "@playwright/test";
