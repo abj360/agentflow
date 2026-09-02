@@ -3,7 +3,7 @@
  * pinning what has already settled
  *
  * Contains:
- *   layoutSignature(): the plan shape a relaxed layout is valid for
+ *   layoutSignature(): the plan shape a relaxed layout stays valid for
  *   byId(): indexes settled placements so the next pass can pin them
  *   useRelaxedLayout(): recomputes the relaxed layout only when the plan changes
  */
@@ -28,9 +28,9 @@ import { relaxPositions } from "../lib/relaxation";
 export function layoutSignature(
   tasks: readonly Readonly<RunViewerTask>[],
 ): string {
-  return tasks
-    .map((task) => `${task.id}:${task.dependsOn.join(",")}`)
-    .join("|");
+  // Length first: a spawn is by far the most common shape change, and comparing
+  // one number rules most re-renders out before any string is built.
+  return `${tasks.length}|${tasks.map((task) => `${task.id}:${task.dependsOn.join(",")}`).join("|")}`;
 }
 
 /**
