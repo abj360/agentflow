@@ -1,5 +1,5 @@
 /**
- * page.tsx --- unified single-screen view of one orchestration run
+ * page.tsx --- the single screen one orchestration run is watched from
  *
  * Contains:
  *   RunHeader: renders the run screen header with the truncated run id
