@@ -3,7 +3,7 @@
  * pinning what has already settled
  *
  * Contains:
- *   layoutSignature(): the plan shape a relaxed layout is valid for
+ *   layoutSignature(): the plan shape a relaxed layout stays valid for
  *   byId(): indexes settled placements so the next pass can pin them
  *   useRelaxedLayout(): recomputes the relaxed layout only when the plan changes
  */
