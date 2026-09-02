@@ -110,7 +110,9 @@ export default function RunPage({
         />
       </aside>
       <div className="run-canvas" aria-label="Run canvas">
-        {tasks.length === 0 || focusedTaskId !== null ? null : (
+        {tasks.length === 0 ||
+        focusedTaskId !== null ||
+        approvals.length === 0 ? null : (
           <p className="canvas-hint">Select a node to act on it (a / r)</p>
         )}
         <Canvas
