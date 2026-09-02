@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-test_task_planner.py --- unit tests for the runtime planner's dependsOn emission
+test_task_planner.py --- unit tests for the runtime planner and its wire shape
 
 Contains:
     test_single_objective_plans_one_root_task(): verifies a one-line task has no deps
