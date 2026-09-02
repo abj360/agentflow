@@ -221,3 +221,11 @@ def test_finishing_without_starting_still_stamps_the_end() -> None:
         "finishing a task must never invent a start time that nothing actually recorded"
     )
     assert task.finished_at == 4.0
+
+
+def test_the_wire_shape_is_json_serialisable() -> None:
+    """Verifies a planned task survives the trip through a WebSocket frame."""
+    import json
+
+    wire = TaskPlanner().plan("gather sources")[0].to_wire()
+    assert json.loads(json.dumps(wire))["dependsOn"] == []
