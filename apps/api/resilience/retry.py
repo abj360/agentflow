@@ -10,6 +10,7 @@ Contains:
 
 import asyncio
 import random
+from collections.abc import Awaitable, Callable
 
 BASE_DELAY_SECONDS = 0.1
 MAX_DELAY_SECONDS = 5.0
@@ -26,10 +27,11 @@ def backoff_delay(attempt: int, base: float = BASE_DELAY_SECONDS) -> float:
         delay: Jittered exponential backoff delay in seconds.
     """
     exponential = min(MAX_DELAY_SECONDS, base * (2**attempt))
-    return exponential * random.uniform(0.5, 1.5)
+    jittered: float = exponential * random.uniform(0.5, 1.5)
+    return jittered
 
 
-async def call_with_retries(func, max_retries: int = 3):
+async def call_with_retries[T](func: Callable[[], Awaitable[T]], max_retries: int = 3) -> T:
     """Retries a failed downstream call with exponential backoff.
 
     Args:

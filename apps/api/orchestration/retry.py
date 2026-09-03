@@ -11,7 +11,9 @@ Contains:
 """
 
 import asyncio
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -83,7 +85,7 @@ class RetryPolicyRegistry:
         self.tenant_overrides.setdefault(tenant_id, {})[policy.tool_name] = policy
 
 
-async def execute_with_retry(func, policy: RetryPolicy):
+async def execute_with_retry[T](func: Callable[[], Awaitable[T]], policy: RetryPolicy) -> T:
     """Runs a tool call under its retry policy.
 
     Args:
@@ -107,7 +109,7 @@ async def execute_with_retry(func, policy: RetryPolicy):
             await asyncio.sleep(policy.backoff_seconds * attempt)
 
 
-def policies_from_dict(raw: dict) -> RetryPolicyRegistry:
+def policies_from_dict(raw: dict[str, Any]) -> RetryPolicyRegistry:
     """Builds a registry from a plain dict, e.g. parsed YAML.
 
     Args:

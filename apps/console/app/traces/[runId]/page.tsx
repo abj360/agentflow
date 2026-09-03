@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 /**
  * page.tsx --- run detail drill-down page
  *

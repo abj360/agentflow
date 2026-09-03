@@ -78,11 +78,6 @@ class SessionRegistry:
         self.records[session_id] = updated
         return updated
 
-
-class VersionConflictError(Exception):
-    """Raised when a session version bump loses a concurrent race."""
-
-
     def close_session(self, session_id: str) -> SessionRecord:
         """Marks a session closed and returns its final record.
 
@@ -94,7 +89,6 @@ class VersionConflictError(Exception):
         """
         return self.records.pop(session_id)
 
-
     def list_sessions(self) -> list[SessionRecord]:
         """Lists all registered session records.
 
@@ -102,7 +96,6 @@ class VersionConflictError(Exception):
             records: Snapshot list of every registered session record.
         """
         return list(self.records.values())
-
 
     def expire_older_than(self, max_age_seconds: float) -> int:
         """Removes sessions idle longer than the given age.
@@ -116,10 +109,12 @@ class VersionConflictError(Exception):
         now = time.time()
         cutoff = now - max_age_seconds
         stale = [
-            session_id
-            for session_id, record in self.records.items()
-            if record.created_at < cutoff
+            session_id for session_id, record in self.records.items() if record.created_at < cutoff
         ]
         for session_id in stale:
             del self.records[session_id]
         return len(stale)
+
+
+class VersionConflictError(Exception):
+    """Raised when a session version bump loses a concurrent race."""

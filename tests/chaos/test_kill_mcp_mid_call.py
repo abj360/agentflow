@@ -56,8 +56,7 @@ def test_breaker_recovers_when_server_returns() -> None:
     """Verifies the breaker half-opens after the server is back."""
     from apps.api.resilience.breaker import ServerCircuitBreaker
 
-    breaker = ServerCircuitBreaker("chaos-srv", failure_threshold=1,
-                                   reset_seconds=0)
+    breaker = ServerCircuitBreaker("chaos-srv", failure_threshold=1, reset_seconds=0)
     breaker.record_failure()
     assert breaker.allows_call() is True
 

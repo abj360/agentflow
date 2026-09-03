@@ -14,11 +14,13 @@ Contains:
 import hashlib
 import hmac
 import json
+from collections.abc import Sequence
+from typing import Any
 
 GENESIS_HASH = "0" * 64
 
 
-def compute_event_hash(trace_id: str, kind: str, payload: dict, prev_hash: str) -> str:
+def compute_event_hash(trace_id: str, kind: str, payload: dict[str, Any], prev_hash: str) -> str:
     """Derives a SHA-256 hash over event content and the previous hash.
 
     Args:
@@ -49,7 +51,7 @@ class ChainLinker:
         """Initializes the linker with no known traces."""
         self.last_hashes: dict[str, str] = {}
 
-    def link(self, trace_id: str, kind: str, payload: dict) -> tuple[str, str]:
+    def link(self, trace_id: str, kind: str, payload: dict[str, Any]) -> tuple[str, str]:
         """Computes prev_hash and event_hash for the next event of a trace.
 
         Args:
@@ -66,22 +68,22 @@ class ChainLinker:
         return prev_hash, event_hash
 
 
-def verify_chain(events: list) -> bool:
+def verify_chain(events: Sequence[Any], start_hash: str = GENESIS_HASH) -> bool:
     """Verifies the integrity of an ordered audit event chain.
 
     Args:
         events: Audit events ordered by created_at for one trace.
+        start_hash: Hash the first event must link back to; the genesis hash
+            for a whole chain, or the preceding event's hash for a segment.
 
     Returns:
         is_valid: True when every event hash matches its recomputed value.
     """
-    prev_hash = GENESIS_HASH
+    prev_hash = start_hash
     for event in events:
         if not hmac.compare_digest(str(event.prev_hash), prev_hash):
             return False
-        recomputed = compute_event_hash(
-            event.trace_id, str(event.kind), event.payload, prev_hash
-        )
+        recomputed = compute_event_hash(event.trace_id, str(event.kind), event.payload, prev_hash)
         if recomputed != event.event_hash:
             return False
         prev_hash = event.event_hash
@@ -89,14 +91,10 @@ def verify_chain(events: list) -> bool:
 
 
 class ChainVerificationError(Exception):
-    """Raised when an audit chain fails integrity verification.
-
-    Carries the trace_id and position of the first invalid event so callers
-    can pinpoint the tampered or missing link without re-walking the chain.
-    """
+    """Raised when an audit chain fails integrity verification."""
 
 
-def chain_head(events: list) -> str:
+def chain_head(events: Sequence[Any]) -> str:
     """Returns the hash of the most recent event in a verified chain.
 
     Args:
@@ -107,4 +105,4 @@ def chain_head(events: list) -> str:
     """
     if not events:
         return GENESIS_HASH
-    return events[-1].event_hash
+    return str(events[-1].event_hash)

@@ -12,9 +12,10 @@ Contains:
 import hashlib
 import json
 import time
+from typing import Any
 
 
-def cache_key(task: str, context: dict) -> str:
+def cache_key(task: str, context: dict[str, Any]) -> str:
     """Derives a stable cache key from task and context.
 
     Args:
@@ -24,9 +25,7 @@ def cache_key(task: str, context: dict) -> str:
     Returns:
         key: Hex-encoded content hash used as the cache key.
     """
-    canonical = json.dumps(
-        {"task": task, "context": context}, sort_keys=True, default=str
-    )
+    canonical = json.dumps({"task": task, "context": context}, sort_keys=True, default=str)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
@@ -73,13 +72,10 @@ class PromptCache:
             completion: The planner completion to cache.
         """
         if len(self.entries) >= self.max_entries:
-            oldest = min(
-                self.entries, key=lambda entry_key: self.entries[entry_key][1]
-            )
+            oldest = min(self.entries, key=lambda entry_key: self.entries[entry_key][1])
             del self.entries[oldest]
             self.evictions += 1
         self.entries[key] = (completion, time.time())
-
 
     def get_fresh(self, key: str, ttl_seconds: float) -> str | None:
         """Looks up a cached completion, honoring a time-to-live.
@@ -100,7 +96,6 @@ class PromptCache:
             del self.entries[key]
             return None
         return value
-
 
     def hit_rate(self) -> float:
         """Computes the cache hit rate since startup.

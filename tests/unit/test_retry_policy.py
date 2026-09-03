@@ -156,9 +156,7 @@ def test_tenant_override_wins_over_default() -> None:
     """Verifies a tenant override beats the registered policy."""
     registry = RetryPolicyRegistry()
     registry.register(RetryPolicy(tool_name="shell.exec", max_attempts=2))
-    registry.register_tenant_override(
-        "acme", RetryPolicy(tool_name="shell.exec", max_attempts=7)
-    )
+    registry.register_tenant_override("acme", RetryPolicy(tool_name="shell.exec", max_attempts=7))
     assert registry.resolve("shell.exec", tenant_id="acme").max_attempts == 7
 
 
@@ -166,9 +164,7 @@ def test_other_tenant_gets_default_policy() -> None:
     """Verifies tenants without an override get the registered policy."""
     registry = RetryPolicyRegistry()
     registry.register(RetryPolicy(tool_name="shell.exec", max_attempts=2))
-    registry.register_tenant_override(
-        "acme", RetryPolicy(tool_name="shell.exec", max_attempts=7)
-    )
+    registry.register_tenant_override("acme", RetryPolicy(tool_name="shell.exec", max_attempts=7))
     assert registry.resolve("shell.exec", tenant_id="globex").max_attempts == 2
 
 

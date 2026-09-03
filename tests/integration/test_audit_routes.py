@@ -7,12 +7,14 @@ Contains:
     test_trace_events_returns_chain(): verifies a known trace returns its events
 """
 
+from collections.abc import AsyncIterator
+from datetime import UTC, datetime
 from types import SimpleNamespace
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from apps.api.audit.chain import GENESIS_HASH, ChainLinker
+from apps.api.audit.chain import ChainLinker
 from apps.api.audit.routes import router
 from apps.api.db import get_session
 
@@ -27,6 +29,10 @@ class FakeScalarResult:
     def all(self) -> list:
         """Returns the captured events."""
         return self._events
+
+    def __iter__(self) -> AsyncIterator:
+        """Iterates the captured events."""
+        return iter(self._events)
 
 
 class FakeExecuteResult:
@@ -66,7 +72,7 @@ class FakeEvent:
         self.payload = payload
         self.prev_hash = prev_hash
         self.event_hash = event_hash
-        self.created_at = None
+        self.created_at = datetime(2026, 4, 30, tzinfo=UTC)
 
 
 def make_events(trace_id: str, count: int) -> list:
@@ -99,7 +105,7 @@ def make_client(events: list) -> TestClient:
     app = FastAPI()
     app.include_router(router)
 
-    async def fake_get_session():
+    async def fake_get_session() -> AsyncIterator[FakeSession]:
         yield FakeSession(events)
 
     app.dependency_overrides[get_session] = fake_get_session

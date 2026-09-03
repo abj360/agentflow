@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 /**
  * ApprovalCard.tsx --- one pending approval request card
  *

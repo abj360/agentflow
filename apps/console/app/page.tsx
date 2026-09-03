@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 /**
  * page.tsx --- console landing page
  *

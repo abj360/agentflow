@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 /**
  * TraceViewer.tsx --- live trace event list for one run
  *

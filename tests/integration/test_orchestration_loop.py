@@ -120,9 +120,7 @@ async def test_graph_state_has_expected_keys() -> None:
     """Verifies node updates keep the graph state shape."""
     from apps.api.orchestration.state_machine import planner_node
 
-    state = planner_node(
-        {"task": "x", "plan": [], "results": [], "critique": "", "iterations": 0}
-    )
+    state = planner_node({"task": "x", "plan": [], "results": [], "critique": "", "iterations": 0})
     assert set(state) == {"task", "plan", "results", "critique", "iterations"}
 
 
@@ -188,8 +186,7 @@ async def test_critic_node_counts_iterations() -> None:
     from apps.api.orchestration.state_machine import critic_node
 
     state = critic_node(
-        {"task": "t", "plan": [], "results": ["r"], "critique": "",
-         "iterations": 4}
+        {"task": "t", "plan": [], "results": ["r"], "critique": "", "iterations": 4}
     )
     assert state["iterations"] == 5
 

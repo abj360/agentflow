@@ -12,20 +12,23 @@ Contains:
     shutdown_tracing(): flushes and shuts down the tracer provider
 """
 
+from collections.abc import Iterator
 from contextlib import contextmanager
 
+from fastapi import FastAPI
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.sampling import ParentBasedTraceIdRatio
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace.sampling import ParentBasedTraceIdRatio
+from redis.asyncio import Redis
 
 DEFAULT_SAMPLER = ParentBasedTraceIdRatio(0.25)  # head-based, per ADR-001
 
 
-def setup_tracing(app, service_name: str = "agentflow-api") -> None:
+def setup_tracing(app: FastAPI, service_name: str = "agentflow-api") -> None:
     """Configures the OTLP tracer provider and FastAPI instrumentation.
 
     Args:
@@ -41,7 +44,7 @@ def setup_tracing(app, service_name: str = "agentflow-api") -> None:
     FastAPIInstrumentor.instrument_app(app)
 
 
-def get_tracer(name: str = "agentflow"):
+def get_tracer(name: str = "agentflow") -> trace.Tracer:
     """Returns the module-level tracer for manual spans.
 
     Args:
@@ -67,7 +70,7 @@ def current_trace_id() -> str:
     return trace_id
 
 
-def set_span_attribute(key: str, value: object) -> None:
+def set_span_attribute(key: str, value: str | bool | int | float) -> None:
     """Sets an attribute on the current span when one is active.
 
     Args:
@@ -80,7 +83,7 @@ def set_span_attribute(key: str, value: object) -> None:
 
 
 @contextmanager
-def traced_section(name: str, **attributes: object):
+def traced_section(name: str, **attributes: str | bool | int | float) -> Iterator[trace.Span]:
     """Wraps a block in a manual span.
 
     Args:
@@ -97,7 +100,7 @@ def traced_section(name: str, **attributes: object):
         yield span  # callers may set additional attributes
 
 
-def instrument_redis(redis_client) -> None:
+def instrument_redis(redis_client: Redis) -> None:
     """Instruments an async Redis client for tracing.
 
     Args:

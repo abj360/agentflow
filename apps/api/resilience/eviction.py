@@ -116,7 +116,6 @@ class ServerEvictor:
         self.checker.failures[server_name] = 0
         return True
 
-
     def list_evicted(self) -> list[str]:  # active-pool inverse
         """Lists currently evicted servers.
 
@@ -124,7 +123,6 @@ class ServerEvictor:
             servers: Names of all evicted servers.
         """
         return list(self.evicted)
-
 
     def eviction_age(self, server_name: str) -> float | None:
         """Reports how long a server has been evicted.
@@ -139,7 +137,6 @@ class ServerEvictor:
         if evicted_at is None:
             return None
         return time.time() - evicted_at
-
 
     def sweep_expired(self, max_age_seconds: float) -> int:
         """Reinstates servers evicted longer than the given age.

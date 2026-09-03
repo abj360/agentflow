@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 /**
  * RunDetail.tsx --- drill-down view of one orchestration run
  *

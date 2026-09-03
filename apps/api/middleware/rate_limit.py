@@ -9,10 +9,12 @@ Contains:
 
 import time
 from collections import defaultdict
+from typing import Protocol
 
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
+from starlette.types import ASGIApp
 
 MAX_REQUESTS = 120
 WINDOW_SECONDS = 60
@@ -28,7 +30,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     """
 
     def __init__(
-        self, app, max_requests: int = MAX_REQUESTS, window_seconds: int = WINDOW_SECONDS
+        self, app: ASGIApp, max_requests: int = MAX_REQUESTS, window_seconds: int = WINDOW_SECONDS
     ) -> None:
         """Initializes the middleware with limits and the request counter store.
 
@@ -36,15 +38,19 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             app: The ASGI application being wrapped.
             max_requests: Maximum requests allowed per client per window.
             window_seconds: Length of the fixed rate-limit window.
+
+        Raises:
+            ValueError: When the limit or window is not positive.
         """
         super().__init__(app)
-        assert max_requests > 0
+        if max_requests <= 0 or window_seconds <= 0:
+            raise ValueError("rate limit and window must both be positive")
         self.max_requests = max_requests
         self.window_seconds = window_seconds
         self._counters: dict[str, tuple[float, int]] = defaultdict(lambda: (0.0, 0))
         self._now = time.monotonic
 
-    async def dispatch(self, request: Request, call_next) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         """Rejects requests that exceed the per-client window allowance.
 
         Args:
@@ -89,6 +95,28 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         return request.client.host if request.client else "unknown"
 
 
+class RedisLike(Protocol):
+    """Structural interface for the async Redis calls the counter uses."""
+
+    async def incr(self, key: str) -> int:
+        """Increments and returns the count for a key.
+
+        Args:
+            key: Counter key to increment.
+
+        Returns:
+            count: The counter's value after the increment.
+        """
+
+    async def expire(self, key: str, seconds: int) -> object:
+        """Sets a key expiry in seconds.
+
+        Args:
+            key: Key to expire.
+            seconds: Time-to-live applied to the key.
+        """
+
+
 class RedisRateCounter:
     """Counts requests in Redis for multi-instance rate limiting.
 
@@ -97,7 +125,7 @@ class RedisRateCounter:
         prefix: Key prefix separating rate-limit keys from other data.
     """
 
-    def __init__(self, redis, prefix: str = "ratelimit") -> None:
+    def __init__(self, redis: RedisLike, prefix: str = "ratelimit") -> None:
         """Initializes the counter with a Redis client and key prefix.
 
         Args:

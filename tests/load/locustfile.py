@@ -30,7 +30,6 @@ class OrchestratorUser(HttpUser):
         """Hits the health endpoint."""
         self.client.get("/health")
 
-
     @task(2)
     def fetch_chain_head(self) -> None:
         """Fetches the head hash of a trace chain."""
@@ -39,11 +38,9 @@ class OrchestratorUser(HttpUser):
             name="/audit/{trace_id}/head",
         )
 
-
     def on_start(self) -> None:
         """Runs once per simulated user at startup (warms the connection)."""
         self.client.get("/health")
-
 
     @task(3)
     def page_trace_events(self) -> None:
@@ -56,14 +53,10 @@ class OrchestratorUser(HttpUser):
             if response.status_code == 200:
                 response.success()
 
-
     @task(1)
     def verify_trace(self) -> None:
         """Re-verifies a trace chain."""
-        self.client.get(
-            "/audit/trace-load-1/verify", name="/audit/{trace_id}/verify"
-        )
-
+        self.client.get("/audit/trace-load-1/verify", name="/audit/{trace_id}/verify")
 
     @task(1)
     def fetch_metrics(self) -> None:
@@ -80,7 +73,6 @@ class ApprovalReviewerUser(HttpUser):
     def poll_approvals(self) -> None:
         """Polls the pending approval queue."""
         self.client.get("/audit/sessions")
-
 
     @task(1)
     def fetch_sessions_page(self) -> None:

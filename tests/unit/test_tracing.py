@@ -90,9 +90,8 @@ def test_traced_section_nested() -> None:
     """Verifies traced sections nest without error."""
     from apps.api.observability.tracing import traced_section
 
-    with traced_section("outer"):
-        with traced_section("inner") as inner:
-            assert inner is not None
+    with traced_section("outer"), traced_section("inner") as inner:
+        assert inner is not None
 
 
 def test_record_exception_callable() -> None:

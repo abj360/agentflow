@@ -17,6 +17,7 @@ Contains:
 import uuid
 from datetime import datetime
 from enum import StrEnum
+from typing import Any
 
 from sqlalchemy import DateTime, Enum, Index, String, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
@@ -59,22 +60,14 @@ class AuditEvent(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
     trace_id: Mapped[str] = mapped_column(String(64), nullable=False)
-    kind: Mapped[EventKind] = mapped_column(
-        Enum(EventKind, name="event_kind"), nullable=False
-    )
-    payload: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
+    kind: Mapped[EventKind] = mapped_column(Enum(EventKind, name="event_kind"), nullable=False)
+    payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
     tenant_id: Mapped[str] = mapped_column(String(64), nullable=False, default="default")
-    prev_hash: Mapped[str] = mapped_column(
-        String(64), nullable=False, default=GENESIS_HASH
-    )
+    prev_hash: Mapped[str] = mapped_column(String(64), nullable=False, default=GENESIS_HASH)
     event_hash: Mapped[str] = mapped_column(String(64), nullable=False)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
-    __table_args__ = (
-        Index("ix_audit_trace_created", "trace_id", "created_at"),
-    )
+    __table_args__ = (Index("ix_audit_trace_created", "trace_id", "created_at"),)
 
 
 class AuditSession(Base):
@@ -95,9 +88,7 @@ class AuditSession(Base):
     )
     trace_id: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
     tenant_id: Mapped[str] = mapped_column(String(64), nullable=False, default="default")
-    started_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
@@ -121,11 +112,10 @@ class ApprovalRequest(Base):
     tool_name: Mapped[str] = mapped_column(String(128), nullable=False)
     status: Mapped[str] = mapped_column(
         Enum("pending", "approved", "rejected", name="approval_status"),
-        nullable=False, default="pending"
+        nullable=False,
+        default="pending",
     )
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 def event_summary(event: AuditEvent) -> str:
@@ -171,7 +161,7 @@ def new_trace_id() -> str:
     return uuid.uuid4().hex
 
 
-def event_to_dict(event: AuditEvent) -> dict:
+def event_to_dict(event: AuditEvent) -> dict[str, Any]:
     """Serializes an audit event for API responses.
 
     Args:

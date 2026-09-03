@@ -11,9 +11,7 @@ from pathlib import Path
 
 from apps.api.policy.engine import PolicyEngine
 
-SCHEMA_PATH = (
-    Path(__file__).parents[2] / "apps" / "api" / "policy" / "schema.yaml"
-)
+SCHEMA_PATH = Path(__file__).parents[2] / "apps" / "api" / "policy" / "schema.yaml"
 
 
 def make_engine() -> PolicyEngine:
@@ -25,6 +23,7 @@ def make_engine() -> PolicyEngine:
             {"match": "*", "action": "deny"},  # fail closed
         ]
     )
+
 
 RULES = [
     {"match": "search.*", "action": "allow"},
@@ -76,9 +75,7 @@ def test_evaluate_accepts_tenant_keyword() -> None:
 def test_inline_engine_ignores_tenant() -> None:
     """Verifies dict-built engines apply their rules for any tenant."""
     engine = build_engine()
-    assert engine.evaluate("shell.exec", {}, tenant_id="globex").action == (
-        "human_approval"
-    )
+    assert engine.evaluate("shell.exec", {}, tenant_id="globex").action == ("human_approval")
 
 
 def test_review_make_engine_is_callable() -> None:

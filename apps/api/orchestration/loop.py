@@ -8,15 +8,35 @@ Contains:
     LoopHooks: receives lifecycle callbacks from the loop
 """
 
+from typing import Any, cast
+
 from apps.api.orchestration.state import StateStore
-from apps.api.orchestration.state_machine import build_graph
+from apps.api.orchestration.state_machine import GraphState, build_graph
 
 MAX_REVISIONS = 3  # hard cap per ADR-001; never let a run spin unbounded
 
 
-async def run_session(
-    session_id: str, task: str, hooks: LoopHooks | None = None
-) -> dict:
+class LoopHooks:
+    """Receives lifecycle callbacks from the orchestration loop."""
+
+    async def on_iteration(self, session_id: str, iteration: int) -> None:
+        """Called after each completed loop iteration.
+
+        Args:
+            session_id: Identifier of the running session.
+            iteration: Index of the iteration that just finished.
+        """
+
+    async def on_complete(self, session_id: str, result: dict[str, Any]) -> None:
+        """Called once when the session finishes.
+
+        Args:
+            session_id: Identifier of the finished session.
+            result: The dict returned by run_session.
+        """
+
+
+async def run_session(session_id: str, task: str, hooks: LoopHooks | None = None) -> dict[str, Any]:
     """Runs one orchestration session to completion.
 
     Args:
@@ -28,8 +48,8 @@ async def run_session(
         result: Final synthesized output and the session's iteration count.
     """
     store = StateStore()  # immutable snapshots; no shared mutable state
-    graph = build_graph()
-    graph_state = {
+    app = build_graph().compile()
+    graph_state: GraphState = {
         "task": task,
         "plan": [],
         "results": [],
@@ -38,7 +58,7 @@ async def run_session(
     }
     revisions = 0
     while revisions < MAX_REVISIONS:
-        graph_state = await graph.ainvoke(graph_state)
+        graph_state = cast(GraphState, await app.ainvoke(graph_state))
         store.advance(
             session_id,
             plan=tuple(graph_state["plan"]),
@@ -63,7 +83,7 @@ async def run_session(
     return result
 
 
-def session_summary(result: dict) -> str:
+def session_summary(result: dict[str, Any]) -> str:
     """Builds a one-line summary of a finished orchestration session.
 
     Args:
@@ -72,25 +92,5 @@ def session_summary(result: dict) -> str:
     Returns:
         summary: One-line description of the run for logs.
     """
-    count = result['iterations']
+    count = result["iterations"]
     return f"finished after {count} iterations"
-
-
-class LoopHooks:
-    """Receives lifecycle callbacks from the orchestration loop."""
-
-    async def on_iteration(self, session_id: str, iteration: int) -> None:
-        """Called after each completed loop iteration.
-
-        Args:
-            session_id: Identifier of the running session.
-            iteration: Index of the iteration that just finished.
-        """
-
-    async def on_complete(self, session_id: str, result: dict) -> None:
-        """Called once when the session finishes.
-
-        Args:
-            session_id: Identifier of the finished session.
-            result: The dict returned by run_session.
-        """

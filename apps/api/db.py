@@ -11,16 +11,23 @@ Contains:
 """
 
 from collections.abc import AsyncIterator
+from typing import Any, cast
 
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+from sqlalchemy.pool import QueuePool
 
 from apps.api.config import get_settings
 
-_engine = None
+_engine: AsyncEngine | None = None
 _session_factory: async_sessionmaker[AsyncSession] | None = None
 
 
-def get_engine():
+def get_engine() -> AsyncEngine:
     """Builds (and caches) the async SQLAlchemy engine.
 
     Returns:
@@ -71,13 +78,13 @@ async def dispose_engine() -> None:
     _session_factory = None
 
 
-def pool_status() -> dict:
+def pool_status() -> dict[str, Any]:
     """Reports current connection pool occupancy.
 
     Returns:
         status: Mapping of pool size, checked-out and overflow counts.
     """
-    pool = get_engine().pool  # sync_pool exposes the raw counters
+    pool = cast(QueuePool, get_engine().pool)  # sync_pool exposes the raw counters
     return {
         "size": pool.size(),
         "checked_out": pool.checkedout(),

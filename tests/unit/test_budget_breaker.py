@@ -7,6 +7,8 @@ Contains:
     test_breaker_opens_after_threshold(): verifies breaches trip the breaker
 """
 
+import contextlib
+
 from apps.api.budget.breaker import BudgetCircuitBreaker, CircuitOpenError
 
 
@@ -105,10 +107,8 @@ def test_call_records_failure_and_reraises() -> None:
         """Always fails."""
         raise RuntimeError("x")
 
-    try:
+    with contextlib.suppress(RuntimeError):
         breaker.call(boom)
-    except RuntimeError:
-        pass
     assert breaker._failures == 1
 
 

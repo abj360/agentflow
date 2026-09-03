@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 /**
  * ThemeToggle.tsx --- manual light/dark theme switcher
  *

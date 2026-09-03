@@ -12,6 +12,7 @@ Contains:
 """
 
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -69,7 +70,7 @@ class BudgetTracker:
             or self.tool_calls_made >= self.limits.max_tool_calls
         )
 
-    def remaining(self) -> dict:
+    def remaining(self) -> dict[str, Any]:
         """Reports remaining budget headroom.
 
         Returns:
@@ -80,8 +81,7 @@ class BudgetTracker:
             "tool_calls": self.limits.max_tool_calls - self.tool_calls_made,
         }
 
-
-    def usage_ratio(self) -> dict:
+    def usage_ratio(self) -> dict[str, Any]:
         """Computes consumption as a fraction of each limit.
 
         Returns:
@@ -91,6 +91,47 @@ class BudgetTracker:
             "tokens": self.tokens_used / self.limits.max_tokens,
             "tool_calls": self.tool_calls_made / self.limits.max_tool_calls,
         }
+
+    def check(self) -> None:
+        """Raises when any budget is exhausted.
+
+        Raises:
+            BudgetExhaustedError: When tokens or tool calls are at the cap.
+        """
+        if self.tokens_used >= self.limits.max_tokens:
+            raise BudgetExhaustedError("tokens")
+        if self.tool_calls_made >= self.limits.max_tool_calls:
+            raise BudgetExhaustedError("tool_calls")
+
+    def reset(self) -> None:
+        """Resets all consumption counters to zero."""
+        self.tokens_used = 0
+        self.tool_calls_made = 0
+
+    def snapshot(self) -> dict[str, Any]:
+        """Serializes current consumption for audit events.
+
+        Returns:
+            snapshot: Consumption and limits as a JSON-ready dict.
+        """
+        return {
+            "tokens_used": self.tokens_used,
+            "tool_calls_made": self.tool_calls_made,
+            "max_tokens": self.limits.max_tokens,
+            "max_tool_calls": self.limits.max_tool_calls,
+        }
+
+    def is_near_limit(self, threshold: float = 0.8) -> bool:
+        """Reports whether any budget is above the given usage fraction.
+
+        Args:
+            threshold: Usage fraction treated as near-limit.
+
+        Returns:
+            near_limit: True when any budget is past the threshold.
+        """
+        ratios = self.usage_ratio()
+        return any(ratio >= threshold for ratio in ratios.values())
 
 
 class BudgetExhaustedError(Exception):
@@ -104,48 +145,3 @@ class BudgetExhaustedError(Exception):
         """
         super().__init__(f"budget exhausted: {resource}")
         self.resource = resource
-
-
-    def check(self) -> None:
-        """Raises when any budget is exhausted.
-
-        Raises:
-            BudgetExhaustedError: When tokens or tool calls are at the cap.
-        """
-        if self.tokens_used >= self.limits.max_tokens:
-            raise BudgetExhaustedError("tokens")
-        if self.tool_calls_made >= self.limits.max_tool_calls:
-            raise BudgetExhaustedError("tool_calls")
-
-
-    def reset(self) -> None:
-        """Resets all consumption counters to zero."""
-        self.tokens_used = 0
-        self.tool_calls_made = 0
-
-
-    def snapshot(self) -> dict:
-        """Serializes current consumption for audit events.
-
-        Returns:
-            snapshot: Consumption and limits as a JSON-ready dict.
-        """
-        return {
-            "tokens_used": self.tokens_used,
-            "tool_calls_made": self.tool_calls_made,
-            "max_tokens": self.limits.max_tokens,
-            "max_tool_calls": self.limits.max_tool_calls,
-        }
-
-
-    def is_near_limit(self, threshold: float = 0.8) -> bool:
-        """Reports whether any budget is above the given usage fraction.
-
-        Args:
-            threshold: Usage fraction treated as near-limit.
-
-        Returns:
-            near_limit: True when any budget is past the threshold.
-        """
-        ratios = self.usage_ratio()
-        return any(ratio >= threshold for ratio in ratios.values())

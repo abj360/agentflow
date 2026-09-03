@@ -10,22 +10,23 @@ import os
 
 import pytest
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from apps.api.audit.chain import verify_chain
 from apps.api.audit.models import AuditEvent, EventKind
 from apps.api.audit.writer import AuditWriter
 
+SessionFactory = async_sessionmaker[AsyncSession]
+
 TEST_DATABASE_URL = os.environ.get("AGENTFLOW_TEST_DATABASE_URL")
 
 pytestmark = [
-    pytest.mark.skipif(
-        TEST_DATABASE_URL is None, reason="AGENTFLOW_TEST_DATABASE_URL not set"
-    ),
+    pytest.mark.skipif(TEST_DATABASE_URL is None, reason="AGENTFLOW_TEST_DATABASE_URL not set"),
     pytest.mark.integration,
 ]
 
 
-async def test_flush_persists_events(session_factory) -> None:
+async def test_flush_persists_events(session_factory: SessionFactory) -> None:
     """Verifies flushed events are queryable afterwards."""
     writer = AuditWriter(session_factory, batch_size=4)
     await writer.enqueue("it-trace-1", EventKind.PLAN_CREATED, {"step": 1})
@@ -37,7 +38,7 @@ async def test_flush_persists_events(session_factory) -> None:
         assert len(list(result.scalars())) == 1
 
 
-async def test_empty_flush_persists_nothing(session_factory) -> None:
+async def test_empty_flush_persists_nothing(session_factory: SessionFactory) -> None:
     """Verifies flushing an empty buffer writes no rows."""
     writer = AuditWriter(session_factory)
     await writer.flush()
@@ -46,7 +47,7 @@ async def test_empty_flush_persists_nothing(session_factory) -> None:
         assert list(result.scalars()) == []
 
 
-async def test_chain_hashes_persist(session_factory) -> None:
+async def test_chain_hashes_persist(session_factory: SessionFactory) -> None:
     """Verifies chained hashes survive the round trip through Postgres."""
     writer = AuditWriter(session_factory, batch_size=4)
     await writer.enqueue("it-trace-2", EventKind.TOOL_CALL, {"idx": 0})
@@ -62,7 +63,7 @@ async def test_chain_hashes_persist(session_factory) -> None:
     assert events[1].prev_hash == events[0].event_hash
 
 
-async def test_events_of_separate_traces_stay_separate(session_factory) -> None:
+async def test_events_of_separate_traces_stay_separate(session_factory: SessionFactory) -> None:
     """Verifies two traces written together query back independently."""
     writer = AuditWriter(session_factory, batch_size=8)
     await writer.enqueue("it-trace-a", EventKind.TOOL_CALL, {})
@@ -75,7 +76,7 @@ async def test_events_of_separate_traces_stay_separate(session_factory) -> None:
         assert len(list(result.scalars())) == 1
 
 
-async def test_drain_persists_remaining_events(session_factory) -> None:
+async def test_drain_persists_remaining_events(session_factory: SessionFactory) -> None:
     """Verifies drain flushes events still sitting in the buffer."""
     writer = AuditWriter(session_factory, batch_size=100)
     await writer.enqueue("it-trace-3", EventKind.CRITIQUE, {"score": 0.5})
@@ -87,7 +88,7 @@ async def test_drain_persists_remaining_events(session_factory) -> None:
         assert len(list(result.scalars())) == 1
 
 
-async def test_drain_is_safe_to_call_twice(session_factory) -> None:
+async def test_drain_is_safe_to_call_twice(session_factory: SessionFactory) -> None:
     """Verifies a second drain writes nothing and does not error."""
     writer = AuditWriter(session_factory)
     await writer.enqueue("it-trace-c", EventKind.CRITIQUE, {})
@@ -95,7 +96,7 @@ async def test_drain_is_safe_to_call_twice(session_factory) -> None:
     assert await writer.drain() == 0
 
 
-async def test_payload_round_trips_as_json(session_factory) -> None:
+async def test_payload_round_trips_as_json(session_factory: SessionFactory) -> None:
     """Verifies nested payloads come back as the same JSON structure."""
     payload = {"tool": "search", "args": {"q": "agentflow", "limit": 3}}
     writer = AuditWriter(session_factory)
@@ -109,7 +110,7 @@ async def test_payload_round_trips_as_json(session_factory) -> None:
     assert event.payload == payload
 
 
-async def test_batch_flushes_in_enqueue_order(session_factory) -> None:
+async def test_batch_flushes_in_enqueue_order(session_factory: SessionFactory) -> None:
     """Verifies persisted events keep their enqueue order."""
     writer = AuditWriter(session_factory, batch_size=8)
     for idx in range(4):
@@ -125,7 +126,7 @@ async def test_batch_flushes_in_enqueue_order(session_factory) -> None:
     assert [e.payload["idx"] for e in events] == [0, 1, 2, 3]
 
 
-async def test_large_batch_round_trip(session_factory) -> None:
+async def test_large_batch_round_trip(session_factory: SessionFactory) -> None:
     """Verifies a batch of fifty events persists completely."""
     writer = AuditWriter(session_factory, batch_size=64)
     for idx in range(50):
@@ -138,7 +139,7 @@ async def test_large_batch_round_trip(session_factory) -> None:
         assert len(list(result.scalars().all())) == 50
 
 
-async def test_writer_reuse_across_flushes(session_factory) -> None:
+async def test_writer_reuse_across_flushes(session_factory: SessionFactory) -> None:
     """Verifies one writer can flush repeatedly without state leaks."""
     writer = AuditWriter(session_factory, batch_size=4)
     await writer.enqueue("it-trace-f", EventKind.TOOL_CALL, {"n": 1})
@@ -152,7 +153,7 @@ async def test_writer_reuse_across_flushes(session_factory) -> None:
         assert len(list(result.scalars())) == 2
 
 
-async def test_event_ids_are_unique(session_factory) -> None:
+async def test_event_ids_are_unique(session_factory: SessionFactory) -> None:
     """Verifies persisted event ids never collide."""
     writer = AuditWriter(session_factory, batch_size=16)
     for idx in range(4):
@@ -166,7 +167,7 @@ async def test_event_ids_are_unique(session_factory) -> None:
     assert len(set(ids)) == 4
 
 
-async def test_verify_chain_over_persisted_events(session_factory) -> None:
+async def test_verify_chain_over_persisted_events(session_factory: SessionFactory) -> None:
     """Verifies the persisted chain passes integrity verification."""
     writer = AuditWriter(session_factory, batch_size=8)
     for idx in range(3):
@@ -182,7 +183,7 @@ async def test_verify_chain_over_persisted_events(session_factory) -> None:
     assert verify_chain(events)
 
 
-async def test_max_buffer_flush_keeps_all_events(session_factory) -> None:
+async def test_max_buffer_flush_keeps_all_events(session_factory: SessionFactory) -> None:
     """Verifies a max-buffer-triggered flush loses no events."""
     writer = AuditWriter(session_factory, batch_size=100, max_buffer=4)
     for idx in range(6):
@@ -195,14 +196,14 @@ async def test_max_buffer_flush_keeps_all_events(session_factory) -> None:
         assert len(list(result.scalars())) == 6
 
 
-async def test_enqueue_returns_event_before_persist(session_factory) -> None:
+async def test_enqueue_returns_event_before_persist(session_factory: SessionFactory) -> None:
     """Verifies enqueue returns the event even before it hits Postgres."""
     writer = AuditWriter(session_factory)
     event = await writer.enqueue("it-trace-h", EventKind.TOOL_CALL, {"k": 1})
     assert event.trace_id == "it-trace-h"
 
 
-async def test_enqueue_after_drain_raises_against_db(session_factory) -> None:
+async def test_enqueue_after_drain_raises_against_db(session_factory: SessionFactory) -> None:
     """Verifies a drained writer rejects new events even mid-session."""
     writer = AuditWriter(session_factory)
     await writer.drain()
@@ -210,14 +211,16 @@ async def test_enqueue_after_drain_raises_against_db(session_factory) -> None:
         await writer.enqueue("it-trace-7", EventKind.SYNTHESIS, {})
 
 
-async def test_session_factory_fixture_yields_working_session(session_factory) -> None:
+async def test_session_factory_fixture_yields_working_session(
+    session_factory: SessionFactory,
+) -> None:
     """Verifies the shared fixture produces a usable session."""
     async with session_factory() as session:
         result = await session.execute(select(AuditEvent))
         assert list(result.scalars()) is not None
 
 
-async def test_created_at_set_by_server(session_factory) -> None:
+async def test_created_at_set_by_server(session_factory: SessionFactory) -> None:
     """Verifies the server assigns created_at on insert."""
     writer = AuditWriter(session_factory)
     await writer.enqueue("it-trace-8", EventKind.PLAN_CREATED, {})

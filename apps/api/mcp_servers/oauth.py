@@ -19,6 +19,8 @@ import hashlib
 import secrets
 import time
 from dataclasses import dataclass
+from typing import Any, Protocol
+from urllib.parse import urlencode
 
 
 @dataclass(frozen=True)
@@ -66,6 +68,20 @@ class TokenSet:
         return time.time() >= self.expires_at - skew_seconds
 
 
+class HttpResponseLike(Protocol):
+    """Structural interface for the token endpoint response."""
+
+    def json(self) -> dict[str, Any]:
+        """Returns the decoded JSON body."""
+
+
+class HttpLike(Protocol):
+    """Structural interface for the async HTTP client used for token calls."""
+
+    async def post(self, url: str, data: dict[str, Any]) -> HttpResponseLike:
+        """Posts form data and returns the response."""
+
+
 class OAuthClient:
     """Runs the authorization-code flow and refreshes tokens.
 
@@ -74,7 +90,7 @@ class OAuthClient:
         http: Async HTTP client used for token endpoint calls.
     """
 
-    def __init__(self, config: OAuthClientConfig, http) -> None:
+    def __init__(self, config: OAuthClientConfig, http: HttpLike) -> None:
         """Initializes the client with config and an HTTP client.
 
         Args:
@@ -100,8 +116,7 @@ class OAuthClient:
             "state": state,
             "scope": scopes_param(self.config.scopes),
         }
-        query = "&".join(f"{key}={value}" for key, value in params.items())
-        return f"{self.config.authorize_url}?{query}"
+        return f"{self.config.authorize_url}?{urlencode(params)}"
 
     async def exchange_code(self, code: str) -> TokenSet:
         """Exchanges an authorization code for a token set.
@@ -148,6 +163,8 @@ class OAuthClient:
                 },
             )
             body = response.json()
+        if "error" in body:
+            raise OAuthError(body["error"], body.get("error_description", ""))
         return TokenSet(
             access_token=body["access_token"],
             refresh_token=body.get("refresh_token", tokens.refresh_token),
@@ -186,7 +203,7 @@ class TokenCache:
 
     def __init__(self) -> None:
         """Initializes an empty token cache."""
-        self.tokens: dict[str, TokenSet] = {}  # server_name -> latest tokens
+        self.tokens: dict[str, TokenSet] = {}
 
     def get(self, server_name: str) -> TokenSet | None:
         """Looks up cached tokens for a server.

@@ -10,6 +10,7 @@ Contains:
 """
 
 import time
+from collections.abc import Callable
 
 
 class CircuitOpenError(Exception):
@@ -34,19 +35,20 @@ class BudgetCircuitBreaker:
         self.failure_threshold = failure_threshold
         self.reset_seconds = reset_seconds
         self._failures = 0
-        self._opened_at: float | None = None  # set on trip, cleared on reset
+        self._opened_at: float | None = None  # set on trip, cleared on close
+        self._breach_total = 0
 
     def record_breach(self) -> None:
         """Records one budget breach, opening the circuit at the threshold."""
         self._failures += 1
         self._breach_total += 1
-        if self._failures >= self.failure_threshold:
-            if self._opened_at is None:
-                self._opened_at = time.time()
+        if self._failures >= self.failure_threshold and self._opened_at is None:
+            self._opened_at = time.time()
 
     def record_success(self) -> None:
-        """Records one successful call, resetting the breach count."""
+        """Records one successful call, closing the circuit."""
         self._failures = 0
+        self._opened_at = None
 
     def is_open(self) -> bool:
         """Reports whether the circuit is currently open.
@@ -65,18 +67,16 @@ class BudgetCircuitBreaker:
             CircuitOpenError: When the circuit is open.
         """
         if self.is_open():
+            elapsed = time.time() - (self._opened_at or 0.0)
             raise CircuitOpenError(
-                f"budget circuit open; probe again in "
-                f"{self.reset_seconds - (time.time() - self._opened_at):.1f}s"
+                f"budget circuit open; probe again in {self.reset_seconds - elapsed:.1f}s"
             )
-
 
     def reset(self) -> None:
         """Closes the circuit and clears the breach count."""
         self._failures = 0
         self._opened_at = None
         self._breach_total = 0
-
 
     def is_half_open(self) -> bool:
         """Reports whether the breaker is past its cooldown but not yet closed.
@@ -87,7 +87,6 @@ class BudgetCircuitBreaker:
         if self._opened_at is None:
             return False
         return time.time() - self._opened_at >= self.reset_seconds
-
 
     def state(self) -> str:
         """Reports the breaker state as a string for metrics.
@@ -101,8 +100,7 @@ class BudgetCircuitBreaker:
             return "half_open"
         return "closed"
 
-
-    def call(self, func):
+    def call[T](self, func: Callable[[], T]) -> T:
         """Runs a function through the breaker, tracking the outcome.
 
         Args:

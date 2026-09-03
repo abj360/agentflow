@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 /**
  * page.tsx --- human-in-the-loop approval queue page
  *

@@ -11,6 +11,7 @@ Contains:
 import json
 import sys
 from dataclasses import dataclass, field
+from typing import Any
 
 from agentflow_core.tool_schema import UnifiedToolSpec, to_mcp_schema
 
@@ -27,7 +28,7 @@ class ToolSpec:
 
     name: str
     description: str
-    input_schema: dict = field(default_factory=dict)
+    input_schema: dict[str, Any] = field(default_factory=dict)
 
 
 class StdioServer:
@@ -49,7 +50,7 @@ class StdioServer:
         """
         self.tools[spec.name] = spec
 
-    def handle_request(self, request: dict) -> dict:
+    def handle_request(self, request: dict[str, Any]) -> dict[str, Any]:
         """Handles one JSON-RPC request.
 
         Args:
@@ -64,11 +65,7 @@ class StdioServer:
         if method == "tools/list":
             return {
                 "tools": [
-                    to_mcp_schema(
-                        UnifiedToolSpec(
-                            name=spec.name, description=spec.description
-                        )
-                    )
+                    to_mcp_schema(UnifiedToolSpec(name=spec.name, description=spec.description))
                     for spec in self.tools.values()
                 ]
             }
@@ -83,7 +80,6 @@ class StdioServer:
             response = self.handle_request(request)
             sys.stdout.write(json.dumps(response) + "\n")
             sys.stdout.flush()
-
 
     def list_tools(self) -> list[str]:
         """Lists registered tool names.

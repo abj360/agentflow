@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 /**
  * ApprovalQueue.tsx --- pending human-in-the-loop approval queue
  *

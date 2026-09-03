@@ -71,7 +71,7 @@ def critic_node(state: GraphState) -> GraphState:
     return {**state, "critique": verdict, "iterations": state["iterations"] + 1}
 
 
-def build_graph() -> StateGraph:
+def build_graph() -> StateGraph[GraphState]:
     """Assembles the planner/executor/critic LangGraph.
 
     Returns:
@@ -106,7 +106,7 @@ def route_after_critic(state: GraphState) -> str:
     return "revise"
 
 
-def validate_graph(graph: StateGraph) -> list[str]:
+def validate_graph(graph: StateGraph[GraphState]) -> list[str]:
     """Checks the assembled graph for wiring mistakes.
 
     Args:

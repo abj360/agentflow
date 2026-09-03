@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 /**
  * layout.tsx --- root layout for the agentflow admin console
  *

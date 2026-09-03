@@ -12,6 +12,7 @@ Contains:
 """
 
 import asyncio
+from typing import Any
 
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -53,7 +54,7 @@ class AuditWriter:
         self._linker = ChainLinker()
         self._draining = False
 
-    async def enqueue(self, trace_id: str, kind: EventKind, payload: dict) -> AuditEvent:
+    async def enqueue(self, trace_id: str, kind: EventKind, payload: dict[str, Any]) -> AuditEvent:
         """Adds an event to the pending buffer, flushing at batch size.
 
         Args:

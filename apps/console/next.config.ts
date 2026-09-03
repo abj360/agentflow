@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 /**
  * next.config.ts --- Next.js configuration for the admin console
  *

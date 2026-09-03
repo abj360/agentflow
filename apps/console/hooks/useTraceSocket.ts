@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 /**
  * useTraceSocket.ts --- opens and maintains the live trace WebSocket
  *

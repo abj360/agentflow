@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 /**
  * api.ts --- typed client for the agentflow API
  *

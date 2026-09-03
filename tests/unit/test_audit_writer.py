@@ -7,6 +7,8 @@ Contains:
     test_flush_writes_pending_events(): verifies flush empties the buffer via the session
 """
 
+import contextlib
+
 from sqlalchemy.exc import OperationalError
 
 from apps.api.audit.models import EventKind
@@ -24,6 +26,9 @@ class FakeSession:
     def add_all(self, events: list) -> None:
         """Captures events passed to add_all."""
         self.added.extend(events)
+
+    async def rollback(self) -> None:
+        """Ignores rollback calls."""
 
     async def commit(self) -> None:
         """Counts commit calls, raising a transient error when armed."""
@@ -133,10 +138,8 @@ async def test_failed_commit_requeues_events() -> None:
     factory.session.fail_commit = True
     writer = AuditWriter(factory)
     await writer.enqueue("trace-1", EventKind.TOOL_CALL, {})
-    try:
+    with contextlib.suppress(OperationalError):
         await writer.flush()
-    except OperationalError:
-        pass
     assert writer.pending_count == 1
 
 

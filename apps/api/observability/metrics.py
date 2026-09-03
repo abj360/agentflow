@@ -21,6 +21,7 @@ from prometheus_client import (
     Histogram,
     generate_latest,
 )
+from starlette.requests import Request
 from starlette.responses import Response
 
 registry = CollectorRegistry()
@@ -32,7 +33,7 @@ sessions_total = Counter(
 )
 
 
-def metrics_endpoint(_request) -> Response:
+def metrics_endpoint(_request: Request) -> Response:
     """Serves the /metrics scrape endpoint.
 
     Args:

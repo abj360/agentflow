@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 /**
  * approvals.spec.ts --- e2e tests for the human-in-the-loop approval flow
  *

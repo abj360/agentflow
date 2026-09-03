@@ -14,6 +14,7 @@ Contains:
 """
 
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -83,7 +84,7 @@ def similarity(old: list[str], new: list[str]) -> float:
     return overlap / union
 
 
-def summarize(diff: PlanDiff) -> dict:
+def summarize(diff: PlanDiff) -> dict[str, Any]:
     """Summarizes a plan diff as headline counts.
 
     Args:
@@ -99,7 +100,7 @@ def summarize(diff: PlanDiff) -> dict:
     }
 
 
-def to_audit_payload(diff: PlanDiff) -> dict:
+def to_audit_payload(diff: PlanDiff) -> dict[str, Any]:
     """Serializes a plan diff for the audit event payload.
 
     Args:

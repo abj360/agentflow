@@ -14,7 +14,6 @@ from apps.api.audit.models import (
     AuditSession,
     EventKind,
     event_summary,
-    event_to_dict,
     new_trace_id,
 )
 
@@ -52,7 +51,8 @@ def test_audit_event_kind_assignment() -> None:
 def test_audit_session_defaults() -> None:
     """Verifies session rows default to the default tenant and an open run."""
     session = AuditSession(trace_id="trace-4")
-    assert session.tenant_id == "default"
+    default = AuditSession.__table__.c.tenant_id.default
+    assert default.arg == "default"
     assert session.ended_at is None
 
 
@@ -68,8 +68,8 @@ def test_audit_session_table_name() -> None:
 
 def test_approval_request_pending_default() -> None:
     """Verifies approval requests start in the pending state."""
-    request = ApprovalRequest(trace_id="trace-5", tool_name="shell.exec")
-    assert request.status == "pending"
+    default = ApprovalRequest.__table__.c.status.default
+    assert default.arg == "pending"
 
 
 def test_archive_event_requires_storage_uri() -> None:

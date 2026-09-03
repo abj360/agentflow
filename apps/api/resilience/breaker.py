@@ -107,9 +107,7 @@ class Bulkhead:
             bulkhead: The bulkhead instance with an acquired slot.
         """
         try:
-            await asyncio.wait_for(
-                self._semaphore.acquire(), timeout=self.acquire_timeout
-            )
+            await asyncio.wait_for(self._semaphore.acquire(), timeout=self.acquire_timeout)
         except TimeoutError as exc:
             raise BulkheadFullError(self.limit) from exc  # shed load fast
         return self
@@ -121,6 +119,15 @@ class Bulkhead:
             exc_info: Exception details from the with block, if any.
         """
         self._semaphore.release()
+
+    def in_flight(self) -> int:
+        """Reports the number of currently held bulkhead slots.
+
+        Returns:
+            count: Slots currently acquired.
+        """
+        acquired = self.limit - self._semaphore._value
+        return max(acquired, 0)
 
 
 class CircuitOpenError(Exception):
@@ -134,16 +141,6 @@ class CircuitOpenError(Exception):
         """
         super().__init__(f"circuit open for server: {server_name}")
         self.server_name = server_name
-
-
-    def in_flight(self) -> int:
-        """Reports the number of currently held bulkhead slots.
-
-        Returns:
-            count: Slots currently acquired.
-        """
-        acquired = self.limit - self._semaphore._value
-        return max(acquired, 0)
 
 
 class BreakerRegistry:

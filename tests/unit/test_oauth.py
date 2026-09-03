@@ -45,15 +45,14 @@ def test_is_expired_past_expiry() -> None:
 
 def test_is_expired_future_token() -> None:
     """Verifies a token with time left is not expired."""
-    tokens = TokenSet(access_token="t", refresh_token=None,
-                      expires_at=9_999_999_999.0)
+    tokens = TokenSet(access_token="t", refresh_token=None, expires_at=9_999_999_999.0)
     assert tokens.is_expired() is False
 
 
 def test_authorize_url_scopes_joined() -> None:
     """Verifies scopes are space-joined in the consent URL."""
     url = build_client().build_authorize_url(state="s")
-    assert "scope=tools:read tools:call" in url
+    assert "scope=tools:call tools:read" in url
 
 
 def test_authorize_url_starts_with_endpoint() -> None:
@@ -88,8 +87,7 @@ def test_is_expired_within_skew_window() -> None:
     """Verifies the skew window treats near-expiry tokens as expired."""
     import time
 
-    tokens = TokenSet(access_token="t", refresh_token=None,
-                      expires_at=time.time() + 10)
+    tokens = TokenSet(access_token="t", refresh_token=None, expires_at=time.time() + 10)
     assert tokens.is_expired(skew_seconds=30) is True
 
 
@@ -121,8 +119,7 @@ async def test_exchange_code_returns_tokens() -> None:
 
         def json(self) -> dict:
             """Returns the canned token payload."""
-            return {"access_token": "at-1", "refresh_token": "rt-1",
-                    "expires_in": 3600}
+            return {"access_token": "at-1", "refresh_token": "rt-1", "expires_in": 3600}
 
     class FakeHttp:
         """Mimics the async HTTP client for token calls."""
@@ -164,8 +161,7 @@ def test_token_cache_isolated_per_server() -> None:
     from apps.api.mcp_servers.oauth import TokenCache
 
     cache = TokenCache()
-    cache.put("srv-a", TokenSet(access_token="a", refresh_token=None,
-                                expires_at=1.0))
+    cache.put("srv-a", TokenSet(access_token="a", refresh_token=None, expires_at=1.0))
     assert cache.get("srv-b") is None
 
 
@@ -246,7 +242,7 @@ def test_scopes_param_empty() -> None:
 def test_authorize_url_scopes_sorted_after_refactor() -> None:
     """Verifies the consent URL keeps working after the scopes refactor."""
     url = build_client().build_authorize_url(state="s")
-    assert "scope=tools:read tools:call" in url
+    assert "scope=tools:call tools:read" in url
 
 
 def test_config_is_frozen() -> None:

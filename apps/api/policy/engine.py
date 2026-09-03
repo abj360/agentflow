@@ -17,6 +17,7 @@ import fnmatch
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -46,7 +47,7 @@ class CompiledRule:
         match: Original glob text for reporting.
     """
 
-    pattern: re.Pattern
+    pattern: re.Pattern[str]
     action: str
     match: str
 
@@ -54,7 +55,7 @@ class CompiledRule:
 DEFAULT_SCHEMA_PATH = Path(__file__).parent / "schema.yaml"
 
 
-def _compile(rules: list[dict]) -> list[CompiledRule]:
+def _compile(rules: list[dict[str, Any]]) -> list[CompiledRule]:
     """Compiles raw policy rules into a decision table.
 
     Args:
@@ -80,14 +81,15 @@ class PolicyEngine:
         schema_path: Path to the YAML policy schema, when file-backed.
     """
 
-    def __init__(self, schema_path: str) -> None:
+    def __init__(self, schema_path: str | None) -> None:
         """Initializes the engine and compiles the schema once.
 
         Args:
             schema_path: Path to the YAML policy schema.
         """
         self.schema_path = schema_path
-        with open(schema_path) as handle:
+        path = schema_path or DEFAULT_SCHEMA_PATH
+        with open(path) as handle:
             data = yaml.safe_load(handle)
         self._table = _compile(data["rules"])
         self._tenant_tables = {
@@ -96,7 +98,7 @@ class PolicyEngine:
         }
 
     @classmethod
-    def from_dict(cls, rules: list[dict]) -> "PolicyEngine":
+    def from_dict(cls, rules: list[dict[str, Any]]) -> "PolicyEngine":
         """Builds an engine from an in-memory rule list.
 
         Args:
@@ -111,7 +113,9 @@ class PolicyEngine:
         engine._tenant_tables = {}
         return engine
 
-    def evaluate(self, tool_name: str, args: dict, tenant_id: str | None = None) -> Decision:
+    def evaluate(
+        self, tool_name: str, args: dict[str, Any], tenant_id: str | None = None
+    ) -> Decision:
         """Evaluates a tool call against the compiled decision table.
 
         Args:

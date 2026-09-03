@@ -9,8 +9,8 @@ Contains:
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
-from apps.api.config import get_settings
 from apps.api.audit.routes import router as audit_router
+from apps.api.config import get_settings
 from apps.api.middleware.rate_limit import RateLimitMiddleware
 from apps.api.observability.metrics import metrics_endpoint
 from apps.api.observability.tracing import setup_tracing
@@ -33,13 +33,23 @@ def create_app() -> FastAPI:
 
     @app.get("/health")
     async def health() -> dict[str, str]:
-        """Returns service health status."""
+        """Returns service health status.
+
+        Returns:
+            status: Health payload reporting the service is up.
+        """
         return {"status": "ok"}
 
     @app.websocket("/ws/traces")
     async def trace_stream(socket: WebSocket, run_id: str = "default") -> None:
-        """Streams live orchestration trace events to console clients."""
-        await hub.register(run_id, socket)
+        """Streams live orchestration trace events to console clients.
+
+        Args:
+            socket: The viewer's WebSocket connection.
+            run_id: Run whose trace events the viewer wants to stream.
+        """
+        if not await hub.register(run_id, socket):
+            return
         try:
             while True:
                 await socket.receive_text()

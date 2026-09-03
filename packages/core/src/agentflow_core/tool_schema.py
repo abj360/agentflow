@@ -12,6 +12,7 @@ Contains:
 """
 
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -46,7 +47,7 @@ class UnifiedToolSpec:
     parameters: tuple[ToolParameter, ...] = ()
 
 
-def to_mcp_schema(spec: UnifiedToolSpec) -> dict:
+def to_mcp_schema(spec: UnifiedToolSpec) -> dict[str, Any]:
     """Renders a UnifiedToolSpec as an MCP tool schema.
 
     Args:
@@ -65,14 +66,12 @@ def to_mcp_schema(spec: UnifiedToolSpec) -> dict:
                 param.name: {"type": param.type, "description": param.description}
                 for param in spec.parameters
             },
-            "required": sorted(
-                param.name for param in spec.parameters if param.required
-            ),
+            "required": sorted(param.name for param in spec.parameters if param.required),
         },
     }
 
 
-def from_mcp_schema(schema: dict) -> UnifiedToolSpec:
+def from_mcp_schema(schema: dict[str, Any]) -> UnifiedToolSpec:
     """Parses an MCP tool schema back into a UnifiedToolSpec.
 
     Args:
@@ -129,9 +128,7 @@ def merge_specs(base: UnifiedToolSpec, override: UnifiedToolSpec) -> UnifiedTool
     Returns:
         merged: The merged unified tool description.
     """
-    parameters: dict[str, ToolParameter] = {
-        param.name: param for param in base.parameters
-    }
+    parameters: dict[str, ToolParameter] = {param.name: param for param in base.parameters}
     for param in override.parameters:
         parameters[param.name] = param
     return UnifiedToolSpec(

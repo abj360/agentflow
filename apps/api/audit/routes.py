@@ -12,12 +12,13 @@ Contains:
 """
 
 from datetime import datetime
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from apps.api.audit.chain import chain_head, verify_chain
+from apps.api.audit.chain import GENESIS_HASH, chain_head, verify_chain
 from apps.api.audit.models import AuditEvent, AuditSession, event_to_dict
 from apps.api.db import get_session
 
@@ -60,8 +61,8 @@ router = APIRouter(prefix="/audit", tags=["audit"])
 @router.get("/sessions")
 async def list_trace_sessions(
     limit: int = Query(default=50, le=MAX_PAGE_SIZE),
-    session: AsyncSession = Depends(get_session),
-) -> dict:
+    session: AsyncSession = Depends(get_session),  # noqa: B008 - FastAPI DI idiom
+) -> dict[str, Any]:
     """Lists recent orchestration sessions, newest first.
 
     Args:
@@ -76,10 +77,7 @@ async def list_trace_sessions(
     )
     sessions = list(result.scalars().all())
     return {
-        "sessions": [
-            {"trace_id": item.trace_id, "tenant_id": item.tenant_id}
-            for item in sessions
-        ]
+        "sessions": [{"trace_id": item.trace_id, "tenant_id": item.tenant_id} for item in sessions]
     }
 
 
@@ -88,15 +86,15 @@ async def get_trace_events(
     trace_id: str,
     limit: int = Query(default=100, ge=1, le=MAX_PAGE_SIZE),
     cursor: str | None = None,
-    session: AsyncSession = Depends(get_session),
-) -> dict:
+    session: AsyncSession = Depends(get_session),  # noqa: B008 - FastAPI DI idiom
+) -> dict[str, Any]:
     """Returns the ordered event chain for one trace.
 
     Args:
         trace_id: Identifier of the orchestration run to look up.
-        session: Async database session injected by FastAPI.
         limit: Maximum events per page, capped by MAX_PAGE_SIZE.
         cursor: Opaque token from a previous response's next_cursor.
+        session: Async database session injected by FastAPI.
 
     Returns:
         trace: One page of ordered events plus a chain-integrity flag.
@@ -108,25 +106,19 @@ async def get_trace_events(
         .limit(limit + 1)
     )
     if cursor:
-        statement = statement.where(
-            AuditEvent.created_at > decode_cursor(cursor)
-        )
+        statement = statement.where(AuditEvent.created_at > decode_cursor(cursor))
     result = await session.execute(statement)
     events = list(result.scalars())
     if not events:
         raise HTTPException(status_code=404, detail=f"trace {trace_id!r} not found")
     page = events[:limit]
-    next_cursor = (
-        (
-            encode_cursor(page[-1].created_at)
-            if len(events) > limit
-            else None
-        )
-    )
+    next_cursor = encode_cursor(page[-1].created_at) if len(events) > limit else None
+    # a cursor page starts mid-chain, so it links back to its predecessor, not genesis
+    start_hash = page[0].prev_hash if cursor else GENESIS_HASH
     return {
         "trace_id": trace_id,
         "event_count": len(page),
-        "chain_valid": verify_chain(page),
+        "chain_valid": verify_chain(page, start_hash),
         "next_cursor": next_cursor,
         "events": [event_to_dict(event) for event in page],
     }
@@ -134,8 +126,9 @@ async def get_trace_events(
 
 @router.get("/{trace_id}/verify")
 async def verify_trace_chain(
-    trace_id: str, session: AsyncSession = Depends(get_session)
-) -> dict:
+    trace_id: str,
+    session: AsyncSession = Depends(get_session),  # noqa: B008 - FastAPI DI idiom
+) -> dict[str, Any]:
     """Recomputes the hash chain for a trace and reports integrity.
 
     Args:
@@ -146,9 +139,7 @@ async def verify_trace_chain(
         verification: Chain validity plus the number of events checked.
     """
     result = await session.execute(
-        select(AuditEvent)
-        .where(AuditEvent.trace_id == trace_id)
-        .order_by(AuditEvent.created_at)
+        select(AuditEvent).where(AuditEvent.trace_id == trace_id).order_by(AuditEvent.created_at)
     )
     events = list(result.scalars().all())
     if not events:
@@ -162,8 +153,9 @@ async def verify_trace_chain(
 
 @router.get("/{trace_id}/head")
 async def get_chain_head(
-    trace_id: str, session: AsyncSession = Depends(get_session)
-) -> dict:
+    trace_id: str,
+    session: AsyncSession = Depends(get_session),  # noqa: B008 - FastAPI DI idiom
+) -> dict[str, Any]:
     """Returns the hash of the most recent event in a trace chain.
 
     Args:
@@ -174,9 +166,7 @@ async def get_chain_head(
         head: Chain-tip hash plus the event count used to compute it.
     """
     result = await session.execute(
-        select(AuditEvent)
-        .where(AuditEvent.trace_id == trace_id)
-        .order_by(AuditEvent.created_at)
+        select(AuditEvent).where(AuditEvent.trace_id == trace_id).order_by(AuditEvent.created_at)
     )
     events = list(result.scalars().all())
     if not events:

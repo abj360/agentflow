@@ -7,7 +7,7 @@ Contains:
     StateStore: atomically versions and stores session snapshots
 """
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
@@ -65,17 +65,29 @@ class StateStore:
         self._snapshots[next_snapshot.session_id] = next_snapshot
         return True
 
-    def advance(self, session_id: str, **changes: object) -> StateSnapshot:
+    def advance(
+        self,
+        session_id: str,
+        *,
+        plan: tuple[str, ...] | None = None,
+        results: tuple[str, ...] | None = None,
+    ) -> StateSnapshot:
         """Builds and stores the next snapshot for a session.
 
         Args:
             session_id: Session to advance.
-            changes: Field updates applied on top of the latest snapshot.
+            plan: Plan steps for the next snapshot, kept when omitted.
+            results: Step outputs for the next snapshot, kept when omitted.
 
         Returns:
             snapshot: The newly stored snapshot with an incremented version.
         """
         current = self.get(session_id)
-        next_snapshot = replace(current, version=current.version + 1, **changes)
+        next_snapshot = StateSnapshot(
+            session_id=session_id,
+            version=current.version + 1,
+            plan=plan if plan is not None else current.plan,
+            results=results if results is not None else current.results,
+        )
         self._snapshots[session_id] = next_snapshot
         return next_snapshot

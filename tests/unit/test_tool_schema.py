@@ -13,8 +13,7 @@ SPEC = UnifiedToolSpec(
     name="search.query",
     description="Run a search query",
     parameters=(
-        ToolParameter(name="q", type="string", description="Query text",
-                      required=True),
+        ToolParameter(name="q", type="string", description="Query text", required=True),
         ToolParameter(name="limit", type="integer"),
     ),
 )
@@ -83,9 +82,7 @@ def test_validate_flags_missing_name() -> None:
     """Verifies a spec without a name fails validation."""
     from agentflow_core.tool_schema import validate_unified_spec
 
-    problems = validate_unified_spec(
-        UnifiedToolSpec(name="", description="d")
-    )
+    problems = validate_unified_spec(UnifiedToolSpec(name="", description="d"))
     assert "tool name is required" in problems
 
 
@@ -110,9 +107,7 @@ def test_registry_find_tool_across_servers() -> None:
     from apps.api.mcp_servers.registry import MCPServerHandle, MCPServerRegistry
 
     registry = MCPServerRegistry()
-    registry.register(
-        MCPServerHandle(name="search", transport="sse", tools=(SPEC,))
-    )
+    registry.register(MCPServerHandle(name="search", transport="sse", tools=(SPEC,)))
     assert registry.find_tool("search.query") is SPEC
 
 

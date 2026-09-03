@@ -23,7 +23,8 @@ def upgrade() -> None:
     """Applies the migration."""
     op.execute(
         """
-        CREATE INDEX IF NOT EXISTS ix_audit_events_payload ON audit_events USING gin (payload jsonb_path_ops)
+        CREATE INDEX IF NOT EXISTS ix_audit_events_payload ON audit_events
+            USING gin (payload jsonb_path_ops)
         """
     )
 

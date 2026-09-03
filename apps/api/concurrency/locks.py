@@ -11,18 +11,38 @@ Contains:
 import asyncio
 import time
 import uuid
+from typing import Protocol
+
+
+class RedisLike(Protocol):
+    """Structural interface for the async Redis calls the lock uses."""
+
+    async def set(self, key: str, value: str, nx: bool = False, px: int = 0) -> object:
+        """Sets a key with optional NX/PX flags."""
+
+    async def get(self, key: str) -> object:
+        """Returns the stored value for a key."""
+
+    async def delete(self, key: str) -> object:
+        """Deletes a key."""
+
+    async def eval(self, script: str, numkeys: int, *args: str) -> object:
+        """Runs a Lua script against the given keys."""
+
+    async def pexpire(self, key: str, ttl_ms: int) -> object:
+        """Sets a key's expiry in milliseconds."""
 
 
 class DistributedLock:
     """Guards a critical section via a Redis SET NX PX lock.
 
     Attributes:
-        redis: Async Redis client used for lock operations.
+        redis: Async Redis client used for lock operations (structural RedisLike).
         key: Lock key in Redis.
         ttl_ms: Lock time-to-live in milliseconds.
     """
 
-    def __init__(self, redis, key: str, ttl_ms: int = 10_000) -> None:
+    def __init__(self, redis: RedisLike, key: str, ttl_ms: int = 10_000) -> None:
         """Initializes the lock with a Redis client, key and TTL.
 
         Args:
@@ -35,7 +55,7 @@ class DistributedLock:
         self.ttl_ms = ttl_ms
         self._token: str | None = None
 
-    async def acquire(self, timeout: float = 5.0) -> bool:
+    async def acquire(self, timeout_seconds: float = 5.0) -> bool:
         """Attempts to acquire the lock within the timeout.
 
         Args:
@@ -44,12 +64,10 @@ class DistributedLock:
         Returns:
             acquired: True when the lock was acquired.
         """
-        deadline = time.monotonic() + timeout
+        deadline = time.monotonic() + timeout_seconds
         token = uuid.uuid4().hex
         while time.monotonic() < deadline:
-            claimed = await self.redis.set(
-                self.key, token, nx=True, px=self.ttl_ms
-            )
+            claimed = await self.redis.set(self.key, token, nx=True, px=self.ttl_ms)
             if claimed:
                 self._token = token
                 return True
@@ -91,7 +109,6 @@ class DistributedLock:
         """
         await self.release()
 
-
     async def extend(self, ttl_ms: int | None = None) -> bool:
         """Extends the lock TTL while still held.
 
@@ -110,14 +127,12 @@ class DistributedLock:
         await self.redis.pexpire(self.key, ttl)
         return True
 
-
     @property
     def is_held(self) -> bool:
         """Reports whether this instance currently holds the lock."""
         return self._token is not None
 
-
-    async def acquire_or_raise(self, timeout: float = 5.0) -> None:
+    async def acquire_or_raise(self, timeout_seconds: float = 5.0) -> None:
         """Acquires the lock or raises instead of returning False.
 
         Args:
@@ -126,7 +141,7 @@ class DistributedLock:
         Raises:
             TimeoutError: When the lock could not be acquired in time.
         """
-        acquired = await self.acquire(timeout)
+        acquired = await self.acquire(timeout_seconds)
         if not acquired:
             raise TimeoutError(f"could not acquire lock {self.key}")
 

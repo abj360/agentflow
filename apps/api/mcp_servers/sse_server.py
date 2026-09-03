@@ -11,6 +11,7 @@ Contains:
 """
 
 from dataclasses import dataclass, field
+from typing import Any
 
 from agentflow_core.tool_schema import UnifiedToolSpec, to_mcp_schema
 
@@ -27,10 +28,10 @@ class ToolSpec:
 
     name: str
     description: str
-    input_schema: dict = field(default_factory=dict)
+    input_schema: dict[str, Any] = field(default_factory=dict)
     version: str = "1.0"
 
-    def mcp_schema(self) -> dict:
+    def mcp_schema(self) -> dict[str, Any]:
         """Renders this spec as an MCP tool schema.
 
         Returns:
@@ -139,7 +140,7 @@ def validate_tool_spec(spec: ToolSpec) -> list[str]:
     return problems
 
 
-def create_sse_app(registry: ToolRegistry) -> dict:
+def create_sse_app(registry: ToolRegistry) -> dict[str, Any]:
     """Builds the SSE transport application wiring.
 
     Args:

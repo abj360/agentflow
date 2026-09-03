@@ -32,6 +32,14 @@ class FakeRedis:
         """Deletes a key."""
         self.store.pop(key, None)
 
+    async def eval(self, script: str, numkeys: int, *args: str) -> int:
+        """Applies the compare-and-delete script semantics."""
+        key, token = args[0], args[1]
+        if self.store.get(key) == token:
+            self.store.pop(key, None)
+            return 1
+        return 0
+
 
 async def test_acquire_succeeds_when_free() -> None:
     """Verifies a free lock is acquired."""
@@ -45,14 +53,14 @@ async def test_acquire_fails_when_held() -> None:
     first = DistributedLock(redis, "k1")
     await first.acquire()
     second = DistributedLock(redis, "k1")
-    assert await second.acquire(timeout=0.2) is False
+    assert await second.acquire(timeout_seconds=0.2) is False
 
 
 async def test_extend_succeeds_when_held() -> None:
     """Verifies a held lock can be extended."""
     redis = FakeRedis()
 
-    async def pexpire(self, key: str, ttl: int) -> None:
+    async def pexpire(self: FakeRedis, key: str, ttl: int) -> None:
         """Records a TTL extension."""
         self.extended = (key, ttl)
 
@@ -125,7 +133,7 @@ async def test_release_uses_atomic_eval() -> None:
     redis = FakeRedis()
     calls = []
 
-    async def eval(self, script: str, keys: int, key: str, token: str) -> int:
+    async def eval(self: FakeRedis, script: str, keys: int, key: str, token: str) -> int:
         """Records the eval invocation and applies it."""
         calls.append(key)
         if self.store.get(key) == token:
@@ -168,7 +176,7 @@ async def test_acquire_or_raise_times_out() -> None:
     holder = DistributedLock(redis, "k1")
     await holder.acquire()
     try:
-        await DistributedLock(redis, "k1").acquire_or_raise(timeout=0.2)
+        await DistributedLock(redis, "k1").acquire_or_raise(timeout_seconds=0.2)
     except TimeoutError:
         return
     raise AssertionError("expected TimeoutError")
@@ -181,19 +189,19 @@ def test_lock_key_builds_namespaced_key() -> None:
     assert lock_key("audit", "trace-1") == "agentflow:lock:audit:trace-1"
 
 
-async def test_acquire_or_raise_times_out() -> None:
+async def test_acquire_or_raise_times_out_when_held() -> None:
     """Verifies acquire_or_raise raises when the lock stays held."""
     redis = FakeRedis()
     holder = DistributedLock(redis, "k1")
     await holder.acquire()
     try:
-        await DistributedLock(redis, "k1").acquire_or_raise(timeout=0.2)
+        await DistributedLock(redis, "k1").acquire_or_raise(timeout_seconds=0.2)
     except TimeoutError:
         return
     raise AssertionError("expected TimeoutError")
 
 
-async def test_is_held_false_after_release() -> None:
+async def test_is_held_stays_false_after_second_release() -> None:
     """Verifies is_held clears after release."""
     lock = DistributedLock(FakeRedis(), "k1")
     await lock.acquire()
@@ -230,7 +238,7 @@ async def test_acquire_retries_until_deadline() -> None:
 
     task = asyncio.create_task(release_soon())
     waiter = DistributedLock(redis, "k1")
-    acquired = await waiter.acquire(timeout=1.0)
+    acquired = await waiter.acquire(timeout_seconds=1.0)
     await task
     assert acquired is True
 

@@ -18,8 +18,10 @@ class FakeRequest:
     """Mimics the request attributes the middleware reads."""
 
     def __init__(self, host: str = "127.0.0.1") -> None:
-        """Stores the fake client host."""
+        """Stores the fake client host and a default URL."""
         self.client = SimpleNamespace(host=host)
+        self.url = SimpleNamespace(path="/audit/x")
+        self.headers: dict = {}
 
 
 async def passthrough(_request: object) -> Response:
