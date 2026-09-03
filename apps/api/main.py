@@ -9,6 +9,7 @@ Contains:
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
+from apps.api.approvals.routes import router as approvals_router
 from apps.api.audit.routes import router as audit_router
 from apps.api.config import get_settings
 from apps.api.middleware.rate_limit import RateLimitMiddleware
@@ -26,10 +27,16 @@ def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title="agentflow", version=settings.app_version)
     hub = TraceHub()
-    setup_tracing(app, service_name="agentflow-api")
+    if settings.otel_exporter_otlp_endpoint:
+        setup_tracing(app, service_name=settings.otel_service_name)
     app.include_router(audit_router)
+    app.include_router(approvals_router)
     app.add_route("/metrics", metrics_endpoint)
-    app.add_middleware(RateLimitMiddleware)
+    app.add_middleware(
+        RateLimitMiddleware,
+        max_requests=settings.rate_limit_requests,
+        window_seconds=settings.rate_limit_window_seconds,
+    )
 
     @app.get("/health")
     async def health() -> dict[str, str]:
