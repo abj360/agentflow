@@ -59,6 +59,8 @@ test("a task sits in the column after its longest path, not its shortest", () =>
 
 test("independent roots share a column, centred on the orchestrator row", () => {
   const placed = layoutTasks([task("a"), task("b")]);
+  // Written against the spacing constants rather than literals, so a design
+  // pass that retunes the gaps does not read as a broken layout.
   expect(placed).toEqual([
     { id: "a", x: COLUMN_WIDTH, y: -ROW_HEIGHT / 2 },
     { id: "b", x: COLUMN_WIDTH, y: ROW_HEIGHT / 2 },
