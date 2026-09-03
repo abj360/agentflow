@@ -643,3 +643,13 @@ code {
   pointer-events: none;
   z-index: 1;
 }
+
+.approval-inline kbd {
+  font: inherit;
+  font-size: 0.6875rem;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  padding: 0 0.25rem;
+  margin-right: 0.25rem;
+}

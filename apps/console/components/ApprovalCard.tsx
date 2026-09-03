@@ -43,6 +43,8 @@ export function ApprovalCard({
         </span>
       </header>
       <footer>
+        <kbd title="Approve">a</kbd>
+        <kbd title="Reject">r</kbd>
         <button
           className="approve"
           disabled={pending}
