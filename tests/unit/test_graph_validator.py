@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-test_graph_validator.py --- regression tests for task graph cycle detection
+test_graph_validator.py --- regression tests for task graph validation
 
 Contains:
     chain(): builds a straight dependency chain of planned tasks
