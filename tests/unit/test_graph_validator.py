@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-test_graph_validator.py --- regression tests for task graph cycle detection
+test_graph_validator.py --- regression tests for task graph validation
 
 Contains:
     chain(): builds a straight dependency chain of planned tasks
@@ -176,3 +176,20 @@ def test_the_planner_only_assigns_roles_that_exist() -> None:
     assert find_unknown_assignees(planned) == (), (
         "the planner only assigns roles the registry knows"
     )
+
+
+def test_every_problem_in_a_bad_plan_is_reported_at_once() -> None:
+    """Verifies validation reports the whole plan, not just the first fault."""
+    tasks = [
+        PlannedTask(id="task-1", title="a", depends_on=("ghost",)),
+        PlannedTask(id="task-1", title="b"),
+    ]
+    with pytest.raises(GraphValidationError) as raised:
+        validate_task_graph(tasks)
+    assert len(raised.value.problems) == 2
+
+
+def test_an_empty_plan_is_not_a_problem() -> None:
+    """Verifies a run that has planned nothing yet validates clean."""
+    validate_task_graph([])
+    assert find_cycle([]) is None
