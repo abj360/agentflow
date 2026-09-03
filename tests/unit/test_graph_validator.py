@@ -187,3 +187,9 @@ def test_every_problem_in_a_bad_plan_is_reported_at_once() -> None:
     with pytest.raises(GraphValidationError) as raised:
         validate_task_graph(tasks)
     assert len(raised.value.problems) == 2
+
+
+def test_an_empty_plan_is_not_a_problem() -> None:
+    """Verifies a run that has planned nothing yet validates clean."""
+    validate_task_graph([])
+    assert find_cycle([]) is None
