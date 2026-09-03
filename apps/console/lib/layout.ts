@@ -4,7 +4,7 @@
  * Contains:
  *   PositionedTask: one task placed at canvas coordinates
  *   LayoutSpacing: the column and row gaps a layout pass is laid out on
- *   COLUMN_WIDTH: horizontal gap between two topological columns
+ *   COLUMN_WIDTH: horizontal gap between the centres of two columns
  *   ROW_HEIGHT: vertical gap between two tasks sharing a column
  *   levelTasks(): assigns each task its longest path length from a root
  *   layoutTasks(): places tasks in topological columns, cycle-checked
