@@ -29,7 +29,9 @@ export function ApprovalNode(props: NodeProps<TaskNodeData>) {
       <TaskNode
         {...props}
         species="approval"
-        detail={toolName === null ? "Awaiting approval" : `Awaiting: ${toolName}`}
+        detail={
+          toolName === null ? "Awaiting approval" : `Awaiting: ${toolName}`
+        }
       />
     );
   }
