@@ -1,5 +1,5 @@
 /**
- * Canvas.tsx --- live React Flow rendering layer for one run's task graph
+ * Canvas.tsx --- the live task graph one run is drawn as
  *
  * Contains:
  *   NO_ACTIVE_EDGES: the empty lit-edge set a canvas with no traffic uses
@@ -44,7 +44,7 @@ const ORCHESTRATOR_Y = 0;
 
 // React Flow remounts every custom edge when this map is a new object.
 const EDGE_TYPES: EdgeTypes = { pulse: PulseEdge };
-const NO_ACTIVE_EDGES: ReadonlySet<string> = new Set();
+const NO_ACTIVE_EDGES: ReadonlySet<string> = new Set<string>();
 
 /**
  * Turns a plan's dependencies into the edges React Flow draws.
@@ -109,7 +109,10 @@ export function Canvas({
   // A stable identity matters: an inline empty Set would rebuild every edge on
   // each render and undo the memo below.
   const litEdges = activeEdgeIds ?? NO_ACTIVE_EDGES;
-  const waiting = pairApprovals(tasks, approvals);
+  const waiting = useMemo(
+    () => pairApprovals(tasks, approvals),
+    [tasks, approvals],
+  );
   const placements: readonly PositionedTask[] = useRelaxedLayout(tasks);
   const positions = useMemo(
     () => new Map(placements.map((placement) => [placement.id, placement])),
@@ -164,6 +167,8 @@ export function Canvas({
         elementsSelectable
         panOnScroll
         onNodeClick={(unused, node) => onFocusTask?.(node.id)}
+        deleteKeyCode={null}
+        multiSelectionKeyCode={null}
         onPaneClick={() => onFocusTask?.(null)}
       >
         <Background variant={BackgroundVariant.Dots} gap={18} size={1} />
