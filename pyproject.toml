@@ -56,6 +56,9 @@ explicit_package_bases = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+markers = [
+    "integration: exercises a real datastore rather than a fake",
+]
 
 
 [tool.coverage.run]

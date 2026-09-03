@@ -164,3 +164,12 @@ def test_threshold_of_one_trips_immediately() -> None:
     breaker = BudgetCircuitBreaker(failure_threshold=1)
     breaker.record_breach()
     assert breaker.is_open() is True
+
+
+def test_usage_ratio_with_zero_limit() -> None:
+    """Verifies a zero limit reads as fully consumed instead of raising."""
+    from apps.api.budget.tracker import BudgetLimits, BudgetTracker
+
+    tracker = BudgetTracker(BudgetLimits(max_tokens=0, max_tool_calls=0))
+    assert tracker.usage_ratio() == {"tokens": 1.0, "tool_calls": 1.0}
+    assert tracker.is_near_limit() is True

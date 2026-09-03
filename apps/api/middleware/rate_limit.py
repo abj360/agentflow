@@ -8,7 +8,6 @@ Contains:
 """
 
 import time
-from collections import defaultdict
 from typing import Protocol
 
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -19,6 +18,7 @@ from starlette.types import ASGIApp
 MAX_REQUESTS = 120
 WINDOW_SECONDS = 60
 EXEMPT_PATHS = frozenset({"/health", "/metrics", "/ready"})
+SWEEP_EVERY_REQUESTS = 1024  # amortized cleanup so idle clients cannot leak memory
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
@@ -47,8 +47,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             raise ValueError("rate limit and window must both be positive")
         self.max_requests = max_requests
         self.window_seconds = window_seconds
-        self._counters: dict[str, tuple[float, int]] = defaultdict(lambda: (0.0, 0))
+        self._counters: dict[str, tuple[float, int]] = {}
         self._now = time.monotonic
+        self._requests_since_sweep = 0
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         """Rejects requests that exceed the per-client window allowance.
@@ -63,8 +64,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if request.url.path in EXEMPT_PATHS:
             return await call_next(request)
         client = self._client_key(request)
-        window_start, count = self._counters[client]
         now = self._now()
+        self._sweep_expired(now)
+        window_start, count = self._counters.get(client, (now, 0))
         if now - window_start > self.window_seconds:
             window_start, count = now, 0
         count += 1
@@ -79,6 +81,21 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         response.headers["X-RateLimit-Limit"] = str(self.max_requests)
         response.headers["X-RateLimit-Remaining"] = str(remaining)
         return response
+
+    def _sweep_expired(self, now: float) -> None:
+        """Drops counters whose window has lapsed, bounding memory use.
+
+        Args:
+            now: Current monotonic timestamp driving expiry.
+        """
+        self._requests_since_sweep += 1
+        if self._requests_since_sweep < SWEEP_EVERY_REQUESTS:
+            return
+        self._requests_since_sweep = 0
+        cutoff = now - self.window_seconds
+        expired = [key for key, (start, _) in self._counters.items() if start <= cutoff]
+        for key in expired:
+            del self._counters[key]
 
     def _client_key(self, request: Request) -> str:
         """Resolves the rate-limit key, preferring tenant headers.

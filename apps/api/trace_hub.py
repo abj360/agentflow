@@ -49,7 +49,12 @@ class TraceHub:
             run_id: Run the viewer was streaming.
             socket: The viewer's WebSocket connection.
         """
-        self.connections.get(run_id, set()).discard(socket)
+        viewers = self.connections.get(run_id)
+        if viewers is None:
+            return
+        viewers.discard(socket)
+        if not viewers:
+            del self.connections[run_id]  # keeps idle runs from accumulating
 
     async def broadcast(self, run_id: str, event: dict[str, Any]) -> None:
         """Sends one event to every viewer of a run.

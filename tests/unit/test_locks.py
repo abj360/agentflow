@@ -16,6 +16,7 @@ class FakeRedis:
     def __init__(self) -> None:
         """Initializes an empty key-value store."""
         self.store: dict[str, str] = {}
+        self.expiries: dict[str, int] = {}
 
     async def set(self, key: str, value: str, nx: bool = False, px: int = 0) -> bool:
         """Sets a key, honoring nx semantics."""
@@ -33,12 +34,22 @@ class FakeRedis:
         self.store.pop(key, None)
 
     async def eval(self, script: str, numkeys: int, *args: str) -> int:
-        """Applies the compare-and-delete script semantics."""
+        """Applies the compare-and-act script semantics for del and pexpire."""
         key, token = args[0], args[1]
-        if self.store.get(key) == token:
+        if self.store.get(key) != token:
+            return 0
+        if "del" in script:
             self.store.pop(key, None)
             return 1
-        return 0
+        self.expiries[key] = int(args[2])
+        return 1
+
+    async def pexpire(self, key: str, ttl_ms: int) -> int:
+        """Records a key expiry in milliseconds."""
+        if key not in self.store:
+            return 0
+        self.expiries[key] = ttl_ms
+        return 1
 
 
 async def test_acquire_succeeds_when_free() -> None:
@@ -253,17 +264,10 @@ def test_lock_key_single_part() -> None:
 async def test_extend_with_explicit_ttl() -> None:
     """Verifies an explicit TTL is used for the extension."""
     redis = FakeRedis()
-    recorded = {}
-
-    async def pexpire(key: str, ttl: int) -> None:
-        """Records the extension TTL."""
-        recorded["ttl"] = ttl
-
-    redis.pexpire = pexpire
     lock = DistributedLock(redis, "k1")
     await lock.acquire()
     await lock.extend(ttl_ms=5000)
-    assert recorded["ttl"] == 5000
+    assert redis.expiries["k1"] == 5000
 
 
 async def test_lock_not_held_error_message() -> None:
@@ -271,3 +275,51 @@ async def test_lock_not_held_error_message() -> None:
     from apps.api.concurrency.locks import LockNotHeldError
 
     assert "k1" in str(LockNotHeldError("k1"))
+
+
+class BytesRedis(FakeRedis):
+    """Mimics a stock redis-py client, which returns bytes rather than str."""
+
+    async def get(self, key: str) -> bytes | None:
+        """Returns the stored value as bytes, or None."""
+        value = self.store.get(key)
+        return value.encode() if value is not None else None
+
+
+async def test_extend_renews_ttl_while_held() -> None:
+    """Verifies extend renews the expiry of a lock this instance holds."""
+    redis = FakeRedis()
+    lock = DistributedLock(redis, "k", ttl_ms=1_000)
+    await lock.acquire()
+    assert await lock.extend(5_000) is True
+    assert redis.expiries["k"] == 5_000
+
+
+async def test_extend_survives_bytes_responses() -> None:
+    """Verifies extend works against a client that returns bytes.
+
+    A str-vs-bytes comparison in Python made renewal silently fail against a
+    stock redis-py client, so long critical sections lost their lock.
+    """
+    lock = DistributedLock(BytesRedis(), "k", ttl_ms=1_000)
+    await lock.acquire()
+    assert await lock.extend(5_000) is True
+
+
+async def test_extend_does_not_delete_the_lock() -> None:
+    """Verifies extending leaves the lock held rather than releasing it."""
+    redis = FakeRedis()
+    lock = DistributedLock(redis, "k")
+    await lock.acquire()
+    await lock.extend()
+    assert "k" in redis.store
+    assert lock.is_held is True
+
+
+async def test_extend_returns_false_when_taken_over() -> None:
+    """Verifies extend reports failure once another holder owns the key."""
+    redis = FakeRedis()
+    lock = DistributedLock(redis, "k")
+    await lock.acquire()
+    redis.store["k"] = "someone-else"
+    assert await lock.extend() is False

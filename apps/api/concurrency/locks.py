@@ -121,11 +121,12 @@ class DistributedLock:
         if self._token is None:
             return False
         ttl = ttl_ms if ttl_ms is not None else self.ttl_ms
-        current = await self.redis.get(self.key)
-        if current != self._token:
-            return False
-        await self.redis.pexpire(self.key, ttl)
-        return True
+        lua = (
+            "if redis.call('get', KEYS[1]) == ARGV[1] then "
+            "return redis.call('pexpire', KEYS[1], ARGV[2]) else return 0 end"
+        )
+        renewed = await self.redis.eval(lua, 1, self.key, self._token, str(ttl))
+        return bool(renewed)
 
     @property
     def is_held(self) -> bool:

@@ -7,6 +7,8 @@ Contains:
     test_is_expired_past_expiry(): verifies an expired token reports expired
 """
 
+from urllib.parse import parse_qs, urlparse
+
 from apps.api.mcp_servers.oauth import OAuthClient, OAuthClientConfig, TokenSet
 
 CONFIG = OAuthClientConfig(
@@ -52,7 +54,8 @@ def test_is_expired_future_token() -> None:
 def test_authorize_url_scopes_joined() -> None:
     """Verifies scopes are space-joined in the consent URL."""
     url = build_client().build_authorize_url(state="s")
-    assert "scope=tools:call tools:read" in url
+    query = parse_qs(urlparse(url).query)
+    assert query["scope"] == ["tools:call tools:read"]
 
 
 def test_authorize_url_starts_with_endpoint() -> None:
@@ -242,7 +245,9 @@ def test_scopes_param_empty() -> None:
 def test_authorize_url_scopes_sorted_after_refactor() -> None:
     """Verifies the consent URL keeps working after the scopes refactor."""
     url = build_client().build_authorize_url(state="s")
-    assert "scope=tools:call tools:read" in url
+    query = parse_qs(urlparse(url).query)
+    assert query["scope"] == ["tools:call tools:read"]
+    assert " " not in urlparse(url).query  # the space must arrive encoded
 
 
 def test_config_is_frozen() -> None:
