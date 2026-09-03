@@ -12,8 +12,8 @@
 
 import type { RunViewerTask } from "./graph-model";
 
-export const COLUMN_WIDTH = 260;
-export const ROW_HEIGHT = 120;
+export const COLUMN_WIDTH = 240;
+export const ROW_HEIGHT = 110;
 
 export interface PositionedTask {
   id: string;
