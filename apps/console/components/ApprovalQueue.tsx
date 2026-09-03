@@ -56,6 +56,10 @@ export function ApprovalQueue() {
     );
   };
 
+  if (loading) {
+    return <p className="queue-loading">Loading approvals…</p>;
+  }
+
   if (approvals.length === 0) {
     return <p className="queue-empty">No pending approvals.</p>;
   }
