@@ -32,7 +32,10 @@ test("a node frame spawns a task", () => {
 });
 
 test("a replan replaces a task instead of duplicating it", () => {
-  const first = applyStructuralEvent({ tasks: [], pulses: [] }, { kind: "node_created", task: TASK });
+  const first = applyStructuralEvent(
+    { tasks: [], pulses: [] },
+    { kind: "node_created", task: TASK },
+  );
   const second = applyStructuralEvent(first, {
     kind: "node_created",
     task: { ...TASK, title: "gather again" },
@@ -42,7 +45,10 @@ test("a replan replaces a task instead of duplicating it", () => {
 });
 
 test("a status frame moves an existing task", () => {
-  const first = applyStructuralEvent({ tasks: [], pulses: [] }, { kind: "node_created", task: TASK });
+  const first = applyStructuralEvent(
+    { tasks: [], pulses: [] },
+    { kind: "node_created", task: TASK },
+  );
   const moved = applyStructuralEvent(first, {
     kind: "node_status_changed",
     id: "task-1",
