@@ -44,6 +44,17 @@ export function applyStructuralEvent(
   event: StructuralEvent,
 ): TaskGraph {
   if (event.kind === "node_created") {
+    // A replan re-announces tasks the canvas already has; replacing rather than
+    // appending keeps one node per task id instead of a duplicate per revision.
+    const known = graph.tasks.findIndex((task) => task.id === event.task.id);
+    if (known >= 0) {
+      return {
+        ...graph,
+        tasks: graph.tasks.map((task) =>
+          task.id === event.task.id ? event.task : task,
+        ),
+      };
+    }
     return { ...graph, tasks: [...graph.tasks, event.task] };
   }
   if (event.kind === "edge_created") {
