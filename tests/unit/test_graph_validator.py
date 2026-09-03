@@ -176,3 +176,14 @@ def test_the_planner_only_assigns_roles_that_exist() -> None:
     assert find_unknown_assignees(planned) == (), (
         "the planner only assigns roles the registry knows"
     )
+
+
+def test_every_problem_in_a_bad_plan_is_reported_at_once() -> None:
+    """Verifies validation reports the whole plan, not just the first fault."""
+    tasks = [
+        PlannedTask(id="task-1", title="a", depends_on=("ghost",)),
+        PlannedTask(id="task-1", title="b"),
+    ]
+    with pytest.raises(GraphValidationError) as raised:
+        validate_task_graph(tasks)
+    assert len(raised.value.problems) == 2
