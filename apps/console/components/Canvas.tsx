@@ -44,7 +44,7 @@ const ORCHESTRATOR_Y = 0;
 
 // React Flow remounts every custom edge when this map is a new object.
 const EDGE_TYPES: EdgeTypes = { pulse: PulseEdge };
-const NO_ACTIVE_EDGES: ReadonlySet<string> = new Set();
+const NO_ACTIVE_EDGES: ReadonlySet<string> = new Set<string>();
 
 /**
  * Turns a plan's dependencies into the edges React Flow draws.
