@@ -164,6 +164,7 @@ export function Canvas({
         elementsSelectable
         panOnScroll
         onNodeClick={(unused, node) => onFocusTask?.(node.id)}
+        deleteKeyCode={null}
         onPaneClick={() => onFocusTask?.(null)}
       >
         <Background variant={BackgroundVariant.Dots} gap={18} size={1} />
