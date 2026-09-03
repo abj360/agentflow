@@ -22,15 +22,39 @@ rules:
     action: deny
     # egress is allowlisted at the sandbox layer too (defense in depth)
     risk: high
-  - match: "*"
-    action: deny
-    risk: unknown
-
-
   - match: "metrics.*"
     action: allow
     risk: low
-
+  - match: "audit.*"
+    action: allow
+    risk: low
+  - match: "config.*"
+    action: human_approval
+    risk: low
+  - match: "admin.*"
+    action: deny
+    risk: critical
+  - match: "report.*"
+    action: human_approval
+    risk: medium
+  - match: "billing.*"
+    action: deny
+    risk: high
+  - match: "deploy.*"
+    action: human_approval
+    risk: critical
+  - match: "secrets.*"
+    action: deny
+    risk: critical
+  - match: "notify.*"
+    action: allow
+    risk: low
+  - match: "backup.*"
+    action: human_approval
+    risk: high
+  - match: "*"
+    action: deny
+    risk: unknown
 
 # per-tenant rule sets shadow the base `rules` when the tenant matches
 tenant_overrides:
@@ -43,7 +67,6 @@ tenant_overrides:
         action: deny
         risk: unknown
 
-
   globex:
     # security review 2026-05: shell stays denied for this tenant
     rules:
@@ -54,12 +77,6 @@ tenant_overrides:
         action: deny
         risk: unknown
 
-
-  - match: "audit.*"
-    action: allow
-    risk: low
-
-
   initech:
     # per 2026-06 contract: everything not search.* needs sign-off
     rules:
@@ -68,42 +85,6 @@ tenant_overrides:
       - match: "*"
         action: human_approval
         risk: medium
-
-
-  - match: "config.*"
-    action: human_approval
-    risk: low
-
-
-  - match: "admin.*"
-    action: deny
-    risk: critical
-
-
-  - match: "report.*"
-    action: human_approval
-    risk: medium
-
-
-  - match: "billing.*"
-    action: deny
-    risk: high
-
-
-  - match: "deploy.*"
-    action: human_approval
-    risk: critical
-
-
-  - match: "secrets.*"
-    action: deny
-    risk: critical
-
-
-  - match: "backup.*"
-    action: human_approval
-    risk: high
-
 
   umbrella:
     # onboarded 2026-07: read-only access while in trial
@@ -115,8 +96,3 @@ tenant_overrides:
       - match: "*"
         action: deny
         risk: unknown
-
-
-  - match: "notify.*"
-    action: allow
-    risk: low
