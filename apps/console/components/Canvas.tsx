@@ -1,5 +1,5 @@
 /**
- * Canvas.tsx --- live React Flow rendering layer for one run's task graph
+ * Canvas.tsx --- the live task graph one run is drawn as
  *
  * Contains:
  *   NO_ACTIVE_EDGES: the empty lit-edge set a canvas with no traffic uses
