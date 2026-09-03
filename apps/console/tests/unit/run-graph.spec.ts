@@ -50,3 +50,19 @@ test("a status frame moves an existing task", () => {
   });
   expect(moved.tasks[0]?.status).toBe("running");
 });
+
+test("a status frame for an unknown task changes nothing", () => {
+  const graph = applyStructuralEvent(
+    { tasks: [TASK], pulses: [] },
+    { kind: "node_status_changed", id: "task-9", status: "done" },
+  );
+  expect(graph.tasks[0]?.status).toBe("pending");
+});
+
+test("an edge frame lights the edge it names", () => {
+  const graph = applyStructuralEvent(
+    { tasks: [], pulses: [] },
+    { kind: "edge_created", from: "orchestrator", to: "task-1" },
+  );
+  expect(graph.pulses[0]?.id).toBe("orchestrator->task-1");
+});
