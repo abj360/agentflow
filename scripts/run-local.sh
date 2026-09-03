@@ -10,4 +10,4 @@ if [ ! -f .env ]; then
 fi
 
 echo "booting agentflow: api :8000, console :3000, postgres :5432, redis :6379"
-docker compose -f docker/docker-compose.yml up --build "$@"
+docker compose --project-directory . -f docker/docker-compose.yml up --build "$@"
