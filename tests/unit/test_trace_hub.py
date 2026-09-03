@@ -45,7 +45,7 @@ async def test_discard_removes_connection() -> None:
     socket = FakeSocket()
     await hub.register("run-1", socket)
     hub.discard("run-1", socket)
-    assert hub.connections["run-1"] == set()
+    assert socket not in hub.connections.get("run-1", set())
 
 
 async def test_broadcast_sends_to_all_viewers() -> None:
@@ -127,3 +127,33 @@ async def test_hub_starts_with_no_connections() -> None:
     """Verifies a fresh hub has no viewers."""
     hub = TraceHub()
     assert hub.connections == {}
+
+
+async def test_run_entry_dropped_when_last_viewer_leaves() -> None:
+    """Verifies a run leaves no empty entry behind once its viewers go.
+
+    The hub used to keep an empty set per run id forever, so a long-lived
+    process accumulated one entry for every run ever streamed.
+    """
+    hub = TraceHub()
+    socket = FakeSocket()
+    await hub.register("run-1", socket)
+    hub.discard("run-1", socket)
+    assert hub.connections == {}
+
+
+async def test_discard_unknown_run_is_a_noop() -> None:
+    """Verifies discarding a socket for an unknown run does not raise."""
+    hub = TraceHub()
+    hub.discard("never-seen", FakeSocket())
+    assert hub.connections == {}
+
+
+async def test_other_viewers_survive_a_discard() -> None:
+    """Verifies dropping one viewer keeps the run's remaining viewers."""
+    hub = TraceHub()
+    staying, leaving = FakeSocket(), FakeSocket()
+    await hub.register("run-1", staying)
+    await hub.register("run-1", leaving)
+    hub.discard("run-1", leaving)
+    assert hub.connections["run-1"] == {staying}

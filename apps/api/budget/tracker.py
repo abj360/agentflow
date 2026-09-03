@@ -9,6 +9,7 @@ Contains:
     BudgetTracker.usage_ratio(): consumption as fraction of limits
     BudgetTracker.snapshot(): serializes consumption for audit events
     BudgetExhaustedError: raised when a call would exceed the budget
+    _ratio(): computes a consumption fraction, guarding a zero limit
 """
 
 from dataclasses import dataclass
@@ -88,8 +89,8 @@ class BudgetTracker:
             ratio: tokens and tool_calls consumed as 0.0-1.0 fractions.
         """
         return {
-            "tokens": self.tokens_used / self.limits.max_tokens,
-            "tool_calls": self.tool_calls_made / self.limits.max_tool_calls,
+            "tokens": _ratio(self.tokens_used, self.limits.max_tokens),
+            "tool_calls": _ratio(self.tool_calls_made, self.limits.max_tool_calls),
         }
 
     def check(self) -> None:
@@ -132,6 +133,21 @@ class BudgetTracker:
         """
         ratios = self.usage_ratio()
         return any(ratio >= threshold for ratio in ratios.values())
+
+
+def _ratio(used: int, limit: int) -> float:
+    """Computes a consumption fraction, treating a zero limit as exhausted.
+
+    Args:
+        used: Amount consumed so far.
+        limit: Cap the consumption is measured against.
+
+    Returns:
+        ratio: Consumption as a 0.0-1.0 fraction; 1.0 when the limit is zero.
+    """
+    if limit <= 0:
+        return 1.0
+    return used / limit
 
 
 class BudgetExhaustedError(Exception):

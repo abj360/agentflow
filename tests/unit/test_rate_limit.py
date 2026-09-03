@@ -144,14 +144,18 @@ class PathRequest(FakeRequest):
 
 async def test_health_path_is_exempt() -> None:
     """Verifies the health endpoint bypasses the rate limiter."""
-    middleware = build_middleware(max_requests=0)
+    middleware = build_middleware(max_requests=1)
+    await middleware.dispatch(FakeRequest(), passthrough)
+    await middleware.dispatch(FakeRequest(), passthrough)  # limit now exhausted
     response = await middleware.dispatch(PathRequest("/health"), passthrough)
     assert response.status_code == 200
 
 
 async def test_metrics_path_is_exempt() -> None:
     """Verifies the metrics endpoint bypasses the rate limiter."""
-    middleware = build_middleware(max_requests=0)
+    middleware = build_middleware(max_requests=1)
+    await middleware.dispatch(FakeRequest(), passthrough)
+    await middleware.dispatch(FakeRequest(), passthrough)  # limit now exhausted
     response = await middleware.dispatch(PathRequest("/metrics"), passthrough)
     assert response.status_code == 200
 
@@ -172,3 +176,33 @@ async def test_tenant_header_takes_priority_over_host() -> None:
     await middleware.dispatch(TenantRequest("acme"), passthrough)
     response = await middleware.dispatch(TenantRequest("acme"), passthrough)
     assert response.status_code == 429
+
+
+async def test_first_window_anchors_on_first_request() -> None:
+    """Verifies a client's window starts at its first request, not at time zero.
+
+    The counter used to default to a 0.0 window start, so a client's first
+    window was measured from process start and expired early.
+    """
+    middleware = build_middleware(max_requests=1)
+    middleware._now = lambda: 5.0
+    await middleware.dispatch(FakeRequest(), passthrough)
+    window_start, count = middleware._counters["127.0.0.1"]
+    assert (window_start, count) == (5.0, 1)
+
+
+async def test_expired_counters_are_swept() -> None:
+    """Verifies stale per-client counters do not accumulate forever."""
+    from apps.api.middleware.rate_limit import SWEEP_EVERY_REQUESTS
+
+    middleware = build_middleware(max_requests=10**9)
+    now = 1000.0
+    middleware._now = lambda: now
+    for index in range(SWEEP_EVERY_REQUESTS):
+        await middleware.dispatch(FakeRequest(host=f"10.0.0.{index}"), passthrough)
+    assert len(middleware._counters) == SWEEP_EVERY_REQUESTS
+
+    now = 1000.0 + middleware.window_seconds * 2
+    for _ in range(SWEEP_EVERY_REQUESTS):  # sweeping is amortized, not per-request
+        await middleware.dispatch(FakeRequest(host="10.1.0.1"), passthrough)
+    assert set(middleware._counters) == {"10.1.0.1"}
