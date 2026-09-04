@@ -8,6 +8,7 @@ Contains:
 """
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
 
 from apps.api.approvals.routes import router as approvals_router
 from apps.api.audit.routes import router as audit_router
@@ -32,6 +33,13 @@ def create_app() -> FastAPI:
     app.include_router(audit_router)
     app.include_router(approvals_router)
     app.add_route("/metrics", metrics_endpoint)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.allowed_origins(),
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_headers=["*"],
+    )
     app.add_middleware(
         RateLimitMiddleware,
         max_requests=settings.rate_limit_requests,

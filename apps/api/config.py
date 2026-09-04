@@ -23,6 +23,7 @@ class Settings(BaseSettings):
         rate_limit_window_seconds: Length of the fixed rate-limit window.
         otel_exporter_otlp_endpoint: OTLP collector endpoint; tracing is off when empty.
         otel_service_name: Resource service.name reported to the collector.
+        cors_allow_origins: Origins the console is served from, comma-separated.
     """
 
     # .env is shared with postgres/console/MCP, so non-API keys must not
@@ -39,6 +40,17 @@ class Settings(BaseSettings):
     rate_limit_window_seconds: int = 60
     otel_exporter_otlp_endpoint: str = ""
     otel_service_name: str = "agentflow-api"
+    # the console is a separate origin (:3000 -> :8000), so its fetches are
+    # cross-origin and fail in the browser without an explicit allowlist
+    cors_allow_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
+
+    def allowed_origins(self) -> list[str]:
+        """Splits the configured origin list into individual origins.
+
+        Returns:
+            origins: Origins permitted to call the API from a browser.
+        """
+        return [o.strip() for o in self.cors_allow_origins.split(",") if o.strip()]
 
 
 @lru_cache
