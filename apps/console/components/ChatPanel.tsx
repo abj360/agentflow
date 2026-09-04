@@ -2,7 +2,7 @@
  * ChatPanel.tsx --- instruction input and the orchestrator's replies
  *
  * Contains:
- *   ChatMessage: one turn in a run's conversation
+ *   ChatMessage: one turn in a run's conversation, from either side
  *   ChatPanel: sends instructions into a run and lists the replies coming back
  */
 
@@ -36,6 +36,8 @@ export function ChatPanel({
     if (instruction.length === 0) {
       return;
     }
+    // The composer keeps focus after a send, so the reviewer can keep typing
+    // without reaching for the mouse between instructions.
     onSend(instruction);
     setDraft("");
   };
@@ -65,6 +67,7 @@ export function ChatPanel({
       >
         <input
           aria-label="Instruction"
+          maxLength={2000}
           placeholder="Send an instruction…"
           autoComplete="off"
           value={draft}
