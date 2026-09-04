@@ -25,7 +25,7 @@ export interface OrchestratorNodeData {
  */
 export function OrchestratorNode({ data }: NodeProps<OrchestratorNodeData>) {
   return (
-    <div className="canvas-node canvas-node--orchestrator">
+    <div className="canvas-node canvas-node--orchestrator" aria-label="Orchestrator">
       <strong>{data.label}</strong>
       <span className="canvas-node__meta">
         {data.taskCount === 0
