@@ -8,7 +8,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchTrace, type TraceResponse } from "../../lib/api";
+import { fetchTrace, type TraceResponse } from "../lib/api";
 
 /**
  * Loads and renders one run's audit events.
