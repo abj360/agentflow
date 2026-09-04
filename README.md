@@ -2,7 +2,7 @@
 
 <img src="docs/media/wordmark.png" alt="agentflow" width="520" />
 
-[![python 3.12+](https://img.shields.io/badge/Python%203.12+-3776AB?logo=python&logoColor=white)](pyproject.toml)
+[![python](https://img.shields.io/badge/python-3.12+-0d9488)](pyproject.toml)
 [![fastapi](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](apps/api)
 [![langgraph](https://img.shields.io/badge/LangGraph-1C3C3C?logo=langgraph&logoColor=white)](packages/core)
 [![mcp](https://img.shields.io/badge/MCP-0d9488)](docs/policy-schema.md)
@@ -10,7 +10,7 @@
 [![redis](https://img.shields.io/badge/Redis-FF4438?logo=redis&logoColor=white)](infra/)
 [![next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white)](apps/console/package.json)
 [![docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](docker/)
-[![mit](https://img.shields.io/badge/MIT-0d9488?logo=opensourceinitiative&logoColor=white)](LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-0d9488)](LICENSE)
 
 Agentflow is a multi-agent orchestrator that runs a bounded planner, executor,
 synthesizer and critic loop over governed MCP tools, routing every high-risk call
