@@ -2,7 +2,7 @@
  * ChatPanel.tsx --- instruction input and the orchestrator's replies
  *
  * Contains:
- *   ChatMessage: one turn in a run's conversation
+ *   ChatMessage: one turn in a run's conversation, from either side
  *   ChatPanel: sends instructions into a run and lists the replies coming back
  */
 
