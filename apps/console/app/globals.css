@@ -359,7 +359,7 @@ code {
 }
 
 .trace-toggle {
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: var(--muted);
   border: none;
   background: none;
