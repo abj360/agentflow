@@ -21,6 +21,17 @@ trace you can replay.
 
 </div>
 
+## Architecture
+
+```
+Console (Next.js) --WebSocket--> API (FastAPI)
+                                    |
+                          Orchestration loop (LangGraph)
+                                    |
+                +-------------------+-------------------+
+           Audit log (Postgres)  Policy engine (YAML)  MCP servers
+```
+
 ## How you use it
 
 1. **Bring the stack up** — `cp .env.example .env`, then
@@ -35,17 +46,6 @@ trace you can replay.
    approval queue; approve or reject it and the executor carries on.
 6. **Replay it afterwards** — `GET /{trace_id}` returns the whole run and
    `GET /{trace_id}/verify` proves the hash chain was never tampered with.
-
-## Architecture
-
-```
-Console (Next.js) --WebSocket--> API (FastAPI)
-                                    |
-                          Orchestration loop (LangGraph)
-                                    |
-                +-------------------+-------------------+
-           Audit log (Postgres)  Policy engine (YAML)  MCP servers
-```
 
 ## Quickstart (one command, fully dockerized)
 
