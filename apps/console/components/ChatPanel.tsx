@@ -65,6 +65,7 @@ export function ChatPanel({
       >
         <input
           aria-label="Instruction"
+          maxLength={2000}
           placeholder="Send an instruction…"
           autoComplete="off"
           value={draft}
