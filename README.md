@@ -1,8 +1,20 @@
-# agentflow
+<div align="center">
 
-A production multi-agent orchestrator: planner/executor/synthesizer/critic roles,
-a hash-chained replayable audit log, MCP tool governance, and cost-aware circuit
-breakers — with a Next.js console for human-in-the-loop approvals.
+<img src="docs/media/wordmark.png" alt="agentflow" width="520" />
+
+[![ci](https://github.com/abj360/agentflow/actions/workflows/ci.yml/badge.svg)](https://github.com/abj360/agentflow/actions/workflows/ci.yml)
+[![security](https://github.com/abj360/agentflow/actions/workflows/security.yml/badge.svg)](https://github.com/abj360/agentflow/actions/workflows/security.yml)
+[![python](https://img.shields.io/badge/python-3.12+-0d9488)](pyproject.toml)
+[![license](https://img.shields.io/badge/license-MIT-0d9488)](LICENSE)
+
+Agentflow is a multi-agent orchestrator that runs a bounded planner, executor,
+synthesizer and critic loop over governed MCP tools, routing every high-risk call
+to a human approval queue and recording the whole run as a hash-chained audit
+trace you can replay.
+
+<img src="docs/media/console.gif" alt="The agentflow console: an orchestration run streaming in, then the approvals it routed to a human" width="940" />
+
+</div>
 
 ## Architecture
 
@@ -29,8 +41,14 @@ Prefer a script? `scripts/run-local.sh` does the same thing.
 ## Governance
 
 Tool calls are evaluated against `apps/api/policy/schema.yaml` before execution;
-high-risk actions route to the approval queue in the console. The schema format is
-documented in `docs/policy-schema.md`.
+high-risk actions route to the approval queue in the console, where a human
+approves or rejects each one before the executor may proceed:
+
+<p align="center">
+  <img src="docs/media/approvals.png" alt="The approval queue: policy-gated tool calls awaiting a human decision" width="940" />
+</p>
+
+The schema format is documented in `docs/policy-schema.md`.
 
 ## Load & chaos testing
 
