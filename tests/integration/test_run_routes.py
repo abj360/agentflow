@@ -52,3 +52,9 @@ def test_a_run_with_no_viewers_still_finishes(client: TestClient) -> None:
     """Verifies broadcasting to an empty room never blocks the run."""
     response = client.post("/runs/run-5", json={"task": "nobody watching"})
     assert response.status_code == 200
+
+
+def test_a_run_reports_the_plan_it_actually_built(client: TestClient) -> None:
+    """Verifies the response counts the tasks the batcher announced."""
+    response = client.post("/runs/run-6", json={"task": "one\ntwo\nthree"})
+    assert response.json()["tasks"] == 3
