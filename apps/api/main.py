@@ -83,7 +83,8 @@ def create_app() -> FastAPI:
             body: The task the planner should decompose.
 
         Returns:
-            summary: The run's final status and how many tasks it planned.
+            summary: The run's final status and how many tasks it planned. Every
+            structural event it produced has already been streamed by then.
         """
         planned = TaskPlanner().plan(body.task)
         if not planned:
