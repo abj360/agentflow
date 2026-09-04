@@ -38,6 +38,7 @@ export function TraceViewer({
       <button
         className="trace-toggle"
         aria-expanded={isRawLogOpen}
+        aria-controls="raw-trace-log"
         onClick={() => setRawLogOpen(!isRawLogOpen)}
       >
         Raw trace log <TraceEventCount count={events.length} />
@@ -78,7 +79,7 @@ function TraceLogList({
   events,
 }: Readonly<{ events: readonly TraceLogEvent[] }>) {
   return (
-    <ol className="trace-list">
+    <ol className="trace-list" id="raw-trace-log">
       {events.map((event, index) => (
         <li
           key={`${event.kind}-${index}`}
