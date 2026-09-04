@@ -38,9 +38,11 @@ export function TraceViewer({
       <button
         className="trace-toggle"
         aria-expanded={isRawLogOpen}
+        aria-controls="raw-trace-log"
         onClick={() => setRawLogOpen(!isRawLogOpen)}
       >
-        Raw trace log <TraceEventCount count={events.length} />
+        {isRawLogOpen ? "Hide" : "Show"} raw trace log{" "}
+        <TraceEventCount count={events.length} />
       </button>
       {!isRawLogOpen ? null : <TraceTruncationNote total={events.length} />}
       {!isRawLogOpen || events.length > 0 ? null : <TraceEmptyState />}
@@ -78,7 +80,7 @@ function TraceLogList({
   events,
 }: Readonly<{ events: readonly TraceLogEvent[] }>) {
   return (
-    <ol className="trace-list">
+    <ol className="trace-list" id="raw-trace-log">
       {events.map((event, index) => (
         <li
           key={`${event.kind}-${index}`}
