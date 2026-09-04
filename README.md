@@ -21,6 +21,21 @@ trace you can replay.
 
 </div>
 
+## How you use it
+
+1. **Bring the stack up** — `cp .env.example .env`, then
+   `docker compose -f docker/docker-compose.yml up --build`.
+2. **Declare what the agents may do** — list your tools in
+   `apps/api/policy/schema.yaml` and mark which ones a human has to approve.
+   The format is documented in `docs/policy-schema.md`.
+3. **Start a run** against the API on `:8000`.
+4. **Watch it** in the console on `:3000`. The trace streams live over `/ws/traces`:
+   planner, executor, synthesizer and critic, each step as it happens.
+5. **Approve the risky calls.** A high-risk tool stops the run and appears in the
+   approval queue; approve or reject it and the executor carries on.
+6. **Replay it afterwards** — `GET /{trace_id}` returns the whole run and
+   `GET /{trace_id}/verify` proves the hash chain was never tampered with.
+
 ## Architecture
 
 ```
