@@ -7,14 +7,18 @@
 
 "use client";
 
-import { use } from "react";
 import { RunDetail } from "../../../components/RunDetail";
 
+/**
+ * Shows one run's events and chain status.
+ *
+ * @param props.params - Route parameters carrying the run identifier.
+ * @returns The run detail page element.
+ */
 export default function RunDetailPage({
   params,
 }: {
-  params: Promise<{ runId: string }>;
+  params: { runId: string };
 }) {
-  const { runId } = use(params);
-  return <RunDetail runId={runId} />;
+  return <RunDetail runId={params.runId} />;
 }
