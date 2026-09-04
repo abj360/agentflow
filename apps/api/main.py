@@ -19,6 +19,7 @@ from apps.api.middleware.rate_limit import RateLimitMiddleware
 from apps.api.observability.metrics import metrics_endpoint
 from apps.api.observability.tracing import setup_tracing
 from apps.api.orchestration.graph_events import (
+    StructuralEventBatcher,
     node_status_changed,
     traced_events_for_plan,
 )
@@ -82,12 +83,14 @@ def create_app() -> FastAPI:
             body: The task the planner should decompose.
 
         Returns:
-            summary: The run's final status and how many tasks it planned.
+            summary: The run's final status and how many tasks it planned. Every
+            structural event it produced has already been streamed by then.
         """
         planned = TaskPlanner().plan(body.task)
         if not planned:
             raise HTTPException(status_code=422, detail="task decomposed into no plannable work")
         await hub.broadcast_batch(run_id, traced_events_for_plan(run_id, planned))
+        batcher = StructuralEventBatcher()
         transitions: list[tuple[str, TaskStatus]] = []
 
         def record(task_id: str, status: TaskStatus) -> None:
@@ -98,12 +101,10 @@ def create_app() -> FastAPI:
                 status: Lifecycle state the task moved into.
             """
             transitions.append((task_id, status))
+            batcher.add(node_status_changed(task_id, status))
 
         result = await run_session(run_id, body.task, on_status=record)
-        await hub.broadcast_batch(
-            run_id,
-            [node_status_changed(task_id, status) for task_id, status in transitions],
-        )
+        await hub.broadcast_batch(run_id, batcher.flush())
         await hub.broadcast(
             run_id,
             {
