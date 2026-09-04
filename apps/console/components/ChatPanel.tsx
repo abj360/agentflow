@@ -36,6 +36,8 @@ export function ChatPanel({
     if (instruction.length === 0) {
       return;
     }
+    // The composer keeps focus after a send, so the reviewer can keep typing
+    // without reaching for the mouse between instructions.
     onSend(instruction);
     setDraft("");
   };
