@@ -41,7 +41,8 @@ export function TraceViewer({
         aria-controls="raw-trace-log"
         onClick={() => setRawLogOpen(!isRawLogOpen)}
       >
-        Raw trace log <TraceEventCount count={events.length} />
+        {isRawLogOpen ? "Hide" : "Show"} raw trace log{" "}
+        <TraceEventCount count={events.length} />
       </button>
       {!isRawLogOpen ? null : <TraceTruncationNote total={events.length} />}
       {!isRawLogOpen || events.length > 0 ? null : <TraceEmptyState />}
