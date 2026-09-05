@@ -458,7 +458,7 @@ code {
   stroke: var(--edge-active);
   stroke-width: 2;
   stroke-dasharray: 6 8;
-  animation: edge-sweep 700ms linear infinite;
+  animation: edge-sweep 620ms linear infinite;
   filter: drop-shadow(0 0 2px var(--edge-active));
 }
 

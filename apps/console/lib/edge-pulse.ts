@@ -13,7 +13,7 @@
  *   activeEdges(): the edge ids still lit at a given moment
  */
 
-export const PULSE_DURATION_MS = 900;
+export const PULSE_DURATION_MS = 800;
 
 export interface EdgePulse {
   readonly id: string;
