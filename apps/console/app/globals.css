@@ -466,6 +466,7 @@ code {
   from {
     stroke-dashoffset: 28;
   }
+
   to {
     stroke-dashoffset: 0;
   }
@@ -654,7 +655,6 @@ code {
   padding: 0 0.25rem;
   margin-right: 0.25rem;
 }
-
 
 .canvas-node--research .canvas-node__meta:first-of-type,
 .canvas-node--tool-call .canvas-node__meta:first-of-type,
