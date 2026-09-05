@@ -139,3 +139,9 @@ def test_every_traced_frame_keeps_its_kind() -> None:
         "node_created",
         "edge_created",
     }
+
+
+def test_tracing_a_plan_traces_every_frame_it_emits() -> None:
+    """Verifies the traced path emits exactly what the untraced path does."""
+    planned = TaskPlanner().plan("one\ntwo\nthree")
+    assert len(traced_events_for_plan("run-7", planned)) == len(events_for_plan(planned))
