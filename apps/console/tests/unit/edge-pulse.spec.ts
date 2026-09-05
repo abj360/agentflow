@@ -27,6 +27,8 @@ test("a freshly fired edge is lit", () => {
 
 test("an edge is still lit one tick before the window closes", () => {
   const pulses = recordPulse([], "e", START);
+  // Everything here is expressed relative to PULSE_DURATION_MS, so retuning
+  // the animation never turns into a golden-output failure.
   expect(activeEdges(pulses, START + PULSE_DURATION_MS - 1).size).toBe(1);
 });
 
