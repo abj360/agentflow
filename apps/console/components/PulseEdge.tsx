@@ -1,5 +1,5 @@
 /**
- * PulseEdge.tsx --- dependency edge that sweeps its dash offset while it fires
+ * PulseEdge.tsx --- the dependency edge that sweeps while a step fires along it
  *
  * Contains:
  *   PulseEdgeData: what the canvas tells an edge about its last firing
