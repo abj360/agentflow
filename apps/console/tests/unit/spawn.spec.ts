@@ -18,6 +18,8 @@ test("the first node spawns immediately", () => {
 });
 
 test("each node waits one stagger longer than the one before it", () => {
+  // Asserted against the constant rather than a literal, so retuning the
+  // animation is a one-line change instead of a failing suite.
   expect(spawnDelayMs(2) - spawnDelayMs(1)).toBe(SPAWN_STAGGER_MS);
 });
 
