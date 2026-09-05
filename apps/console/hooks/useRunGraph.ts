@@ -1,5 +1,5 @@
 /**
- * useRunGraph.ts --- folds the live trace stream into the graph the canvas draws
+ * useRunGraph.ts --- folds the live trace stream into what the canvas draws
  *
  * Contains:
  *   TaskGraph: the tasks and edge firings folded out of the structural frames

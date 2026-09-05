@@ -3,7 +3,7 @@
  *
  * Contains:
  *   TaskStatus: lifecycle states a task node moves through
- *   RunViewerTask: one runtime-planned task as the API streams it
+ *   RunViewerTask: one runtime-planned task, exactly as the API streams it
  *   TaskSpecies: the node species the canvas renders a task as
  *   ORCHESTRATOR_ID: id of the fixed central node every run hangs off
  *   speciesFor(): resolves which species the canvas renders a task as

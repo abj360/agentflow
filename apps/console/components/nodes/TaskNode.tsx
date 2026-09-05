@@ -2,7 +2,7 @@
  * TaskNode.tsx --- the shared shell every task node species renders inside
  *
  * Contains:
- *   TaskNodeData: what the canvas hands one task node
+ *   TaskNodeData: everything one task node needs, handed down by the canvas
  *   SPAWN_STYLES: cached style objects, so a re-render never rebuilds one
  *   shellClass(): the class list the node shell renders with
  *   spawnStyle(): the inline style that staggers one node's mount animation

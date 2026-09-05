@@ -1,5 +1,5 @@
 /**
- * relaxation.ts --- light force relaxation layered on the topological skeleton
+ * relaxation.ts --- the light force pass layered on the topological skeleton
  *
  * Contains:
  *   RELAXATION_TICKS: simulation ticks a small plan's relaxation pass runs

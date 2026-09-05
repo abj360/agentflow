@@ -2,7 +2,7 @@
  * Canvas.tsx --- the live task graph one run is drawn as
  *
  * Contains:
- *   NO_ACTIVE_EDGES: the empty lit-edge set a canvas with no traffic uses
+ *   NO_ACTIVE_EDGES: the shared empty set a canvas with no live traffic uses
  *   buildEdges(): turns a plan's dependencies into React Flow edges
  *   Canvas: renders a run's planned tasks as a positioned, live-updating graph
  */
