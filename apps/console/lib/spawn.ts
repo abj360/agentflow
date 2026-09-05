@@ -7,7 +7,7 @@
  *   spawnDelayMs(): the delay a node at a given position waits before spawning
  */
 
-export const SPAWN_STAGGER_MS = 45;
+export const SPAWN_STAGGER_MS = 40;
 export const MAX_SPAWN_DELAY_MS = 360;
 
 /**
