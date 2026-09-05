@@ -575,7 +575,7 @@ code {
 
 .canvas-edge--pending {
   stroke-dasharray: 2 6;
-  opacity: 0.55;
+  opacity: 0.45;
 }
 
 @media (max-width: 60rem) {
