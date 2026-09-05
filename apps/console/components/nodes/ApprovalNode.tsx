@@ -1,5 +1,5 @@
 /**
- * ApprovalNode.tsx --- task node species for a step waiting on a human decision
+ * ApprovalNode.tsx --- the node species a step waiting on a human is drawn as
  *
  * Contains:
  *   ApprovalNode: renders a paused task, expanding into its approval decision
