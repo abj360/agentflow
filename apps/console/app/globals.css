@@ -438,7 +438,7 @@ code {
 .canvas-node--awaiting-approval {
   border-color: var(--node-approval);
   border-width: 2px;
-  animation: approval-ring 1.6s ease-in-out infinite;
+  animation: approval-ring 1.8s ease-in-out infinite;
   z-index: 2;
 }
 
