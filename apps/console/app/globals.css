@@ -347,6 +347,7 @@ code {
 .canvas-node--orchestrator {
   border-color: var(--node-orchestrator);
   box-shadow: var(--node-elevation);
+  animation: none;
   border-width: 2px;
   padding: 0.875rem 1.25rem;
   font-size: 0.9375rem;
