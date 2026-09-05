@@ -445,7 +445,7 @@ code {
 @media (prefers-reduced-motion: reduce) {
   .canvas-node--awaiting-approval {
     animation: none;
-    box-shadow: 0 0 0 3px rgb(245 158 11 / 0.35);
+    box-shadow: 0 0 0 3px rgb(180 83 9 / 0.35);
   }
 }
 
