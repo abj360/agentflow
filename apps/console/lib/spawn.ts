@@ -1,5 +1,5 @@
 /**
- * spawn.ts --- timing for the animation a newly planned task node mounts with
+ * spawn.ts --- the timing a newly planned task node mounts with
  *
  * Contains:
  *   SPAWN_STAGGER_MS: gap between two nodes spawning out of the same batch
