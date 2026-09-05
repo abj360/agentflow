@@ -39,8 +39,8 @@ export function PulseEdge({
     targetY,
     targetPosition,
   });
-  const active = data?.active ?? false;
-  const pending = data?.pending ?? false;
+  const active: boolean = data?.active ?? false;
+  const pending: boolean = data?.pending ?? false;
   const modifier = active
     ? " canvas-edge--active"
     : pending
