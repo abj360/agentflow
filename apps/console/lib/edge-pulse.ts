@@ -6,7 +6,7 @@
  * stroke that never goes dark.
  *
  * Contains:
- *   PULSE_DURATION_MS: how long an edge stays active after it fires
+ *   PULSE_DURATION_MS: how long an edge stays lit after a single firing
  *   EdgePulse: one edge firing, with the moment it started
  *   edgeId(): builds the canvas id for the edge between two task nodes
  *   recordPulse(): folds one firing into the pulse list, dropping expired ones
