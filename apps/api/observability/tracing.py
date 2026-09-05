@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-tracing.py --- OpenTelemetry tracing instrumentation for the API
+tracing.py --- OpenTelemetry tracing for the API and the graph it streams
 
 Contains:
     setup_tracing(): configures the OTLP tracer provider and FastAPI instrumentation
