@@ -1,5 +1,5 @@
 /**
- * OrchestratorNode.tsx --- the fixed central node every task node hangs off
+ * OrchestratorNode.tsx --- the fixed central node every task hangs off
  *
  * Contains:
  *   OrchestratorNodeData: what the canvas hands the orchestrator node
@@ -25,7 +25,10 @@ export interface OrchestratorNodeData {
  */
 export function OrchestratorNode({ data }: NodeProps<OrchestratorNodeData>) {
   return (
-    <div className="canvas-node canvas-node--orchestrator" aria-label="Orchestrator">
+    <div
+      className="canvas-node canvas-node--orchestrator"
+      aria-label="Orchestrator"
+    >
       <strong>{data.label}</strong>
       <span className="canvas-node__meta">
         {data.taskCount === 0
