@@ -422,7 +422,7 @@ code {
 }
 
 .canvas-node--spawning {
-  animation: node-spawn 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: node-spawn 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 @keyframes approval-ring {
