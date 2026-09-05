@@ -1,5 +1,5 @@
 /**
- * ToolCallNode.tsx --- task node species for governed MCP tool calls
+ * ToolCallNode.tsx --- the node species a governed tool call is drawn as
  *
  * Contains:
  *   ToolCallNode: renders a tool-call task with its running call count

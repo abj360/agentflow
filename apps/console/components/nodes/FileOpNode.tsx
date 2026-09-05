@@ -1,5 +1,5 @@
 /**
- * FileOpNode.tsx --- task node species for filesystem writes
+ * FileOpNode.tsx --- the node species a filesystem write is drawn as
  *
  * Contains:
  *   FileOpNode: renders a file-operation task inside the shared shell
