@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-tracing.py --- OpenTelemetry tracing instrumentation for the API
+tracing.py --- OpenTelemetry tracing for the API and the graph it streams
 
 Contains:
     setup_tracing(): configures the OTLP tracer provider and FastAPI instrumentation
@@ -8,6 +8,7 @@ Contains:
     current_trace_id(): returns the active span's trace id as hex
     set_span_attribute(): sets an attribute on the current span
     traced_section(): wraps a block in a manual span
+    GRAPH_SPAN_PREFIX: namespace every graph span name is built under
     structural_span(): wraps the emission of one structural graph event
     batch_span(): wraps the emission of one batched graph_delta frame
     instrument_redis(): instruments an async Redis client
@@ -28,6 +29,7 @@ from opentelemetry.sdk.trace.sampling import ParentBasedTraceIdRatio
 from redis.asyncio import Redis
 
 DEFAULT_SAMPLER = ParentBasedTraceIdRatio(0.25)  # head-based, per ADR-001
+GRAPH_SPAN_PREFIX: str = "graph"
 
 
 def setup_tracing(app: FastAPI, service_name: str = "agentflow-api") -> None:
@@ -113,7 +115,7 @@ def structural_span(kind: str, run_id: str) -> Iterator[trace.Span]:
     Yields:
         span: The started span, so callers can attach the node or edge ids.
     """
-    with traced_section(f"graph.{kind}", **{"graph.run_id": run_id}) as span:
+    with traced_section(f"{GRAPH_SPAN_PREFIX}.{kind}", **{"graph.run_id": run_id}) as span:
         yield span
 
 
@@ -132,7 +134,7 @@ def batch_span(run_id: str, event_count: int) -> Iterator[trace.Span]:
         "graph.run_id": run_id,
         "graph.event_count": event_count,
     }
-    with traced_section("graph.batch", **span_attributes) as span:
+    with traced_section(f"{GRAPH_SPAN_PREFIX}.batch", **span_attributes) as span:
         yield span
 
 

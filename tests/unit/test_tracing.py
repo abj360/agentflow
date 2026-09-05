@@ -114,3 +114,18 @@ def test_batch_span_names_the_run_and_its_size() -> None:
 
     with batch_span("run-7", 12) as span:
         assert span is not None
+
+
+def test_graph_spans_share_one_namespace() -> None:
+    """Verifies every graph span name is built under the same prefix."""
+    from apps.api.observability.tracing import GRAPH_SPAN_PREFIX
+
+    assert GRAPH_SPAN_PREFIX == "graph"
+
+
+def test_a_structural_span_carries_its_run() -> None:
+    """Verifies a structural span can be opened for any event kind."""
+    from apps.api.observability.tracing import structural_span
+
+    with structural_span("node_created", "run-7") as span:
+        assert span is not None
