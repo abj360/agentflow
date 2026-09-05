@@ -1,5 +1,5 @@
 /**
- * ResearchNode.tsx --- task node species for retrieval and reading work
+ * ResearchNode.tsx --- the node species retrieval work is drawn as
  *
  * Contains:
  *   ResearchNode: renders a research task inside the shared task node shell
