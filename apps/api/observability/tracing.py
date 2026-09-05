@@ -29,7 +29,7 @@ from opentelemetry.sdk.trace.sampling import ParentBasedTraceIdRatio
 from redis.asyncio import Redis
 
 DEFAULT_SAMPLER = ParentBasedTraceIdRatio(0.25)  # head-based, per ADR-001
-GRAPH_SPAN_PREFIX = "graph"
+GRAPH_SPAN_PREFIX: str = "graph"
 
 
 def setup_tracing(app: FastAPI, service_name: str = "agentflow-api") -> None:
