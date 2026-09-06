@@ -162,3 +162,10 @@ def test_every_announced_node_carries_the_counters_the_canvas_reads() -> None:
             "retries",
             "toolCallCount",
         }
+
+
+def test_a_replan_never_renames_a_task_the_canvas_already_has() -> None:
+    """Verifies a revise cycle keeps ids stable so nodes are updated, not doubled."""
+    planned = TaskPlanner().plan(PLAN_TEXT)
+    replanned = TaskPlanner().replan(planned, "revise")
+    assert [task.id for task in planned] == [task.id for task in replanned]
