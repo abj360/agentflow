@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-test_dynamic_plan_pipeline.py --- end-to-end tests from a planned task to a canvas frame
+test_dynamic_plan_pipeline.py --- end-to-end tests from a planned task to a frame
 
 Contains:
     test_a_plan_becomes_a_graph_and_a_frame(): verifies plan, wiring, and frames agree
