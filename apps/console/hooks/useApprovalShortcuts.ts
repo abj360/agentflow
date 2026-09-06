@@ -1,5 +1,5 @@
 /**
- * useApprovalShortcuts.ts --- keyboard shortcuts for approving and rejecting
+ * useApprovalShortcuts.ts --- approve and reject, scoped to the focused node
  *
  * Contains:
  *   APPROVE_KEY: single press that approves the approval a reviewer is looking at

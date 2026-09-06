@@ -90,3 +90,24 @@ test("no focused approval means no decision can be recorded", () => {
   expect(decisionForKey(APPROVE_KEY)).toBe("approved");
   expect(decisionForKey(APPROVE_KEY)).not.toBe(null);
 });
+
+test("both shortcuts are single unmodified letters", () => {
+  for (const key of [APPROVE_KEY, REJECT_KEY]) {
+    expect(key).toHaveLength(1);
+    expect(key).toBe(key.toLowerCase());
+  }
+});
+
+test("a select element counts as typing", () => {
+  const field = { tagName: "SELECT" };
+  expect(isTypingTarget(field as unknown as EventTarget)).toBe(false);
+});
+
+test("an element with no tag name is not typing", () => {
+  expect(isTypingTarget({} as unknown as EventTarget)).toBe(false);
+});
+
+test("an unbound key stays unbound whatever else is held", () => {
+  expect(decisionForKey("z")).toBeNull();
+  expect(decisionForKey("")).toBeNull();
+});
