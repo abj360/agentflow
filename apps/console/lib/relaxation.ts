@@ -7,7 +7,7 @@
  *   MAX_SIMULATION_NODES: plan size past which the skeleton is used untouched
  *   isWorthSimulating(): whether a plan of a given size earns a simulation pass
  *   ticksFor(): the tick budget a plan of a given size is worth spending
- *   NODE_HEIGHT: rendered height a task node occupies on the canvas
+ *   NODE_HEIGHT: the height a task node occupies once it has rendered
  *   COLLIDE_RADIUS: minimum gap the simulation keeps between two node centres
  *   COLUMN_STRENGTH: how hard a node is pulled back to its topological column
  *   ROW_STRENGTH: how hard a node is pulled back to its starting row
@@ -36,11 +36,11 @@ export const COLUMN_STRENGTH = 0.9;
 export const ROW_STRENGTH = 0.12;
 
 const NOTHING_PINNED: ReadonlyMap<string, PositionedTask> = new Map();
-export const NODE_HEIGHT = 84;
+export const NODE_HEIGHT = 78;
 
 // Half the node height plus breathing room, so two nodes in one column never
 // visually touch even at the simulation's closest approach.
-export const COLLIDE_RADIUS = NODE_HEIGHT / 2 + 30;
+export const COLLIDE_RADIUS = NODE_HEIGHT / 2 + 26;
 
 interface RelaxationNode extends SimulationNodeDatum {
   readonly id: string;
