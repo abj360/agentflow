@@ -163,3 +163,14 @@ test("the run screen survives a reload", async ({ page }) => {
   await page.reload();
   await expect(page.getByLabel("Run canvas")).toBeVisible();
 });
+
+test("the whole run fits on one screen", async ({ page }) => {
+  await openRun(page);
+  for (const region of [
+    "Run chat",
+    "Run canvas",
+    "Raw trace log",
+  ]) {
+    await expect(page.getByLabel(region)).toBeVisible();
+  }
+});
