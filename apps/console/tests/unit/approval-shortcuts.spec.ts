@@ -90,3 +90,10 @@ test("no focused approval means no decision can be recorded", () => {
   expect(decisionForKey(APPROVE_KEY)).toBe("approved");
   expect(decisionForKey(APPROVE_KEY)).not.toBe(null);
 });
+
+test("both shortcuts are single unmodified letters", () => {
+  for (const key of [APPROVE_KEY, REJECT_KEY]) {
+    expect(key).toHaveLength(1);
+    expect(key).toBe(key.toLowerCase());
+  }
+});
