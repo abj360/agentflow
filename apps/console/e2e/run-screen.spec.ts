@@ -166,11 +166,12 @@ test("the run screen survives a reload", async ({ page }) => {
 
 test("the whole run fits on one screen", async ({ page }) => {
   await openRun(page);
-  for (const region of [
-    "Run chat",
-    "Run canvas",
-    "Raw trace log",
-  ]) {
+  for (const region of ["Run chat", "Run canvas", "Raw trace log"]) {
     await expect(page.getByLabel(region)).toBeVisible();
   }
+});
+
+test("the topbar links back to a run", async ({ page }) => {
+  await openRun(page);
+  await expect(page.getByRole("link", { name: "Run" })).toBeVisible();
 });
