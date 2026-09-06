@@ -36,11 +36,11 @@ export const COLUMN_STRENGTH = 0.9;
 export const ROW_STRENGTH = 0.12;
 
 const NOTHING_PINNED: ReadonlyMap<string, PositionedTask> = new Map();
-export const NODE_HEIGHT = 84;
+export const NODE_HEIGHT = 78;
 
 // Half the node height plus breathing room, so two nodes in one column never
 // visually touch even at the simulation's closest approach.
-export const COLLIDE_RADIUS = NODE_HEIGHT / 2 + 30;
+export const COLLIDE_RADIUS = NODE_HEIGHT / 2 + 26;
 
 interface RelaxationNode extends SimulationNodeDatum {
   readonly id: string;
