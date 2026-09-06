@@ -143,3 +143,22 @@ def test_a_fanned_out_plan_reaches_the_canvas_as_parallel_roots() -> None:
         frame["from"] for frame in frames if frame["kind"] == "edge_created"
     }
     assert sources == {ORCHESTRATOR_ID}
+
+
+def test_every_announced_node_carries_the_counters_the_canvas_reads() -> None:
+    """Verifies no node frame reaches the console missing a field it renders."""
+    for frame in events_for_plan(TaskPlanner().plan(PLAN_TEXT)):
+        if frame["kind"] != "node_created":
+            continue
+        assert set(frame["task"]) == {
+            "id",
+            "title",
+            "assignee",
+            "status",
+            "dependsOn",
+            "startedAt",
+            "finishedAt",
+            "tokens",
+            "retries",
+            "toolCallCount",
+        }
