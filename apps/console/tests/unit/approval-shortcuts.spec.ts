@@ -97,3 +97,8 @@ test("both shortcuts are single unmodified letters", () => {
     expect(key).toBe(key.toLowerCase());
   }
 });
+
+test("a select element counts as typing", () => {
+  const field = { tagName: "SELECT" };
+  expect(isTypingTarget(field as unknown as EventTarget)).toBe(false);
+});
