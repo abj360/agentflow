@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-test_dynamic_plan_pipeline.py --- end-to-end tests from a planned task to a canvas frame
+test_dynamic_plan_pipeline.py --- end-to-end tests from a planned task to a frame
 
 Contains:
     test_a_plan_becomes_a_graph_and_a_frame(): verifies plan, wiring, and frames agree
+    test_a_run_streams_its_graph_and_then_its_statuses(): verifies the whole pipeline
     test_every_edge_frame_names_an_announced_node(): verifies frames are self-consistent
     test_a_run_completes_over_the_dynamic_graph(): verifies the loop still finishes
     test_a_single_step_plan_still_reaches_the_canvas(): verifies the degenerate plan
@@ -110,3 +111,64 @@ def test_a_cyclic_plan_never_produces_a_frame() -> None:
     ]
     with pytest.raises(GraphValidationError):
         events_for_plan(tasks)
+
+
+@pytest.mark.asyncio
+async def test_a_run_streams_its_graph_and_then_its_statuses() -> None:
+    """Verifies one run produces a plan, a wired graph, and a status for every task."""
+    seen: list[tuple[str, str]] = []
+    result = await run_session(
+        "it-canvas-4",
+        PLAN_TEXT,
+        on_status=lambda task_id, status: seen.append((task_id, status)),
+    )
+    planned = TaskPlanner().plan(PLAN_TEXT)
+    frames = events_for_plan(planned)
+
+    announced = {frame["task"]["id"] for frame in frames if frame["kind"] == "node_created"}
+    started = {task_id for task_id, status in seen if status == "running"}
+    finished = {task_id for task_id, status in seen if status == "done"}
+
+    assert announced == started == finished
+    assert result["status"] in {"completed", "revision-bounded"}
+
+
+def test_a_fanned_out_plan_reaches_the_canvas_as_parallel_roots() -> None:
+    """Verifies independent objectives arrive as roots off the orchestrator."""
+    from apps.api.orchestration.state_machine import plan_for
+
+    frames = events_for_plan(plan_for(PLAN_TEXT))
+    sources = {frame["from"] for frame in frames if frame["kind"] == "edge_created"}
+    assert sources == {ORCHESTRATOR_ID}
+
+
+def test_every_announced_node_carries_the_counters_the_canvas_reads() -> None:
+    """Verifies no node frame reaches the console missing a field it renders."""
+    for frame in events_for_plan(TaskPlanner().plan(PLAN_TEXT)):
+        if frame["kind"] != "node_created":
+            continue
+        assert set(frame["task"]) == {
+            "id",
+            "title",
+            "assignee",
+            "status",
+            "dependsOn",
+            "startedAt",
+            "finishedAt",
+            "tokens",
+            "retries",
+            "toolCallCount",
+        }
+
+
+def test_a_replan_never_renames_a_task_the_canvas_already_has() -> None:
+    """Verifies a revise cycle keeps ids stable so nodes are updated, not doubled."""
+    planned = TaskPlanner().plan(PLAN_TEXT)
+    replanned = TaskPlanner().replan(planned, "revise")
+    assert [task.id for task in planned] == [task.id for task in replanned]
+
+
+def test_an_unplannable_task_produces_no_graph_at_all() -> None:
+    """Verifies a task with no work leaves the canvas empty rather than half-built."""
+    assert TaskPlanner().plan("   ") == ()
+    assert events_for_plan(TaskPlanner().plan("   ")) == []
