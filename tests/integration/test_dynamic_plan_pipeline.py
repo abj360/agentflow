@@ -169,3 +169,9 @@ def test_a_replan_never_renames_a_task_the_canvas_already_has() -> None:
     planned = TaskPlanner().plan(PLAN_TEXT)
     replanned = TaskPlanner().replan(planned, "revise")
     assert [task.id for task in planned] == [task.id for task in replanned]
+
+
+def test_an_unplannable_task_produces_no_graph_at_all() -> None:
+    """Verifies a task with no work leaves the canvas empty rather than half-built."""
+    assert TaskPlanner().plan("   ") == ()
+    assert events_for_plan(TaskPlanner().plan("   ")) == []
