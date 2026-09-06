@@ -9,7 +9,9 @@ import { expect, test } from "@playwright/test";
 
 import { COLUMN_WIDTH } from "../../lib/layout";
 import {
+  COLLIDE_RADIUS,
   COLUMN_STRENGTH,
+  NODE_HEIGHT,
   MIN_RELAXATION_TICKS,
   ROW_STRENGTH,
   RELAXATION_TICKS,
@@ -108,4 +110,8 @@ test("pinning a node the layout no longer has is ignored", () => {
 
 test("the column force is the stronger of the two", () => {
   expect(COLUMN_STRENGTH).toBeGreaterThan(ROW_STRENGTH);
+});
+
+test("the collide radius always clears a whole node", () => {
+  expect(COLLIDE_RADIUS).toBeGreaterThan(NODE_HEIGHT / 2);
 });
