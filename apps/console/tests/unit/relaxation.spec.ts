@@ -115,3 +115,11 @@ test("the column force is the stronger of the two", () => {
 test("the collide radius always clears a whole node", () => {
   expect(COLLIDE_RADIUS).toBeGreaterThan(NODE_HEIGHT / 2);
 });
+
+test("relaxing the same layout twice lands in the same place", () => {
+  const placed = [
+    { id: "a", x: COLUMN_WIDTH, y: 0 },
+    { id: "b", x: COLUMN_WIDTH, y: 0 },
+  ];
+  expect(relaxPositions(placed)).toEqual(relaxPositions(placed));
+});
