@@ -7,7 +7,7 @@
  *   MAX_SIMULATION_NODES: plan size past which the skeleton is used untouched
  *   isWorthSimulating(): whether a plan of a given size earns a simulation pass
  *   ticksFor(): the tick budget a plan of a given size is worth spending
- *   NODE_HEIGHT: rendered height a task node occupies on the canvas
+ *   NODE_HEIGHT: the height a task node occupies once it has rendered
  *   COLLIDE_RADIUS: minimum gap the simulation keeps between two node centres
  *   COLUMN_STRENGTH: how hard a node is pulled back to its topological column
  *   ROW_STRENGTH: how hard a node is pulled back to its starting row
