@@ -4,6 +4,7 @@ test_dynamic_plan_pipeline.py --- end-to-end tests from a planned task to a fram
 
 Contains:
     test_a_plan_becomes_a_graph_and_a_frame(): verifies plan, wiring, and frames agree
+    test_a_run_streams_its_graph_and_then_its_statuses(): verifies the whole pipeline
     test_every_edge_frame_names_an_announced_node(): verifies frames are self-consistent
     test_a_run_completes_over_the_dynamic_graph(): verifies the loop still finishes
     test_a_single_step_plan_still_reaches_the_canvas(): verifies the degenerate plan
@@ -124,9 +125,7 @@ async def test_a_run_streams_its_graph_and_then_its_statuses() -> None:
     planned = TaskPlanner().plan(PLAN_TEXT)
     frames = events_for_plan(planned)
 
-    announced = {
-        frame["task"]["id"] for frame in frames if frame["kind"] == "node_created"
-    }
+    announced = {frame["task"]["id"] for frame in frames if frame["kind"] == "node_created"}
     started = {task_id for task_id, status in seen if status == "running"}
     finished = {task_id for task_id, status in seen if status == "done"}
 
@@ -139,9 +138,7 @@ def test_a_fanned_out_plan_reaches_the_canvas_as_parallel_roots() -> None:
     from apps.api.orchestration.state_machine import plan_for
 
     frames = events_for_plan(plan_for(PLAN_TEXT))
-    sources = {
-        frame["from"] for frame in frames if frame["kind"] == "edge_created"
-    }
+    sources = {frame["from"] for frame in frames if frame["kind"] == "edge_created"}
     assert sources == {ORCHESTRATOR_ID}
 
 
