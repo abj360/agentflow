@@ -106,3 +106,8 @@ test("a select element counts as typing", () => {
 test("an element with no tag name is not typing", () => {
   expect(isTypingTarget({} as unknown as EventTarget)).toBe(false);
 });
+
+test("an unbound key stays unbound whatever else is held", () => {
+  expect(decisionForKey("z")).toBeNull();
+  expect(decisionForKey("")).toBeNull();
+});
