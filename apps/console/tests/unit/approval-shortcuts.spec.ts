@@ -102,3 +102,7 @@ test("a select element counts as typing", () => {
   const field = { tagName: "SELECT" };
   expect(isTypingTarget(field as unknown as EventTarget)).toBe(false);
 });
+
+test("an element with no tag name is not typing", () => {
+  expect(isTypingTarget({} as unknown as EventTarget)).toBe(false);
+});
