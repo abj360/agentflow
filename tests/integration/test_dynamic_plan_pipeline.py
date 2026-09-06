@@ -132,3 +132,14 @@ async def test_a_run_streams_its_graph_and_then_its_statuses() -> None:
 
     assert announced == started == finished
     assert result["status"] in {"completed", "revision-bounded"}
+
+
+def test_a_fanned_out_plan_reaches_the_canvas_as_parallel_roots() -> None:
+    """Verifies independent objectives arrive as roots off the orchestrator."""
+    from apps.api.orchestration.state_machine import plan_for
+
+    frames = events_for_plan(plan_for(PLAN_TEXT))
+    sources = {
+        frame["from"] for frame in frames if frame["kind"] == "edge_created"
+    }
+    assert sources == {ORCHESTRATOR_ID}
