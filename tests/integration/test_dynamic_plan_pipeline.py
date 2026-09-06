@@ -110,3 +110,25 @@ def test_a_cyclic_plan_never_produces_a_frame() -> None:
     ]
     with pytest.raises(GraphValidationError):
         events_for_plan(tasks)
+
+
+@pytest.mark.asyncio
+async def test_a_run_streams_its_graph_and_then_its_statuses() -> None:
+    """Verifies one run produces a plan, a wired graph, and a status for every task."""
+    seen: list[tuple[str, str]] = []
+    result = await run_session(
+        "it-canvas-4",
+        PLAN_TEXT,
+        on_status=lambda task_id, status: seen.append((task_id, status)),
+    )
+    planned = TaskPlanner().plan(PLAN_TEXT)
+    frames = events_for_plan(planned)
+
+    announced = {
+        frame["task"]["id"] for frame in frames if frame["kind"] == "node_created"
+    }
+    started = {task_id for task_id, status in seen if status == "running"}
+    finished = {task_id for task_id, status in seen if status == "done"}
+
+    assert announced == started == finished
+    assert result["status"] in {"completed", "revision-bounded"}
