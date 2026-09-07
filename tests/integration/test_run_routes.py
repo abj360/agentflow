@@ -6,6 +6,8 @@ Contains:
     client(): builds a test client over the real application
     test_starting_a_run_reports_its_plan_size(): verifies the response shape
     test_starting_a_run_rejects_an_empty_task(): verifies the request is validated
+    test_a_datastore_outage_answers_503(): verifies an outage is readable, not a bare 500
+    test_a_datastore_outage_keeps_its_cors_headers(): verifies the browser can read it
 """
 
 import pytest
@@ -58,3 +60,21 @@ def test_a_run_reports_the_plan_it_actually_built(client: TestClient) -> None:
     """Verifies the response counts the tasks the batcher announced."""
     response = client.post("/runs/run-6", json={"task": "one\ntwo\nthree"})
     assert response.json()["tasks"] == 3
+
+
+def test_a_datastore_outage_answers_503(client: TestClient) -> None:
+    """Verifies an unreachable datastore answers 503 rather than a bare 500."""
+    response = client.get("/audit/run-unreachable")
+    assert response.status_code == 503
+    assert response.json()["detail"] == "datastore unavailable"
+
+
+def test_a_datastore_outage_keeps_its_cors_headers(client: TestClient) -> None:
+    """Verifies an outage response still carries the headers the console needs.
+
+    An unhandled database error is raised above the CORS middleware, so the
+    browser reports a CORS failure and the console never sees the status code.
+    """
+    response = client.get("/audit/run-unreachable", headers={"Origin": "http://localhost:3000"})
+    assert response.status_code == 503
+    assert response.headers["access-control-allow-origin"] == "http://localhost:3000"
