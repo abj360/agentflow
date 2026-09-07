@@ -3,21 +3,31 @@
  *
  * Contains:
  *   NO_ACTIVE_EDGES: the shared empty set a canvas with no live traffic uses
+ *   FIT_VIEW_OPTIONS: the framing every fit of the canvas viewport uses
+ *   CanvasProps: everything the canvas needs to draw one run
  *   buildEdges(): turns a plan's dependencies into React Flow edges
+ *   measuredGraph(): the ids and measured sizes React Flow currently holds
+ *   useFitOnMeasuredGraph(): re-frames the viewport once a new node is measured
+ *   CanvasSurface: renders the graph inside an established React Flow context
  *   Canvas: renders a run's planned tasks as a positioned, live-updating graph
  */
 
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import ReactFlow, {
   Background,
   BackgroundVariant,
   Controls,
+  ReactFlowProvider,
+  useReactFlow,
+  useStore,
   type Edge,
   type EdgeTypes,
+  type FitViewOptions,
   type Node,
+  type ReactFlowState,
 } from "reactflow";
 
 import { useRelaxedLayout } from "../hooks/useRelaxedLayout";
@@ -46,6 +56,19 @@ const ORCHESTRATOR_Y = 0;
 const EDGE_TYPES: EdgeTypes = { pulse: PulseEdge };
 const NO_ACTIVE_EDGES: ReadonlySet<string> = new Set<string>();
 
+// maxZoom caps the fit: a run that has only planned its first task would
+// otherwise be framed at React Flow's default 2x, and every node that spawned
+// after it would land off screen at that magnification.
+const FIT_VIEW_OPTIONS: FitViewOptions = { padding: 0.25, maxZoom: 1 };
+
+export interface CanvasProps {
+  tasks: readonly RunViewerTask[];
+  approvals?: readonly Approval[];
+  onResolve?: (approvalId: string) => void;
+  activeEdgeIds?: ReadonlySet<string>;
+  onFocusTask?: (taskId: string | null) => void;
+}
+
 /**
  * Turns a plan's dependencies into the edges React Flow draws.
  *
@@ -56,7 +79,7 @@ const NO_ACTIVE_EDGES: ReadonlySet<string> = new Set<string>();
 function buildEdges(
   tasks: readonly RunViewerTask[],
   lit: ReadonlySet<string>,
-): readonly Edge[] {
+): Edge[] {
   const started = new Set(
     tasks.filter((task) => task.status !== "pending").map((task) => task.id),
   );
@@ -84,6 +107,40 @@ function buildEdges(
 }
 
 /**
+ * Builds the ids and measured sizes React Flow currently holds for the graph.
+ *
+ * @param state - React Flow's internal store.
+ * @returns signature - One comparable string, empty while nothing is measured.
+ */
+export function measuredGraph(state: ReactFlowState): string {
+  return Array.from(state.nodeInternals.values())
+    .map((node) => `${node.id}:${node.width ?? 0}x${node.height ?? 0}`)
+    .join("|");
+}
+
+/**
+ * Re-frames the viewport once a newly spawned node has actually been measured.
+ *
+ * React Flow's fitView prop only runs on the first render, and the canvas
+ * mounts before the planner has emitted anything, so without this a run keeps
+ * the framing chosen for an empty graph and every task spawns off screen.
+ *
+ * This keys on measured sizes rather than on node count because a spawned node
+ * reaches the store a render before it is measured, and fitting a node that
+ * still reports no dimensions frames the orchestrator on its own.
+ */
+function useFitOnMeasuredGraph(): void {
+  const { fitView } = useReactFlow();
+  const measured = useStore(measuredGraph);
+
+  useEffect(() => {
+    if (measured.length > 0) {
+      fitView(FIT_VIEW_OPTIONS);
+    }
+  }, [measured, fitView]);
+}
+
+/**
  * Renders a run's planned tasks as a positioned, live-updating graph.
  *
  * @param props.tasks - Runtime-planned tasks streamed in for this run so far.
@@ -93,19 +150,13 @@ function buildEdges(
  * @param props.onFocusTask - Called with the task id a reviewer selects.
  * @returns The canvas element.
  */
-export function Canvas({
+function CanvasSurface({
   tasks,
   approvals = [],
   onResolve,
   activeEdgeIds,
   onFocusTask,
-}: Readonly<{
-  tasks: readonly RunViewerTask[];
-  approvals?: readonly Approval[];
-  onResolve?: (approvalId: string) => void;
-  activeEdgeIds?: ReadonlySet<string>;
-  onFocusTask?: (taskId: string | null) => void;
-}>) {
+}: Readonly<CanvasProps>) {
   // A stable identity matters: an inline empty Set would rebuild every edge on
   // each render and undo the memo below.
   const litEdges = activeEdgeIds ?? NO_ACTIVE_EDGES;
@@ -119,36 +170,40 @@ export function Canvas({
     [placements],
   );
 
-  const nodes: readonly Node<TaskNodeData | OrchestratorNodeData>[] = [
-    {
-      id: ORCHESTRATOR_ID,
-      type: "orchestrator",
-      position: { x: 0, y: ORCHESTRATOR_Y },
-      draggable: false,
-      data: { label: "Orchestrator", ...runTotals(tasks) },
-    },
-    ...tasks.map((task, index) => ({
-      id: task.id,
-      type: speciesFor(task),
-      position: {
-        x: positions.get(task.id)?.x ?? 0,
-        y: positions.get(task.id)?.y ?? 0,
+  const nodes: Node<TaskNodeData | OrchestratorNodeData>[] = useMemo(
+    () => [
+      {
+        id: ORCHESTRATOR_ID,
+        type: "orchestrator",
+        position: { x: 0, y: ORCHESTRATOR_Y },
+        draggable: false,
+        data: { label: "Orchestrator", ...runTotals(tasks) },
       },
-      data: {
-        title: task.title,
-        assignee: task.assignee,
-        status: task.status,
-        tokens: task.tokens,
-        retries: task.retries,
-        spawnDelay: spawnDelayMs(index),
-        toolCallCount: task.toolCallCount,
-        approval: waiting.get(task.id),
-        onResolve,
-      },
-    })),
-  ];
+      ...tasks.map((task, index) => ({
+        id: task.id,
+        type: speciesFor(task),
+        position: {
+          x: positions.get(task.id)?.x ?? 0,
+          y: positions.get(task.id)?.y ?? 0,
+        },
+        data: {
+          title: task.title,
+          assignee: task.assignee,
+          status: task.status,
+          tokens: task.tokens,
+          retries: task.retries,
+          spawnDelay: spawnDelayMs(index),
+          toolCallCount: task.toolCallCount,
+          approval: waiting.get(task.id),
+          onResolve,
+        },
+      })),
+    ],
+    [tasks, positions, waiting, onResolve],
+  );
 
   const edges = useMemo(() => buildEdges(tasks, litEdges), [tasks, litEdges]);
+  useFitOnMeasuredGraph();
 
   return (
     <div className="canvas">
@@ -156,12 +211,12 @@ export function Canvas({
         <p className="canvas-placeholder">Waiting for the planner…</p>
       )}
       <ReactFlow
-        nodes={[...nodes]}
-        edges={[...edges]}
+        nodes={nodes}
+        edges={edges}
         nodeTypes={NODE_TYPES}
         edgeTypes={EDGE_TYPES}
         fitView
-        fitViewOptions={{ padding: 0.25 }}
+        fitViewOptions={FIT_VIEW_OPTIONS}
         minZoom={0.2}
         nodesConnectable={false}
         elementsSelectable
@@ -175,5 +230,19 @@ export function Canvas({
         <Controls showInteractive={false} />
       </ReactFlow>
     </div>
+  );
+}
+
+/**
+ * Renders a run's planned tasks as a positioned, live-updating graph.
+ *
+ * @param props - Everything the canvas surface renders, passed straight through.
+ * @returns The canvas element, inside its own React Flow context.
+ */
+export function Canvas(props: Readonly<CanvasProps>) {
+  return (
+    <ReactFlowProvider>
+      <CanvasSurface {...props} />
+    </ReactFlowProvider>
   );
 }
