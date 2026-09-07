@@ -17,9 +17,37 @@ want and keep chatting; the coordinator reasons about it, weaves a DAG of tasks
 assigned to agents, and a deterministic scheduler runs it across the team. The
 whole run stays data you can watch node by node, inspect, approve, and replay.
 
-<img src="docs/media/console.gif" alt="The agentflow console: an orchestration run streaming in, then the approvals it routed to a human" width="940" />
+<img src="docs/media/console.gif" alt="One goal typed into the console, decomposed into seven tasks, and woven onto the canvas as the team runs it" width="940" />
+
+<sub>One goal, typed and sent. The coordinator reasons, plans, and weaves seven
+tasks onto the canvas — three researchers in parallel, three writers behind
+them, one critic at the end — and the scheduler runs it.</sub>
 
 </div>
+
+## What it looks like
+
+The canvas is the run, not a picture of it. Each node is a task assigned to an
+agent, drawn as the species of work it is, carrying the state it is in:
+
+<p align="center">
+  <img src="docs/media/run.png" alt="The run screen: chat sessions on the left, the task graph in the centre, the conversation on the right" width="940" />
+</p>
+
+Open a node for its evidence — the agent, the kind of work, how long it took,
+what it waited on, and the agent's own output, streaming in while it is still
+being written:
+
+<p align="center">
+  <img src="docs/media/node-evidence.png" alt="A task node opened to show its agent, duration, dependencies and full output" width="940" />
+</p>
+
+Pick the model the team reasons through: a provider, its key, then any model
+that key can actually reach. Switching model later never asks for the key again:
+
+<p align="center">
+  <img src="docs/media/model-picker.png" alt="The model picker listing the models the configured credential can reach" width="420" />
+</p>
 
 ## Architecture
 
@@ -103,13 +131,17 @@ cd apps/console && npm install && npm run dev
 
 ## Governance
 
-Tool calls are evaluated against `apps/api/policy/schema.yaml` before execution;
-high-risk actions route to the approval queue in the console, where a human
-approves or rejects each one before the executor may proceed:
+Tool calls are evaluated against `apps/api/policy/schema.yaml` before execution.
+An approval is a state a node is in rather than a queue somewhere else: the
+coordinator plans anything that writes, sends, deletes or spends as
+`needs_approval`, the scheduler holds that task and everything behind it, and
+the node waits on the canvas with an `!` until a human decides. Nothing
+downstream runs in the meantime.
 
-<p align="center">
-  <img src="docs/media/approvals.png" alt="The approval queue: policy-gated tool calls awaiting a human decision" width="940" />
-</p>
+The critic works the same way, in the other direction. When it rejects the work
+it names what each author has to change, those authors run again with the note
+attached, and the critic reviews the result — up to `MAX_REVISIONS` passes,
+after which the run reports `revision-bounded` rather than looping forever.
 
 The schema format is documented in `docs/policy-schema.md`.
 

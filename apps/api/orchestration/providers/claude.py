@@ -7,6 +7,7 @@ Contains:
     MAX_TOKENS: output ceiling one reasoning call may spend
     THINKING: thinking configuration every reasoning call runs under
     OUTPUT: how hard the model works before it answers
+    _readable(): renders a provider failure as something a reviewer can act on
     ClaudeProvider: reasons through Claude for prose answers and typed plans
     ClaudeProvider.verify(): confirms the credential can reach the model
     ClaudeProvider.list_models(): lists the Claude models the key can reach
@@ -29,10 +30,35 @@ MAX_TOKENS = 16000
 
 # Adaptive thinking lets Claude decide how long to reason about a goal; high
 # effort is what makes a plan worth executing rather than a list of guesses.
+# It is spent on the structured calls only -- planning, critique, the closing
+# report -- because those decide what the team does. An agent writing its own
+# task's prose does not get it: it made every node take minutes and bought no
+# more accuracy than the model's own default.
 THINKING: ThinkingConfigParam = {"type": "adaptive"}
 OUTPUT: OutputConfigParam = {"effort": "high"}
 
 Schema = TypeVar("Schema", bound=BaseModel)
+
+
+def _readable(error: Exception) -> str:
+    """Renders a provider failure as something a reviewer can act on.
+
+    The SDK's own string is a wall of request metadata around one useful
+    sentence, and that sentence is usually the whole story: out of credit, over
+    the rate limit, model not available to this key.
+
+    Args:
+        error: The exception the SDK raised.
+
+    Returns:
+        message: The provider's own message where there is one, else the type.
+    """
+    body = getattr(error, "body", None)
+    if isinstance(body, dict):
+        inner = body.get("error")
+        if isinstance(inner, dict) and isinstance(inner.get("message"), str):
+            return f"claude: {inner['message']}"
+    return f"claude: {type(error).__name__}: {error}"
 
 
 class ClaudeProvider:
@@ -101,30 +127,33 @@ class ClaudeProvider:
         Returns:
             answer: The model's reply with its text blocks joined.
         """
-        if on_delta is None:
-            response = await self._client.messages.create(
+        try:
+            if on_delta is None:
+                response = await self._client.messages.create(
+                    model=self.model,
+                    max_tokens=MAX_TOKENS,
+                    system=system,
+                    thinking=THINKING,
+                    messages=[{"role": "user", "content": prompt}],
+                )
+                return "".join(block.text for block in response.content if block.type == "text")
+
+            chunks: list[str] = []
+            async with self._client.messages.stream(
                 model=self.model,
                 max_tokens=MAX_TOKENS,
                 system=system,
                 thinking=THINKING,
-                output_config=OUTPUT,
                 messages=[{"role": "user", "content": prompt}],
-            )
-            return "".join(block.text for block in response.content if block.type == "text")
-
-        chunks: list[str] = []
-        async with self._client.messages.stream(
-            model=self.model,
-            max_tokens=MAX_TOKENS,
-            system=system,
-            thinking=THINKING,
-            output_config=OUTPUT,
-            messages=[{"role": "user", "content": prompt}],
-        ) as stream:
-            async for text in stream.text_stream:
-                chunks.append(text)
-                on_delta(text)
-        return "".join(chunks)
+            ) as stream:
+                async for text in stream.text_stream:
+                    chunks.append(text)
+                    on_delta(text)
+            return "".join(chunks)
+        except ReasoningFailed:
+            raise
+        except Exception as error:  # billing, rate limits, outages: all the same here
+            raise ReasoningFailed(_readable(error)) from error
 
     async def parse(
         self,
@@ -148,15 +177,18 @@ class ClaudeProvider:
         turns: list[MessageParam] = [
             {"role": turn["role"], "content": turn["content"]} for turn in messages
         ]
-        response = await self._client.messages.parse(
-            model=self.model,
-            max_tokens=MAX_TOKENS,
-            system=system,
-            thinking=THINKING,
-            output_config=OUTPUT,
-            messages=turns,
-            output_format=schema,
-        )
+        try:
+            response = await self._client.messages.parse(
+                model=self.model,
+                max_tokens=MAX_TOKENS,
+                system=system,
+                thinking=THINKING,
+                output_config=OUTPUT,
+                messages=turns,
+                output_format=schema,
+            )
+        except Exception as error:  # billing, rate limits, outages: all the same here
+            raise ReasoningFailed(_readable(error)) from error
         parsed = response.parsed_output
         if parsed is None:
             raise ReasoningFailed("claude returned nothing matching the schema")

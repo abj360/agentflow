@@ -53,8 +53,15 @@ const NO_ACTIVE_EDGES: ReadonlySet<string> = new Set<string>();
 
 // maxZoom caps the fit: a run that has only planned its first task would
 // otherwise be framed at React Flow's default 2x, and every node that spawned
-// after it would land off screen at that magnification.
-const FIT_VIEW_OPTIONS: FitViewOptions = { padding: 0.25, maxZoom: 1 };
+// after it would land off screen at that magnification. minZoom is the other
+// half of that: a seven-node plan fitted into a narrow canvas shrinks until the
+// titles cannot be read, and a graph you have to pan is better than one you
+// cannot read.
+const FIT_VIEW_OPTIONS: FitViewOptions = {
+  padding: 0.2,
+  maxZoom: 1,
+  minZoom: 0.62,
+};
 
 export interface CanvasProps {
   tasks: readonly RunViewerTask[];

@@ -12,11 +12,14 @@ Contains:
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Mapping
 
 from pydantic import BaseModel, Field
 
 from apps.api.orchestration.reasoning import ChatMessage, ReasoningClient
+
+logger = logging.getLogger(__name__)
 
 REPORT_SYSTEM = """You are the coordinator, reporting back on work your team has finished.
 
@@ -110,4 +113,6 @@ async def report_on_run(
     try:
         return await llm.parse(REPORT_SYSTEM, messages, RunReport)
     except Exception:  # a failed write-up must not swallow the work itself
+        # The reviewer is told the write-up failed, but only the log says why.
+        logger.exception("could not write the closing report")
         return fallback_report(outputs)

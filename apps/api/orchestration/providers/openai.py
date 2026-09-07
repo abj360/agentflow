@@ -5,6 +5,7 @@ openai.py --- reasoning through OpenAI's chat models
 Contains:
     PREFERRED_MODELS: models tried in order when the account exposes them
     MAX_TOKENS: output ceiling one reasoning call may spend
+    _readable(): renders a provider failure as something a reviewer can act on
     OpenAIProvider: reasons through OpenAI for prose answers and typed plans
     OpenAIProvider.verify(): confirms the credential and picks a live model
     OpenAIProvider.list_models(): lists the chat models the key can reach
@@ -31,6 +32,21 @@ PREFERRED_MODELS = ("gpt-5", "gpt-4.1", "gpt-4o")
 MAX_TOKENS = 16000
 
 Schema = TypeVar("Schema", bound=BaseModel)
+
+
+def _readable(error: Exception) -> str:
+    """Renders a provider failure as something a reviewer can act on.
+
+    Args:
+        error: The exception the SDK raised.
+
+    Returns:
+        message: The provider's own message where there is one, else the type.
+    """
+    body = getattr(error, "body", None)
+    if isinstance(body, dict) and isinstance(body.get("message"), str):
+        return f"openai: {body['message']}"
+    return f"openai: {type(error).__name__}: {error}"
 
 
 class OpenAIProvider:
@@ -123,27 +139,32 @@ class OpenAIProvider:
             ChatCompletionSystemMessageParam(role="system", content=system),
             ChatCompletionUserMessageParam(role="user", content=prompt),
         ]
-        if on_delta is None:
-            response = await self._client.chat.completions.create(
+        try:
+            if on_delta is None:
+                response = await self._client.chat.completions.create(
+                    model=self.model,
+                    max_completion_tokens=MAX_TOKENS,
+                    messages=messages,
+                )
+                return response.choices[0].message.content or ""
+
+            chunks: list[str] = []
+            stream = await self._client.chat.completions.create(
                 model=self.model,
                 max_completion_tokens=MAX_TOKENS,
                 messages=messages,
+                stream=True,
             )
-            return response.choices[0].message.content or ""
-
-        chunks: list[str] = []
-        stream = await self._client.chat.completions.create(
-            model=self.model,
-            max_completion_tokens=MAX_TOKENS,
-            messages=messages,
-            stream=True,
-        )
-        async for chunk in stream:
-            text = chunk.choices[0].delta.content if chunk.choices else None
-            if text:
-                chunks.append(text)
-                on_delta(text)
-        return "".join(chunks)
+            async for chunk in stream:
+                text = chunk.choices[0].delta.content if chunk.choices else None
+                if text:
+                    chunks.append(text)
+                    on_delta(text)
+            return "".join(chunks)
+        except ReasoningFailed:
+            raise
+        except Exception as error:  # billing, rate limits, outages: all the same here
+            raise ReasoningFailed(_readable(error)) from error
 
     async def parse(
         self,
@@ -173,12 +194,15 @@ class OpenAIProvider:
                 if turn["role"] == "user"
                 else ChatCompletionAssistantMessageParam(role="assistant", content=turn["content"])
             )
-        response = await self._client.chat.completions.parse(
-            model=self.model,
-            max_completion_tokens=MAX_TOKENS,
-            messages=turns,
-            response_format=schema,
-        )
+        try:
+            response = await self._client.chat.completions.parse(
+                model=self.model,
+                max_completion_tokens=MAX_TOKENS,
+                messages=turns,
+                response_format=schema,
+            )
+        except Exception as error:  # billing, rate limits, outages: all the same here
+            raise ReasoningFailed(_readable(error)) from error
         parsed = response.choices[0].message.parsed
         if parsed is None:
             raise ReasoningFailed("openai returned nothing matching the schema")

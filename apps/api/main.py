@@ -117,10 +117,20 @@ def stopped_early(result: ScheduleResult, planned: Sequence[PlannedTask]) -> str
     if result.waiting:
         held = ", ".join(titles.get(task_id, task_id) for task_id in result.waiting)
         return f"I have paused on work that needs your approval first: {held}."
+    if result.bounded:
+        critics = ", ".join(titles.get(task_id, task_id) for task_id in result.bounded)
+        return (
+            f"I stopped after the revision limit: {critics} kept sending the work "
+            "back. What is on the canvas is the last version the team produced."
+        )
     failed = ", ".join(titles.get(task_id, task_id) for task_id in result.failed)
     blocked = len(result.skipped)
     tail = f" {blocked} task(s) downstream never ran." if blocked else ""
-    return f"I could not finish: {failed} failed.{tail}"
+    # The reason is the same for every task when the provider is the problem, so
+    # it is worth saying once rather than making the reviewer open each red node.
+    reasons = sorted(set(result.errors.values()))
+    why = f" {reasons[0]}" if len(reasons) == 1 else ""
+    return f"I could not finish: {failed} failed.{why}{tail}"
 
 
 class ProviderRequest(BaseModel):
