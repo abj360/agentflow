@@ -33,6 +33,7 @@ import ReactFlow, {
 import { useRelaxedLayout } from "../hooks/useRelaxedLayout";
 import type { Approval } from "../lib/api";
 import { edgeId } from "../lib/edge-pulse";
+import type { Feedback } from "../hooks/useRunGraph";
 import {
   pairApprovals,
   speciesFor,
@@ -57,6 +58,7 @@ const FIT_VIEW_OPTIONS: FitViewOptions = { padding: 0.25, maxZoom: 1 };
 
 export interface CanvasProps {
   tasks: readonly RunViewerTask[];
+  feedback?: readonly Feedback[];
   approvals?: readonly Approval[];
   onResolve?: (approvalId: string) => void;
   activeEdgeIds?: ReadonlySet<string>;
@@ -71,40 +73,53 @@ export interface CanvasProps {
  *
  * @param tasks - Runtime-planned tasks carrying the ids they depend on.
  * @param lit - Ids of the edges a trace event is currently firing along.
- * @returns edges - One edge per dependency between two revealed tasks.
+ * @param sentBack - Return paths a critic has sent work along.
+ * @returns edges - One edge per dependency between two revealed tasks, plus
+ *   one per critic rejection.
  */
 function buildEdges(
   tasks: readonly RunViewerTask[],
   lit: ReadonlySet<string>,
+  sentBack: readonly Feedback[],
 ): Edge[] {
   const status = new Map(tasks.map((task) => [task.id, task.status]));
-  return tasks
-    .flatMap((task) =>
-      task.dependsOn.map((dependency) => ({
-        source: dependency,
-        target: task.id,
-      })),
-    )
-    .filter(({ source }) => status.has(source))
-    .map(({ source, target }) => {
-      const downstream = status.get(target);
-      const settled = downstream === "done" || downstream === "failed";
-      return {
-        id: edgeId(source, target),
-        type: "pulse",
-        source,
-        target,
-        data: {
-          // An edge sweeps while the work at its far end is actually running.
-          // Lighting it from the firing alone left it sweeping forever, because
-          // nothing re-renders the canvas once a run goes quiet.
-          active:
-            downstream === "running" ||
-            (!settled && lit.has(edgeId(source, target))),
-          pending: downstream === "pending",
-        },
-      };
-    });
+  const returns: Edge[] = sentBack
+    .filter((sent) => status.has(sent.from) && status.has(sent.to))
+    .map((sent) => ({
+      id: `feedback:${edgeId(sent.from, sent.to)}`,
+      type: "pulse",
+      source: sent.from,
+      target: sent.to,
+      label: "revise",
+      data: { active: false, pending: false, feedback: true, note: sent.note },
+    }));
+  return returns.concat(
+    tasks
+      .flatMap((task) =>
+        task.dependsOn.map((dependency) => ({
+          source: dependency,
+          target: task.id,
+        })),
+      )
+      .filter(({ source }) => status.has(source))
+      .map(({ source, target }) => {
+        const downstream = status.get(target);
+        const settled = downstream === "done" || downstream === "failed";
+        return {
+          id: edgeId(source, target),
+          type: "pulse",
+          source,
+          target,
+          data: {
+            // An edge fires from the moment it is drawn and stops when the work
+            // at its far end settles. Lighting it only from the trace firing left
+            // it sweeping forever, because nothing re-renders a quiet canvas.
+            active: !settled,
+            pending: false,
+          },
+        };
+      }),
+  );
 }
 
 /**
@@ -145,6 +160,7 @@ function useFitOnMeasuredGraph(): void {
  * Renders a run's planned tasks as a positioned, live-updating graph.
  *
  * @param props.tasks - Runtime-planned tasks streamed in for this run so far.
+ * @param props.feedback - Return paths a critic has sent work back along.
  * @param props.approvals - Approval requests currently waiting on a reviewer.
  * @param props.onResolve - Called with the approval a reviewer has decided.
  * @param props.activeEdgeIds - Edges currently lit by a trace event.
@@ -153,6 +169,7 @@ function useFitOnMeasuredGraph(): void {
  */
 function CanvasSurface({
   tasks,
+  feedback = [],
   approvals = [],
   onResolve,
   activeEdgeIds,
@@ -196,7 +213,10 @@ function CanvasSurface({
     [tasks, positions, waiting, onResolve],
   );
 
-  const edges = useMemo(() => buildEdges(tasks, litEdges), [tasks, litEdges]);
+  const edges = useMemo(
+    () => buildEdges(tasks, litEdges, feedback),
+    [tasks, litEdges, feedback],
+  );
   useFitOnMeasuredGraph();
 
   return (

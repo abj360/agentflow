@@ -12,10 +12,10 @@
 [![docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](docker/)
 [![license](https://img.shields.io/badge/license-MIT-0d9488)](LICENSE)
 
-Agentflow is a multi-agent orchestrator that runs a bounded planner, executor,
-synthesizer and critic loop over governed MCP tools, routing every high-risk call
-to a human approval queue and recording the whole run as a hash-chained audit
-trace you can replay.
+Agentflow turns one goal into a task graph at run time. You describe what you
+want and keep chatting; the coordinator reasons about it, weaves a DAG of tasks
+assigned to agents, and a deterministic scheduler runs it across the team. The
+whole run stays data you can watch node by node, inspect, approve, and replay.
 
 <img src="docs/media/console.gif" alt="The agentflow console: an orchestration run streaming in, then the approvals it routed to a human" width="940" />
 
@@ -25,38 +25,81 @@ trace you can replay.
 
 ```
 Console (Next.js) --WebSocket--> API (FastAPI)
-                                    |
-                          Orchestration loop (LangGraph)
-                                    |
-                +-------------------+-------------------+
-           Audit log (Postgres)  Policy engine (YAML)  MCP servers
+                                     |
+                         Coordinator (Claude / OpenAI)
+                                     |
+                            Task DAG, built per goal
+                                     |
+                        Deterministic wave scheduler
+                                     |
+              +----------------------+----------------------+
+        researcher / executor / writer / critic      governed MCP tools
+                                     |
+        Audit log (Postgres)   Policy engine (YAML)   Approval queue
 ```
+
+## Install
+
+Everything runs in Docker. You need Docker Desktop (or Docker Engine with
+Compose v2) and nothing else — no local Python or Node.
+
+```bash
+git clone https://github.com/abj360/agentflow.git
+cd agentflow
+cp .env.example .env
+docker compose -f docker/docker-compose.yml up --build
+```
+
+That brings up four containers: the console on **:3000**, the API on **:8000**,
+Postgres on **:5432** and Redis on **:6379**. Database migrations run
+automatically when the API container starts. `scripts/run-local.sh` does the
+same thing if you prefer a script.
+
+Then open **http://localhost:3000/run/new** and give it a model to think with:
+click the model pill under the composer, choose **Claude** or **OpenAI**, paste
+an API key, and pick the model you want from the ones that key can actually
+reach. The key is verified before it is kept, held in the API process only, and
+never written to disk or returned to the browser. To have a deployment come up
+already able to reason, set `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` in `.env`
+instead.
+
+<details>
+<summary>Running it without Docker</summary>
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+alembic upgrade head                       # needs Postgres on :5432
+uvicorn apps.api.main:app --port 8000
+
+cd apps/console && npm install && npm run dev
+```
+
+</details>
 
 ## How you use it
 
-1. **Bring the stack up** — `cp .env.example .env`, then
-   `docker compose -f docker/docker-compose.yml up --build`.
-2. **Declare what the agents may do** — list your tools in
-   `apps/api/policy/schema.yaml` and mark which ones a human has to approve.
-   The format is documented in `docs/policy-schema.md`.
-3. **Start a run** against the API on `:8000`.
-4. **Watch it** in the console on `:3000`. The trace streams live over `/ws/traces`:
-   planner, executor, synthesizer and critic, each step as it happens.
-5. **Approve the risky calls.** A high-risk tool stops the run and appears in the
-   approval queue; approve or reject it and the executor carries on.
-6. **Replay it afterwards** — `GET /{trace_id}` returns the whole run and
+1. **Describe a goal** in the chat panel, in plain language, and keep chatting.
+2. **The coordinator decides what the turn is.** It answers a question, asks you
+   one clarifying question when the goal is genuinely ambiguous, or decomposes
+   the goal into a task graph. The shape comes from the goal: one step is one
+   node, independent strands become parallel roots, and a chain appears only
+   where the work really depends on itself.
+3. **Watch it weave.** Nodes appear one at a time on the canvas, each assigned
+   to an agent, each carrying a tick, a cross, a turning ring or an `!` for the
+   state it is in. Dependency edges fire until the work at their far end
+   settles.
+4. **Open any node** to read its evidence: the agent, the kind of work, how
+   long it took, its dependencies, and the agent's own output — streaming in
+   while it is still being written.
+5. **Approve what needs it.** A task that writes, sends, deletes or spends is
+   planned as `needs_approval`; the scheduler holds it and everything behind it
+   until a human decides.
+6. **Read the close.** Every run ends with the artifact the team produced and
+   the coordinator's candid feedback on it — what it answers, what is thin, and
+   what it would do next.
+7. **Replay it afterwards** — `GET /{trace_id}` returns the whole run and
    `GET /{trace_id}/verify` proves the hash chain was never tampered with.
-
-## Quickstart (one command, fully dockerized)
-
-```bash
-cp .env.example .env
-docker compose -f docker/docker-compose.yml up --build
-# console on :3000, api on :8000, postgres on :5432, redis on :6379
-```
-
-Migrations run automatically on api container startup. No local Python/Node install needed.
-Prefer a script? `scripts/run-local.sh` does the same thing.
 
 ## Governance
 
@@ -81,6 +124,7 @@ pytest tests/chaos/
 
 - `docs/adr/ADR-001-orchestration-pattern.md` — the four-role loop and why it is bounded
 - `docs/adr/ADR-002-audit-trace-format.md` — the hash-chained audit event format
+- `docs/adr/ADR-002-dynamic-task-graph.md` — why the graph is built per goal at run time
 - `docs/policy-schema.md` — the governance policy schema reference
 
 ## License

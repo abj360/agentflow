@@ -11,11 +11,13 @@ import type { NodeTypes } from "reactflow";
 import { ApprovalNode } from "./ApprovalNode";
 import { FileOpNode } from "./FileOpNode";
 import { ResearchNode } from "./ResearchNode";
+import { ReviewNode } from "./ReviewNode";
 import { ToolCallNode } from "./ToolCallNode";
 
 export const NODE_TYPES: NodeTypes = {
   research: ResearchNode,
   "tool-call": ToolCallNode,
   "file-op": FileOpNode,
+  review: ReviewNode,
   approval: ApprovalNode,
 };

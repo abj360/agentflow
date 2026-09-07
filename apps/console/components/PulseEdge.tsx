@@ -2,7 +2,7 @@
  * PulseEdge.tsx --- the dependency edge that sweeps while a step fires along it
  *
  * Contains:
- *   PulseEdgeData: what the canvas tells an edge about its last firing
+ *   PulseEdgeData: what the canvas tells an edge about its firing and role
  *   PulseEdge: renders one dependency edge, sweeping while the edge is active
  */
 
@@ -13,6 +13,8 @@ import { getBezierPath, type EdgeProps } from "reactflow";
 export interface PulseEdgeData {
   readonly active: boolean;
   readonly pending: boolean;
+  readonly feedback?: boolean;
+  readonly note?: string;
 }
 
 /**
@@ -41,12 +43,24 @@ export function PulseEdge({
   });
   const active: boolean = data?.active ?? false;
   const pending: boolean = data?.pending ?? false;
-  const modifier = active
-    ? " canvas-edge--active"
-    : pending
-      ? " canvas-edge--pending"
-      : "";
+  const isFeedback: boolean = data?.feedback ?? false;
+  const modifier = isFeedback
+    ? " canvas-edge--feedback"
+    : active
+      ? " canvas-edge--active"
+      : pending
+        ? " canvas-edge--pending"
+        : "";
   return (
-    <path id={id} d={path} fill="none" className={`canvas-edge${modifier}`} />
+    <path
+      id={id}
+      d={path}
+      fill="none"
+      className={`canvas-edge${modifier}`}
+      // The note is what the critic asked for, so the return path can be read
+      // by hovering it rather than only opening the author's node.
+    >
+      {data?.note === undefined ? null : <title>{data.note}</title>}
+    </path>
   );
 }

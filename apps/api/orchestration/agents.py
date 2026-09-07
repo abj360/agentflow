@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from apps.api.orchestration.reasoning import ReasoningClient
+from apps.api.orchestration.reasoning import OnDelta, ReasoningClient
 from apps.api.orchestration.task_planner import PlannedTask
 
 MAX_UPSTREAM_CHARS = 4000
@@ -60,6 +60,7 @@ def render_brief(
     goal: str,
     task: PlannedTask,
     upstream: Mapping[str, str],
+    revision: str = "",
 ) -> str:
     """Renders the goal, the task, and whatever upstream tasks produced.
 
@@ -71,6 +72,8 @@ def render_brief(
         goal: What the reviewer asked the team for.
         task: The task this agent is about to run.
         upstream: Output of every task this one depends on, keyed by task id.
+        revision: What the critic asked this task to change, when it has been
+            sent back for another pass.
 
     Returns:
         brief: The prompt handed to the agent.
@@ -80,6 +83,11 @@ def render_brief(
         result = upstream.get(task_id, "")
         if result:
             parts.append(f"Result of {task_id}:\n{result[:MAX_UPSTREAM_CHARS]}")
+    if revision:
+        parts.append(
+            "The critic reviewed your last attempt and sent it back. Fix "
+            f"exactly this and produce the work again in full:\n{revision}"
+        )
     parts.append("Do your task now and answer with its output only.")
     return "\n\n".join(parts)
 
@@ -89,6 +97,8 @@ async def run_task(
     goal: str,
     task: PlannedTask,
     upstream: Mapping[str, str],
+    on_delta: OnDelta | None = None,
+    revision: str = "",
 ) -> str:
     """Reasons one planned task through the model and returns what it produced.
 
@@ -97,6 +107,10 @@ async def run_task(
         goal: What the reviewer asked the team for.
         task: The task to run.
         upstream: Output of every task this one depends on, keyed by task id.
+        on_delta: Called with each fragment as the agent writes it, so the node
+            can be opened and read while the work is still going.
+        revision: What the critic asked this task to change, when it is being
+            run again after a rejection.
 
     Returns:
         output: What the agent produced for this task.
@@ -105,7 +119,8 @@ async def run_task(
         ReasoningFailed: When the model could not answer at all.
     """
     system = AGENT_SYSTEM.get(task.assignee, DEFAULT_SYSTEM)
-    return await llm.complete(system, render_brief(goal, task, upstream))
+    brief = render_brief(goal, task, upstream, revision)
+    return await llm.complete(system, brief, on_delta)
 
 
 async def summarise(llm: ReasoningClient, goal: str, outputs: Mapping[str, str]) -> str:

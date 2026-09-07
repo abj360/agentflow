@@ -44,7 +44,7 @@ test("a long task is reported in minutes", () => {
 
 test("a running frame starts the task's clock", () => {
   const graph = applyStructuralEvent(
-    { tasks: [TASK], pulses: [] },
+    { tasks: [TASK], pulses: [], feedback: [] },
     { kind: "node_status_changed", id: "task-1", status: "running", at: 12 },
   );
   expect(graph.tasks[0].startedAt).toBe(12);
@@ -52,7 +52,7 @@ test("a running frame starts the task's clock", () => {
 
 test("a done frame stops the clock and keeps the output", () => {
   const graph = applyStructuralEvent(
-    { tasks: [{ ...TASK, startedAt: 12 }], pulses: [] },
+    { tasks: [{ ...TASK, startedAt: 12 }], pulses: [], feedback: [] },
     {
       kind: "node_status_changed",
       id: "task-1",
@@ -67,7 +67,7 @@ test("a done frame stops the clock and keeps the output", () => {
 
 test("a later frame never erases an output already received", () => {
   const withOutput = applyStructuralEvent(
-    { tasks: [TASK], pulses: [] },
+    { tasks: [TASK], pulses: [], feedback: [] },
     {
       kind: "node_status_changed",
       id: "task-1",

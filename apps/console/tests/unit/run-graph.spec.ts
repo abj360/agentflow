@@ -25,7 +25,7 @@ const TASK: RunViewerTask = {
 
 test("a node frame spawns a task", () => {
   const graph = applyStructuralEvent(
-    { tasks: [], pulses: [] },
+    { tasks: [], pulses: [], feedback: [] },
     { kind: "node_created", task: TASK },
   );
   expect(graph.tasks).toHaveLength(1);
@@ -33,7 +33,7 @@ test("a node frame spawns a task", () => {
 
 test("a replan replaces a task instead of duplicating it", () => {
   const first = applyStructuralEvent(
-    { tasks: [], pulses: [] },
+    { tasks: [], pulses: [], feedback: [] },
     { kind: "node_created", task: TASK },
   );
   const second = applyStructuralEvent(first, {
@@ -46,7 +46,7 @@ test("a replan replaces a task instead of duplicating it", () => {
 
 test("a status frame moves an existing task", () => {
   const first = applyStructuralEvent(
-    { tasks: [], pulses: [] },
+    { tasks: [], pulses: [], feedback: [] },
     { kind: "node_created", task: TASK },
   );
   const moved = applyStructuralEvent(first, {
@@ -59,7 +59,7 @@ test("a status frame moves an existing task", () => {
 
 test("a status frame for an unknown task changes nothing", () => {
   const graph = applyStructuralEvent(
-    { tasks: [TASK], pulses: [] },
+    { tasks: [TASK], pulses: [], feedback: [] },
     { kind: "node_status_changed", id: "task-9", status: "done" },
   );
   expect(graph.tasks[0]?.status).toBe("pending");
@@ -67,8 +67,39 @@ test("a status frame for an unknown task changes nothing", () => {
 
 test("an edge frame lights the edge it names", () => {
   const graph = applyStructuralEvent(
-    { tasks: [], pulses: [] },
+    { tasks: [], pulses: [], feedback: [] },
     { kind: "edge_created", from: "orchestrator", to: "task-1" },
   );
   expect(graph.pulses[0]?.id).toBe("orchestrator->task-1");
+});
+
+test("a rejection is folded into the return paths", () => {
+  const graph = applyStructuralEvent(
+    { tasks: [], pulses: [], feedback: [] },
+    {
+      kind: "edge_feedback",
+      from: "task-2",
+      to: "task-1",
+      note: "add the numbers",
+    },
+  );
+  expect(graph.feedback).toEqual([
+    { from: "task-2", to: "task-1", note: "add the numbers" },
+  ]);
+});
+
+test("a second rejection of the same task replaces the first note", () => {
+  const first = applyStructuralEvent(
+    { tasks: [], pulses: [], feedback: [] },
+    { kind: "edge_feedback", from: "task-2", to: "task-1", note: "first" },
+  );
+  const second = applyStructuralEvent(first, {
+    kind: "edge_feedback",
+    from: "task-2",
+    to: "task-1",
+    note: "second",
+  });
+  expect(second.feedback).toEqual([
+    { from: "task-2", to: "task-1", note: "second" },
+  ]);
 });

@@ -40,7 +40,7 @@ export const NODE_HEIGHT = 78;
 
 // Half the node height plus breathing room, so two nodes in one column never
 // visually touch even at the simulation's closest approach.
-export const COLLIDE_RADIUS = NODE_HEIGHT / 2 + 26;
+export const COLLIDE_RADIUS = NODE_HEIGHT / 2 + 34;
 
 interface RelaxationNode extends SimulationNodeDatum {
   readonly id: string;

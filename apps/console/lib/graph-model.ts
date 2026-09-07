@@ -32,12 +32,18 @@ export interface RunViewerTask {
   output?: string;
 }
 
-export type TaskSpecies = "research" | "tool-call" | "file-op" | "approval";
+export type TaskSpecies =
+  | "research"
+  | "tool-call"
+  | "file-op"
+  | "review"
+  | "approval";
 
 const SPECIES_BY_ASSIGNEE: Readonly<Record<string, TaskSpecies>> = {
   researcher: "research",
   executor: "tool-call",
   writer: "file-op",
+  critic: "review",
 };
 
 /**

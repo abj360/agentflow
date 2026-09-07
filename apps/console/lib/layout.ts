@@ -12,8 +12,10 @@
 
 import type { RunViewerTask } from "./graph-model";
 
-export const COLUMN_WIDTH = 240;
-export const ROW_HEIGHT = 110;
+// A node is around 200px wide, so 240 left barely 40px between two columns and
+// the dependency edge had nowhere to be drawn. These are centre-to-centre.
+export const COLUMN_WIDTH = 340;
+export const ROW_HEIGHT = 132;
 
 export interface PositionedTask {
   id: string;

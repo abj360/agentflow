@@ -10,7 +10,7 @@ Contains:
     ClaudeProvider: reasons through Claude for prose answers and typed plans
     ClaudeProvider.verify(): confirms the credential can reach the model
     ClaudeProvider.list_models(): lists the Claude models the key can reach
-    ClaudeProvider.complete(): returns Claude's prose answer to a prompt
+    ClaudeProvider.complete(): returns Claude's prose answer, streaming it if asked
     ClaudeProvider.parse(): returns Claude's answer validated against a schema
 """
 
@@ -22,7 +22,7 @@ from anthropic import AsyncAnthropic
 from anthropic.types import MessageParam, OutputConfigParam, ThinkingConfigParam
 from pydantic import BaseModel
 
-from apps.api.orchestration.reasoning import ChatMessage, ReasoningFailed
+from apps.api.orchestration.reasoning import ChatMessage, OnDelta, ReasoningFailed
 
 DEFAULT_MODEL = "claude-opus-5"
 MAX_TOKENS = 16000
@@ -80,25 +80,51 @@ class ClaudeProvider:
             raise ReasoningFailed(f"claude would not list its models: {error}") from error
         return [item.id for item in listed.data]
 
-    async def complete(self, system: str, prompt: str) -> str:
+    async def complete(
+        self,
+        system: str,
+        prompt: str,
+        on_delta: OnDelta | None = None,
+    ) -> str:
         """Returns Claude's prose answer to one rendered prompt.
+
+        A caller that passes on_delta is handed the answer as it is written, so
+        a reviewer watching a node can read it being produced rather than
+        waiting for the whole thing. Streaming also keeps a long answer from
+        hitting the request timeout.
 
         Args:
             system: Standing instructions describing the role that is answering.
             prompt: The question or task put to the model.
+            on_delta: Called with each text fragment as the model writes it.
 
         Returns:
             answer: The model's reply with its text blocks joined.
         """
-        response = await self._client.messages.create(
+        if on_delta is None:
+            response = await self._client.messages.create(
+                model=self.model,
+                max_tokens=MAX_TOKENS,
+                system=system,
+                thinking=THINKING,
+                output_config=OUTPUT,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            return "".join(block.text for block in response.content if block.type == "text")
+
+        chunks: list[str] = []
+        async with self._client.messages.stream(
             model=self.model,
             max_tokens=MAX_TOKENS,
             system=system,
             thinking=THINKING,
             output_config=OUTPUT,
             messages=[{"role": "user", "content": prompt}],
-        )
-        return "".join(block.text for block in response.content if block.type == "text")
+        ) as stream:
+            async for text in stream.text_stream:
+                chunks.append(text)
+                on_delta(text)
+        return "".join(chunks)
 
     async def parse(
         self,

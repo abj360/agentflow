@@ -5,7 +5,7 @@
  *   STORAGE_KEY: where the session list is remembered for this browser
  *   ChatSession: one session, and the run its task graph belongs to
  *   newRunId(): mints the id a fresh session's run is streamed under
- *   useChatSessions(): lists remembered sessions and records new ones
+ *   useChatSessions(): lists remembered sessions, records and forgets them
  */
 
 "use client";
@@ -36,7 +36,8 @@ export function newRunId(): string {
  * already in the audit log, and this list is only how one reviewer gets back to
  * the runs they were looking at.
  *
- * @returns sessions - The remembered sessions plus the callback that records one.
+ * @returns sessions - The remembered sessions, and the callbacks that record
+ *   and forget one.
  */
 export function useChatSessions() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
@@ -65,5 +66,17 @@ export function useChatSessions() {
     });
   }, []);
 
-  return { sessions, remember };
+  const forget = useCallback((id: string) => {
+    setSessions((previous) => {
+      const next = previous.filter((session) => session.id !== id);
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        // the row is gone from this list either way; remembering that is a bonus
+      }
+      return next;
+    });
+  }, []);
+
+  return { sessions, remember, forget };
 }

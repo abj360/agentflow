@@ -104,7 +104,7 @@ export default function RunPage({
 }: Readonly<{ params: { id: string } }>) {
   // Hooks cannot sit behind the guard below, so an empty run id is handled by
   // the socket refusing to connect rather than by an early return.
-  const { tasks, pulses, logs } = useRunGraph(params.id);
+  const { tasks, pulses, logs, feedback } = useRunGraph(params.id);
   const woven = useWovenTasks(tasks);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [awaiting, setAwaiting] = useState(false);
@@ -116,7 +116,7 @@ export default function RunPage({
   const sidebar = useStickyToggle("agentflow.sidebar.open", true);
   const chatPanel = useStickyToggle("agentflow.chat.open", true);
   const router = useRouter();
-  const { sessions, remember } = useChatSessions();
+  const { sessions, remember, forget } = useChatSessions();
   usePublishTrace(logs);
 
   const replies = orchestratorReplies(logs);
@@ -175,6 +175,14 @@ export default function RunPage({
             currentId={params.id}
             onOpen={(runId) => router.push(`/run/${runId}`)}
             onNew={() => router.push(`/run/${newRunId()}`)}
+            onDelete={(runId) => {
+              forget(runId);
+              // Deleting the chat you are looking at leaves the screen showing a
+              // run the sidebar no longer lists, so it opens a fresh one.
+              if (runId === params.id) {
+                router.push(`/run/${newRunId()}`);
+              }
+            }}
             onHide={sidebar.toggle}
           />
         </aside>
@@ -195,6 +203,7 @@ export default function RunPage({
         )}
         <Canvas
           tasks={woven}
+          feedback={feedback}
           approvals={approvals}
           onResolve={dismiss}
           activeEdgeIds={activeEdges(pulses, Date.now())}

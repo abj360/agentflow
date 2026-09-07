@@ -25,6 +25,8 @@ dependencies = [
     "opentelemetry-instrumentation-fastapi>=0.46b0",
     "opentelemetry-instrumentation-redis>=0.46b0",
     "prometheus-client>=0.20",
+    "anthropic>=1.4",
+    "openai>=3.8",
 ]
 
 [tool.setuptools.packages.find]
