@@ -14,7 +14,6 @@ Contains:
 import pytest
 
 from apps.api.orchestration.graph_events import (
-    ORCHESTRATOR_ID,
     StructuralEventBatcher,
     events_for_plan,
     structural_frame,
@@ -42,7 +41,6 @@ def test_every_edge_frame_names_an_announced_node() -> None:
     planned = TaskPlanner().plan(PLAN_TEXT)
     frames = events_for_plan(planned)
     announced = {frame["task"]["id"] for frame in frames if frame["kind"] == "node_created"}
-    announced.add(ORCHESTRATOR_ID)
     for frame in frames:
         if frame["kind"] == "edge_created":
             assert frame["from"] in announced
@@ -57,13 +55,9 @@ async def test_a_run_completes_over_the_dynamic_graph() -> None:
 
 
 def test_a_single_step_plan_still_reaches_the_canvas() -> None:
-    """Verifies a one-objective plan produces a node and an orchestrator edge."""
+    """Verifies a one-objective plan produces its node and nothing else."""
     frames = events_for_plan(TaskPlanner().plan("just do it"))
-    assert [frame["kind"] for frame in frames] == [
-        "node_created",
-        "edge_created",
-    ]
-    assert frames[1]["from"] == ORCHESTRATOR_ID
+    assert [frame["kind"] for frame in frames] == ["node_created"]
 
 
 def test_batching_a_plan_costs_one_frame() -> None:
@@ -134,12 +128,11 @@ async def test_a_run_streams_its_graph_and_then_its_statuses() -> None:
 
 
 def test_a_fanned_out_plan_reaches_the_canvas_as_parallel_roots() -> None:
-    """Verifies independent objectives arrive as roots off the orchestrator."""
+    """Verifies independent objectives arrive as unconnected roots."""
     from apps.api.orchestration.state_machine import plan_for
 
     frames = events_for_plan(plan_for(PLAN_TEXT))
-    sources = {frame["from"] for frame in frames if frame["kind"] == "edge_created"}
-    assert sources == {ORCHESTRATOR_ID}
+    assert [frame["kind"] for frame in frames if frame["kind"] == "edge_created"] == []
 
 
 def test_every_announced_node_carries_the_counters_the_canvas_reads() -> None:

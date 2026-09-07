@@ -5,6 +5,7 @@ test_graph_events.py --- unit tests for the structural trace event builders
 Contains:
     test_node_created_carries_the_wire_task(): verifies the node frame wraps to_wire()
     test_edge_created_names_both_ends(): verifies the edge frame carries source and target
+    test_a_root_task_has_no_incoming_edge(): verifies roots are announced edgeless
     test_node_status_changed_carries_the_new_status(): verifies status frames
     test_events_for_plan_emits_nodes_before_edges(): verifies frame ordering
     test_events_for_plan_on_empty_plan_emits_nothing(): verifies the empty case
@@ -18,7 +19,6 @@ Contains:
 """
 
 from apps.api.orchestration.graph_events import (
-    ORCHESTRATOR_ID,
     StructuralEventBatcher,
     edge_created,
     events_for_plan,
@@ -54,14 +54,18 @@ def test_events_for_plan_emits_nodes_before_edges() -> None:
     """Verifies every node frame lands before the edges referencing it."""
     planned = TaskPlanner().plan("first\nsecond")
     kinds = [frame["kind"] for frame in events_for_plan(planned)]
-    assert kinds == ["node_created", "node_created", "edge_created", "edge_created"]
+    assert kinds == ["node_created", "node_created", "edge_created"]
 
 
-def test_events_for_plan_hangs_roots_off_the_orchestrator() -> None:
-    """Verifies a task with no dependencies is linked to the orchestrator."""
+def test_a_root_task_has_no_incoming_edge() -> None:
+    """Verifies a task that waits on nothing is announced without an edge.
+
+    The coordinator is the chat panel, not a node, so there is nothing on the
+    canvas for a root task to hang off.
+    """
     planned = TaskPlanner().plan("only step")
     edges = [frame for frame in events_for_plan(planned) if frame["kind"] == "edge_created"]
-    assert edges[0]["from"] == ORCHESTRATOR_ID
+    assert edges == []
 
 
 def test_events_for_plan_on_empty_plan_emits_nothing() -> None:

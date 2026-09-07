@@ -3,7 +3,6 @@
 graph_events.py --- builds the structural trace events the canvas renders from
 
 Contains:
-    ORCHESTRATOR_ID: id of the fixed central node every root task hangs off
     node_created(): builds the frame announcing a newly planned task node
     edge_created(): builds the frame announcing a new dependency edge
     node_status_changed(): builds the frame announcing a task status transition
@@ -16,13 +15,13 @@ Contains:
     StructuralEventBatcher.pending(): how many events are waiting to be sent
 """
 
+import time
 from collections.abc import Mapping, Sequence
 
 from apps.api.observability.tracing import set_span_attribute, structural_span
 from apps.api.orchestration.graph_validator import validate_task_graph
 from apps.api.orchestration.task_planner import PlannedTask, TaskStatus
 
-ORCHESTRATOR_ID = "orchestrator"
 MAX_EVENTS_PER_FRAME = 32
 
 
@@ -51,17 +50,30 @@ def edge_created(source: str, target: str) -> dict[str, object]:
     return {"kind": "edge_created", "from": source, "to": target}
 
 
-def node_status_changed(task_id: str, status: TaskStatus) -> dict[str, object]:
+def node_status_changed(task_id: str, status: TaskStatus, output: str = "") -> dict[str, object]:
     """Builds the frame announcing a task status transition.
+
+    The transition carries the moment it happened so the console can report how
+    long a task took without a second round trip, and the task's output so a
+    reviewer can open a node and read what the agent actually produced.
 
     Args:
         task_id: Id of the task whose status moved.
         status: Lifecycle state the task has moved into.
+        output: What the task produced, when it has finished and produced any.
 
     Returns:
         frame: Structural event the console applies to an existing node.
     """
-    return {"kind": "node_status_changed", "id": task_id, "status": status}
+    frame: dict[str, object] = {
+        "kind": "node_status_changed",
+        "id": task_id,
+        "status": status,
+        "at": time.time(),
+    }
+    if output:
+        frame["output"] = output
+    return frame
 
 
 def events_for_plan(tasks: Sequence[PlannedTask]) -> list[dict[str, object]]:
@@ -71,15 +83,15 @@ def events_for_plan(tasks: Sequence[PlannedTask]) -> list[dict[str, object]]:
         tasks: Planned tasks to announce, newest plan first.
 
     Returns:
-        frames: Node frames followed by the edge frames that reference them.
+        frames: Node frames followed by one edge frame per real dependency. A
+            root task has no incoming edge: the coordinator is the chat panel,
+            not a node on the canvas.
     """
     if not tasks:
         return []
     validate_task_graph(tasks)
     frames = [node_created(task) for task in tasks]
     for task in tasks:
-        if not task.depends_on:
-            frames.append(edge_created(ORCHESTRATOR_ID, task.id))
         frames.extend(edge_created(dependency, task.id) for dependency in task.depends_on)
     return frames
 

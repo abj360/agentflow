@@ -10,3 +10,8 @@ node_modules/
 .next/
 dist/
 coverage.xml
+.DS_Store
+apps/console/test-results/
+apps/console/tsconfig.tsbuildinfo
+apps/console/next-env.d.ts
+apps/console/.env.local

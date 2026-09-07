@@ -59,3 +59,22 @@ def test_allowed_origins_parsing() -> None:
     """Verifies the comma-separated origin setting splits and trims."""
     settings = Settings(cors_allow_origins="http://a.test , http://b.test ,")
     assert settings.allowed_origins() == ["http://a.test", "http://b.test"]
+
+
+def test_preflight_allows_the_provider_put() -> None:
+    """Verifies a browser may preflight the PUT that configures the provider.
+
+    The console saves a key with PUT, so a preflight that only allows GET and
+    POST fails before the key is ever sent, and the save looks silently broken.
+    """
+    client = TestClient(create_app())
+    response = client.options(
+        "/settings/provider",
+        headers={
+            "Origin": "http://localhost:3000",
+            "Access-Control-Request-Method": "PUT",
+            "Access-Control-Request-Headers": "content-type",
+        },
+    )
+    assert response.status_code == 200
+    assert "PUT" in response.headers["access-control-allow-methods"]
