@@ -61,6 +61,7 @@ body {
 
 .topbar nav {
   display: flex;
+  align-items: center;
   gap: 1.25rem;
 }
 
@@ -627,6 +628,8 @@ code {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  /* leaves the status dot in the top-right corner a lane of its own */
+  padding-right: 0.75rem;
   max-width: 11rem;
 }
 
