@@ -16,6 +16,7 @@ import type { ChatSession } from "../hooks/useChatSessions";
  * @param props.currentId - Run the reviewer is looking at now.
  * @param props.onOpen - Called with the run a reviewer wants to switch to.
  * @param props.onNew - Called when a reviewer wants a fresh session.
+ * @param props.onDelete - Called with the session a reviewer wants removed.
  * @param props.onHide - Called when a reviewer wants the sidebar out of the way.
  * @returns The session list element.
  */
@@ -24,12 +25,14 @@ export function ChatSessionList({
   currentId,
   onOpen,
   onNew,
+  onDelete,
   onHide,
 }: Readonly<{
   sessions: readonly ChatSession[];
   currentId: string;
   onOpen: (runId: string) => void;
   onNew: () => void;
+  onDelete: (runId: string) => void;
   onHide: () => void;
 }>) {
   return (
@@ -55,17 +58,28 @@ export function ChatSessionList({
       ) : (
         <ul className="sessions__list">
           {sessions.map((session) => (
-            <li key={session.id}>
+            <li
+              key={session.id}
+              className={
+                session.id === currentId
+                  ? "sessions__item sessions__item--selected"
+                  : "sessions__item"
+              }
+            >
               <button
-                className={
-                  session.id === currentId
-                    ? "sessions__row sessions__row--selected"
-                    : "sessions__row"
-                }
+                className="sessions__row"
                 aria-current={session.id === currentId}
                 onClick={() => onOpen(session.id)}
               >
                 {session.title}
+              </button>
+              <button
+                className="sessions__delete"
+                aria-label={`Delete ${session.title}`}
+                title="Delete this chat"
+                onClick={() => onDelete(session.id)}
+              >
+                &times;
               </button>
             </li>
           ))}

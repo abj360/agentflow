@@ -15,6 +15,7 @@ Contains:
     app: module-level ASGI application instance
 """
 
+import asyncio
 import logging
 from collections.abc import Mapping, Sequence
 
@@ -30,10 +31,13 @@ from apps.api.db import DatastoreUnavailable
 from apps.api.middleware.rate_limit import RateLimitMiddleware
 from apps.api.observability.metrics import metrics_endpoint
 from apps.api.observability.tracing import setup_tracing
-from apps.api.orchestration.agents import run_task, summarise
+from apps.api.orchestration.agents import run_task
 from apps.api.orchestration.conversations import Conversations
 from apps.api.orchestration.coordinator import Coordinator, drafts_to_tasks
+from apps.api.orchestration.critique import render_critique, review
 from apps.api.orchestration.graph_events import (
+    edge_feedback,
+    node_output,
     node_status_changed,
     traced_events_for_plan,
 )
@@ -47,6 +51,7 @@ from apps.api.orchestration.llm import (
     provider_status,
 )
 from apps.api.orchestration.reasoning import ReasoningFailed
+from apps.api.orchestration.reporting import report_on_run
 from apps.api.orchestration.scheduler import Scheduler, ScheduleResult
 from apps.api.orchestration.task_planner import PlannedTask, TaskStatus
 from apps.api.trace_hub import TraceHub
@@ -331,6 +336,11 @@ def create_app() -> FastAPI:
         async def work(task: PlannedTask, upstream: Mapping[str, str]) -> str:
             """Runs one planned task through the agent it was assigned to.
 
+            The agent's answer is streamed to the run's viewers as it is
+            written, so opening a running node shows the work in progress. The
+            model client calls back synchronously, so each fragment is handed to
+            the event loop as its own task rather than awaited in place.
+
             Args:
                 task: The task the scheduler dispatched.
                 upstream: What every task this one waits on produced.
@@ -338,16 +348,70 @@ def create_app() -> FastAPI:
             Returns:
                 output: What the agent produced for this task.
             """
-            return await run_task(llm, goal, task, upstream)
+            pending: set[asyncio.Task[None]] = set()
 
-        result = await Scheduler(planned, work, announce).run()
-        closing = (
-            await summarise(llm, goal, result.outputs)
-            if result.status == "completed"
-            else stopped_early(result, planned)
-        )
-        conversations.append(run_id, "assistant", closing)
-        await say(closing)
+            def stream(delta: str) -> None:
+                """Ships one fragment of this task's output to the canvas.
+
+                Args:
+                    delta: The text the agent has just produced.
+                """
+                shipped = asyncio.create_task(
+                    hub.broadcast_batch(run_id, [node_output(task.id, delta)])
+                )
+                pending.add(shipped)
+                shipped.add_done_callback(pending.discard)
+
+            try:
+                return await run_task(
+                    llm, goal, task, upstream, stream, scheduler.note_for(task.id)
+                )
+            finally:
+                if pending:
+                    await asyncio.gather(*pending, return_exceptions=True)
+
+        async def judge(
+            task: PlannedTask, upstream: Mapping[str, str]
+        ) -> tuple[str, bool, Mapping[str, str]]:
+            """Has the critic judge the work its task depends on.
+
+            Args:
+                task: The critic's own task.
+                upstream: What every task it reviews produced.
+
+            Returns:
+                verdict: The written review, whether it accepted, and one note
+                    per task it wants changed.
+            """
+            critique = await review(llm, goal, task, upstream)
+            notes = {note.task_id: note.problem for note in critique.notes}
+            return render_critique(critique), critique.verdict == "accept", notes
+
+        async def sent_back(critic: str, author: str, note: str) -> None:
+            """Draws the path a critic sent one task's work back along.
+
+            Args:
+                critic: Task that rejected the work.
+                author: Task being asked to do it again.
+                note: What the critic asked the author to change.
+            """
+            await hub.broadcast_batch(run_id, [edge_feedback(critic, author, note)])
+
+        scheduler = Scheduler(planned, work, announce, judge, sent_back)
+        result = await scheduler.run()
+
+        # Every run ends with something to read: the artifact the team produced
+        # and the coordinator's own verdict on it. A run that stopped early has
+        # no finished artifact, so it says what it is waiting on instead.
+        if result.outputs:
+            report = await report_on_run(llm, goal, result.outputs)
+            for turn in (report.artifact, report.feedback):
+                conversations.append(run_id, "assistant", turn)
+                await say(turn)
+        if result.status != "completed":
+            held = stopped_early(result, planned)
+            conversations.append(run_id, "assistant", held)
+            await say(held)
         return TurnResult(kind="plan", status=result.status, tasks=len(planned))
 
     @app.websocket("/ws/traces")

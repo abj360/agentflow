@@ -3,7 +3,9 @@
  *
  * Contains:
  *   PROVIDER_LABELS: how each provider name is written for a reader
+ *   KEY_HINTS: the credential shape each provider issues
  *   Step: which panel of the picker is open
+ *   PickerRow: one selectable row in the picker's list
  *   ModelPicker: picks a provider, takes its key, then pins one of its models
  */
 
@@ -23,7 +25,48 @@ const PROVIDER_LABELS: Readonly<Record<string, string>> = {
   openai: "OpenAI",
 };
 
+const KEY_HINTS: Readonly<Record<string, string>> = {
+  claude: "sk-ant-…",
+  openai: "sk-…",
+};
+
 type Step = "closed" | "provider" | "key" | "loading" | "model";
+
+/**
+ * Renders one selectable row in the picker's list.
+ *
+ * Rows are flat rather than boxed: a list of eleven bordered rectangles reads
+ * as eleven separate controls, when what it is is one choice with eleven
+ * answers.
+ *
+ * @param props.label - What the row offers.
+ * @param props.isCurrent - Whether this row is already in use.
+ * @param props.onSelect - Called when the reviewer picks this row.
+ * @returns The picker row element.
+ */
+function PickerRow({
+  label,
+  isCurrent = false,
+  onSelect,
+}: Readonly<{
+  label: string;
+  isCurrent?: boolean;
+  onSelect: () => void;
+}>) {
+  return (
+    <button
+      className="picker__row"
+      aria-current={isCurrent}
+      onClick={onSelect}
+      type="button"
+    >
+      <span className="picker__row-label">{label}</span>
+      <span className="picker__row-mark" aria-hidden="true">
+        {isCurrent ? "✓" : ""}
+      </span>
+    </button>
+  );
+}
 
 /**
  * Picks the model the team reasons through and takes the credential for it.
@@ -90,11 +133,14 @@ export function ModelPicker() {
   const label = ready
     ? `${PROVIDER_LABELS[provider.provider] ?? provider.provider} · ${provider.model}`
     : "Choose model provider";
-  const pill = ready ? provider.model : "Model";
-  const open = () => {
-    setError(null);
-    setStep(ready ? "model" : "provider");
-  };
+  const providerName = PROVIDER_LABELS[chosen] ?? chosen;
+  const title =
+    step === "provider"
+      ? "Choose a provider"
+      : step === "model"
+        ? "Choose a model"
+        : `Connect ${providerName}`;
+  const canGoBack = step !== "provider";
 
   return (
     <div className="picker">
@@ -104,7 +150,11 @@ export function ModelPicker() {
         title={label}
         aria-expanded={step !== "closed"}
         data-ready={ready}
-        onClick={() => (step === "closed" ? open() : setStep("closed"))}
+        type="button"
+        onClick={() => {
+          setError(null);
+          setStep(step !== "closed" ? "closed" : ready ? "model" : "provider");
+        }}
       >
         <svg
           width="13"
@@ -120,40 +170,66 @@ export function ModelPicker() {
           <path d="M12 3v3M12 18v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M3 12h3M18 12h3M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1" />
           <circle cx="12" cy="12" r="3.2" />
         </svg>
-        <span className="picker__label">{pill}</span>
+        <span className="picker__label">
+          {ready ? provider.model : "Model"}
+        </span>
       </button>
 
       {step === "closed" ? null : (
-        <div className="picker__panel" role="dialog" aria-label={label}>
+        <div className="picker__panel" role="dialog" aria-label={title}>
+          <header className="picker__head">
+            {!canGoBack ? null : (
+              <button
+                className="picker__back"
+                aria-label="Back to providers"
+                title="Back to providers"
+                type="button"
+                onClick={() => {
+                  setError(null);
+                  setStep("provider");
+                }}
+              >
+                &#8249;
+              </button>
+            )}
+            <p className="picker__title">{title}</p>
+            <button
+              className="picker__close"
+              aria-label="Close"
+              title="Close"
+              type="button"
+              onClick={() => setStep("closed")}
+            >
+              &times;
+            </button>
+          </header>
+
           {step === "provider" ? (
-            <>
-              <p className="picker__title">Choose model provider</p>
+            <div className="picker__list">
               {(provider?.providers ?? ["claude", "openai"]).map((name) => (
-                <button
+                <PickerRow
                   key={name}
-                  className="picker__choice"
-                  onClick={() => {
+                  label={PROVIDER_LABELS[name] ?? name}
+                  isCurrent={ready && provider.provider === name}
+                  onSelect={() => {
                     setChosen(name);
+                    setError(null);
                     setStep("key");
                   }}
-                >
-                  {PROVIDER_LABELS[name] ?? name}
-                </button>
+                />
               ))}
-            </>
+            </div>
           ) : null}
 
           {step === "key" || step === "loading" ? (
-            <>
-              <p className="picker__title">
-                Enter {PROVIDER_LABELS[chosen] ?? chosen} API key
-              </p>
+            <div className="picker__form">
               <input
                 className="picker__key"
                 type="password"
                 autoComplete="off"
                 autoFocus
-                placeholder={chosen === "openai" ? "sk-..." : "sk-ant-..."}
+                aria-label={`${providerName} API key`}
+                placeholder={KEY_HINTS[chosen] ?? "API key"}
                 value={key}
                 disabled={step === "loading"}
                 onChange={(event) => setKey(event.target.value)}
@@ -163,55 +239,39 @@ export function ModelPicker() {
                   }
                 }}
               />
-              {error === null ? null : (
-                <p className="picker__error" role="alert">
-                  {error}
-                </p>
-              )}
               <button
                 className="picker__connect"
                 disabled={step === "loading" || key.trim().length === 0}
+                type="button"
                 onClick={connect}
               >
-                {step === "loading" ? "Loading…" : "Connect"}
+                {step === "loading" ? "Checking…" : "Connect"}
               </button>
               <p className="picker__note">
-                Held by the API for this process. Never stored in this browser.
+                Verified now, then held by the API for this process. Never
+                stored in this browser.
               </p>
-            </>
+            </div>
           ) : null}
 
           {step === "model" ? (
-            <>
-              <p className="picker__title">Choose model</p>
-              <div className="picker__models">
-                {(provider?.models ?? []).map((model) => (
-                  <button
-                    key={model}
-                    className="picker__choice"
-                    aria-current={model === provider?.model}
-                    onClick={() => pin(model)}
-                  >
-                    {model}
-                  </button>
-                ))}
-              </div>
-              {error === null ? null : (
-                <p className="picker__error" role="alert">
-                  {error}
-                </p>
-              )}
-              <button
-                className="picker__switch"
-                onClick={() => {
-                  setError(null);
-                  setStep("provider");
-                }}
-              >
-                Use a different provider
-              </button>
-            </>
+            <div className="picker__list picker__list--scroll">
+              {(provider?.models ?? []).map((model) => (
+                <PickerRow
+                  key={model}
+                  label={model}
+                  isCurrent={model === provider?.model}
+                  onSelect={() => pin(model)}
+                />
+              ))}
+            </div>
           ) : null}
+
+          {error === null ? null : (
+            <p className="picker__error" role="alert">
+              {error}
+            </p>
+          )}
         </div>
       )}
     </div>

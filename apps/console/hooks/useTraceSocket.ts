@@ -8,6 +8,8 @@
  *   NodeCreatedEvent: announces a task node the planner has just spawned
  *   EdgeCreatedEvent: announces a dependency edge between two task nodes
  *   NodeStatusChangedEvent: announces a task node's status transition
+ *   NodeOutputEvent: carries one fragment of a task's output as it is written
+ *   EdgeFeedbackEvent: announces a critic sending one task's work back
  *   StructuralEvent: the three frames that shape the canvas graph
  *   GraphDeltaFrame: a batch of structural events delivered as one frame
  *   TraceEvent: every frame shape the trace stream can deliver
@@ -54,10 +56,25 @@ export interface NodeStatusChangedEvent {
   output?: string;
 }
 
+export interface NodeOutputEvent {
+  kind: "node_output";
+  id: string;
+  delta: string;
+}
+
+export interface EdgeFeedbackEvent {
+  kind: "edge_feedback";
+  from: string;
+  to: string;
+  note: string;
+}
+
 export type StructuralEvent =
   | NodeCreatedEvent
   | EdgeCreatedEvent
-  | NodeStatusChangedEvent;
+  | NodeStatusChangedEvent
+  | NodeOutputEvent
+  | EdgeFeedbackEvent;
 
 export interface GraphDeltaFrame {
   kind: "graph_delta";
@@ -76,6 +93,8 @@ const STRUCTURAL_KINDS = new Set<string>([
   "node_created",
   "edge_created",
   "node_status_changed",
+  "node_output",
+  "edge_feedback",
 ]);
 
 const GRAPH_DELTA_KIND = "graph_delta";

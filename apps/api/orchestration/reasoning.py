@@ -4,12 +4,14 @@ reasoning.py --- the contract every model provider answers to
 
 Contains:
     ChatMessage: one turn handed to a provider, in a shape both understand
+    OnDelta: called with each fragment of an answer as the model writes it
     ReasoningFailed: raised when a provider cannot answer
     ReasoningClient: what the coordinator and its agents reason through
 """
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Literal, Protocol, TypedDict, TypeVar
 
 from pydantic import BaseModel
@@ -27,6 +29,9 @@ class ChatMessage(TypedDict):
 
     role: Literal["user", "assistant"]
     content: str
+
+
+OnDelta = Callable[[str], None]
 
 
 class ReasoningFailed(RuntimeError):
@@ -56,12 +61,19 @@ class ReasoningClient(Protocol):
         """
         ...
 
-    async def complete(self, system: str, prompt: str) -> str:
+    async def complete(
+        self,
+        system: str,
+        prompt: str,
+        on_delta: OnDelta | None = None,
+    ) -> str:
         """Returns the model's prose answer to one rendered prompt.
 
         Args:
             system: Standing instructions describing the role that is answering.
             prompt: The question or task put to the model.
+            on_delta: Called with each fragment as the model writes it, so a
+                caller can stream the answer instead of waiting for all of it.
 
         Returns:
             answer: The model's reply as plain text.

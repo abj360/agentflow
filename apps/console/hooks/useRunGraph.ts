@@ -2,6 +2,7 @@
  * useRunGraph.ts --- folds the live trace stream into what the canvas draws
  *
  * Contains:
+ *   Feedback: one critic rejection, as the return path the canvas draws
  *   TaskGraph: the tasks and edge firings folded out of the structural frames
  *   RunGraph: everything one run screen reads off a single trace connection
  *   SETTLED: the statuses that stop a task's clock
@@ -25,9 +26,16 @@ import {
   type TraceLogEvent,
 } from "./useTraceSocket";
 
+export interface Feedback {
+  readonly from: string;
+  readonly to: string;
+  readonly note: string;
+}
+
 export interface TaskGraph {
   readonly tasks: RunViewerTask[];
   readonly pulses: EdgePulse[];
+  readonly feedback: Feedback[];
 }
 
 export interface RunGraph extends TaskGraph {
@@ -56,7 +64,9 @@ function applyStatus(
   return {
     ...task,
     status: event.status,
-    output: event.output ?? task.output,
+    // The streamed fragments are the same text, so the frame's copy only fills
+    // in for a run whose stream the console joined late.
+    output: task.output ?? event.output,
     startedAt: event.status === "running" ? at : task.startedAt,
     finishedAt: SETTLED.has(event.status) ? at : task.finishedAt,
   };
@@ -96,6 +106,30 @@ export function applyStructuralEvent(
       ],
     };
   }
+  if (event.kind === "edge_feedback") {
+    // One entry per pair: a critic that rejects the same task twice is drawing
+    // the same return path, with the newer note on it.
+    const others = graph.feedback.filter(
+      (sent) => sent.from !== event.from || sent.to !== event.to,
+    );
+    return {
+      ...graph,
+      feedback: [
+        ...others,
+        { from: event.from, to: event.to, note: event.note },
+      ],
+    };
+  }
+  if (event.kind === "node_output") {
+    return {
+      ...graph,
+      tasks: graph.tasks.map((task) =>
+        task.id === event.id
+          ? { ...task, output: (task.output ?? "") + event.delta }
+          : task,
+      ),
+    };
+  }
   if (event.kind === "node_status_changed") {
     return {
       ...graph,
@@ -122,7 +156,7 @@ export function useRunGraph(runId: string): RunGraph {
   return useMemo(() => {
     const folded = events
       .filter(isStructuralEvent)
-      .reduce(applyStructuralEvent, { tasks: [], pulses: [] });
+      .reduce(applyStructuralEvent, { tasks: [], pulses: [], feedback: [] });
     return { ...folded, logs: events.filter(isLogEvent), isLive };
   }, [events, isLive]);
 }

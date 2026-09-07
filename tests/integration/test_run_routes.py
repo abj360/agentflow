@@ -8,6 +8,8 @@ Contains:
     client(): builds a test client over the real application
     test_a_goal_is_planned_and_run(): verifies a goal weaves a graph and runs it
     test_a_question_plans_nothing(): verifies a clarifying turn starts no run
+    test_a_running_task_streams_its_output(): verifies fragments reach the canvas
+    test_a_finished_run_reports_an_artifact_and_feedback(): verifies the close
     test_a_run_without_a_provider_is_blocked(): verifies the unconfigured reply
     test_a_coordinator_failure_is_reported(): verifies a model outage is readable
     test_an_invalid_plan_never_starts(): verifies a cyclic plan is refused
@@ -30,7 +32,9 @@ from pydantic import BaseModel
 from apps.api.main import create_app
 from apps.api.orchestration import llm as registry
 from apps.api.orchestration.coordinator import CoordinatorReply, TaskDraft
-from apps.api.orchestration.reasoning import ChatMessage
+from apps.api.orchestration.critique import Critique
+from apps.api.orchestration.reasoning import ChatMessage, OnDelta
+from apps.api.orchestration.reporting import RunReport
 
 PLAN = [
     TaskDraft(id="task-1", title="gather the sources", assignee="researcher", rationale="a"),
@@ -78,18 +82,28 @@ class StubLLM:
         """
         return [self.model]
 
-    async def complete(self, system: str, prompt: str) -> str:
-        """Returns a deterministic answer for any prompt.
+    async def complete(
+        self,
+        system: str,
+        prompt: str,
+        on_delta: OnDelta | None = None,
+    ) -> str:
+        """Returns a deterministic answer, in fragments when asked to stream.
 
         Args:
             system: Standing instructions, ignored by the stub.
             prompt: The rendered prompt, ignored by the stub.
+            on_delta: Called with each fragment, as a real provider would.
 
         Returns:
             answer: A fixed line standing in for the agent's work.
         """
         _ = (system, prompt)
-        return "stub output"
+        fragments = ["stub ", "output"]
+        if on_delta is not None:
+            for fragment in fragments:
+                on_delta(fragment)
+        return "".join(fragments)
 
     async def parse(
         self,
@@ -97,17 +111,25 @@ class StubLLM:
         messages: list[ChatMessage],
         schema: type[BaseModel],
     ) -> BaseModel:
-        """Returns the coordinator reply this stub was built with.
+        """Returns an answer in the shape the caller asked for.
+
+        The stub honours the schema rather than always handing back a
+        coordinator reply, because the run path asks it for three different
+        shapes: the plan, a critic's verdict, and the closing report.
 
         Args:
             system: Standing instructions, ignored by the stub.
             messages: The conversation, ignored by the stub.
-            schema: Shape the caller wanted, ignored by the stub.
+            schema: Shape the answer has to satisfy.
 
         Returns:
-            reply: The fixed coordinator reply.
+            answer: The fixed reply for that shape.
         """
-        _ = (system, messages, schema)
+        _ = (system, messages)
+        if schema is RunReport:
+            return RunReport(artifact="stub artifact", feedback="stub feedback")
+        if schema is Critique:
+            return Critique(verdict="accept", summary="stub review")
         return self.reply
 
 
@@ -142,11 +164,54 @@ def test_a_goal_is_planned_and_run(client: TestClient, stub_llm: StubLLM) -> Non
     assert response.json() == {"kind": "plan", "status": "completed", "tasks": 3}
 
 
+@pytest.mark.asyncio
+async def test_a_running_task_streams_its_output() -> None:
+    """Verifies an agent's answer reaches the canvas while it is still writing.
+
+    A reviewer who opens a running node should read the work appearing, so the
+    fragments have to be shipped as the model produces them rather than folded
+    into the frame that says the task is done.
+    """
+    from apps.api.orchestration.agents import run_task
+    from apps.api.orchestration.task_planner import PlannedTask
+
+    seen: list[str] = []
+    output = await run_task(
+        StubLLM(),
+        "a goal",
+        PlannedTask(id="task-1", title="write it", assignee="writer"),
+        {},
+        seen.append,
+    )
+    assert seen == ["stub ", "output"]
+    assert output == "stub output"
+
+
 def test_a_question_plans_nothing(client: TestClient, stub_llm: StubLLM) -> None:
     """Verifies a turn the coordinator answers starts no run at all."""
     stub_llm.reply = CoordinatorReply(kind="question", message="Which filings?")
     response = client.post("/runs/run-2", json={"task": "summarise them"})
     assert response.json() == {"kind": "question", "status": "question", "tasks": 0}
+
+
+@pytest.mark.asyncio
+async def test_a_finished_run_reports_an_artifact_and_feedback() -> None:
+    """Verifies a finished run hands back a deliverable and a verdict on it."""
+    from apps.api.orchestration.reporting import report_on_run
+
+    report = await report_on_run(StubLLM(), "a goal", {"task-1": "some work"})
+    assert report.artifact == "stub artifact"
+    assert report.feedback == "stub feedback"
+
+
+@pytest.mark.asyncio
+async def test_a_run_with_no_output_still_reports_something() -> None:
+    """Verifies an empty run is reported rather than silently dropped."""
+    from apps.api.orchestration.reporting import report_on_run
+
+    report = await report_on_run(StubLLM(), "a goal", {})
+    assert report.artifact != ""
+    assert report.feedback != ""
 
 
 def test_a_run_without_a_provider_is_blocked(client: TestClient) -> None:

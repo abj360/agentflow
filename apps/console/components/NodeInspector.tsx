@@ -4,6 +4,7 @@
  * Contains:
  *   STATUS_LABELS: how each lifecycle state is written for a reader
  *   duration(): renders how long a task took, once it has taken any
+ *   counted(): renders a counter, or a dash where nothing was measured
  *   Field: one labelled value in the inspector's grid
  *   NodeInspector: shows one task's evidence beside the graph
  */
@@ -37,6 +38,19 @@ export function duration(task: Readonly<RunViewerTask>): string {
   return seconds < 60
     ? `${seconds.toFixed(1)} s`
     : `${(seconds / 60).toFixed(1)} min`;
+}
+
+/**
+ * Renders a counter, or a dash where nothing was measured.
+ *
+ * A run that never recorded a task's spend should say so rather than claim it
+ * cost zero, which is a different and untrue statement.
+ *
+ * @param count - The counter as the API reported it.
+ * @returns rendered - The count, or a dash when it is zero.
+ */
+function counted(count: number): string {
+  return count === 0 ? "—" : count.toLocaleString();
 }
 
 /**
@@ -95,17 +109,32 @@ export function NodeInspector({
         <Field label="Kind">{speciesFor(task)}</Field>
         <Field label="Task">{task.id}</Field>
         <Field label="Duration">{duration(task)}</Field>
-        <Field label="Tokens">{task.tokens.toLocaleString()}</Field>
-        <Field label="Tool calls">{task.toolCallCount}</Field>
+        <Field label="Tokens">{counted(task.tokens)}</Field>
+        <Field label="Tool calls">{counted(task.toolCallCount)}</Field>
         <Field label="Retries">{task.retries}</Field>
         <Field label="Waits on">
           {task.dependsOn.length === 0 ? "nothing" : task.dependsOn.join(", ")}
         </Field>
       </div>
 
-      {task.output === undefined || task.output === "" ? null : (
+      {task.output === undefined || task.output === "" ? (
+        task.status !== "running" ? null : (
+          <section className="inspector__output">
+            <p className="inspector__label">Output</p>
+            <p className="inspector__waiting" role="status">
+              <span className="chat-working__spinner" aria-hidden="true" />
+              The agent is working…
+            </p>
+          </section>
+        )
+      ) : (
         <section className="inspector__output">
-          <p className="inspector__label">Output</p>
+          <p className="inspector__label">
+            Output
+            {task.status !== "running" ? null : (
+              <span className="inspector__streaming"> · streaming</span>
+            )}
+          </p>
           <Markdown text={task.output} />
         </section>
       )}

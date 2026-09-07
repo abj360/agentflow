@@ -14,11 +14,20 @@ Contains:
     test_every_task_reports_running_then_done(): verifies the status stream
     test_an_upstream_result_reaches_its_dependent(): verifies output threading
     test_an_empty_graph_completes(): verifies the degenerate case
+    test_a_rejected_task_runs_again(): verifies the critic's revision loop
+    test_a_critic_that_accepts_never_revises(): verifies acceptance ends it
+    test_a_critic_runs_out_of_revisions(): verifies the loop is bounded
+    test_a_rejection_is_announced(): verifies the feedback path is reported
 """
 
 import pytest
 
-from apps.api.orchestration.scheduler import Scheduler, StatusSink, TaskRunner
+from apps.api.orchestration.scheduler import (
+    Reviewer,
+    Scheduler,
+    StatusSink,
+    TaskRunner,
+)
 from apps.api.orchestration.task_planner import PlannedTask, TaskStatus
 
 
@@ -212,3 +221,93 @@ async def test_an_empty_graph_completes() -> None:
     result = await Scheduler((), always(), record([])).run()
     assert result.status == "completed"
     assert result.completed == ()
+
+
+REVIEWED = (
+    PlannedTask(id="task-1", title="draft it", assignee="writer"),
+    PlannedTask(id="task-2", title="review it", assignee="critic", depends_on=("task-1",)),
+)
+
+
+def verdicts(accepts_on: int) -> tuple[Reviewer, dict[str, int]]:
+    """Builds a reviewer that rejects until the given attempt, then accepts.
+
+    Args:
+        accepts_on: Which attempt accepts, counting from one.
+
+    Returns:
+        reviewer: The reviewer to hand the scheduler, and its attempt counter.
+    """
+    attempts = {"count": 0}
+
+    async def reviewer(
+        task: PlannedTask, upstream: dict[str, str]
+    ) -> tuple[str, bool, dict[str, str]]:
+        """Accepts on the configured attempt and rejects before it.
+
+        Args:
+            task: The critic's own task.
+            upstream: What it reviews, ignored by the stub.
+
+        Returns:
+            verdict: The written review, whether it accepted, and its notes.
+        """
+        _ = (task, upstream)
+        attempts["count"] += 1
+        if attempts["count"] >= accepts_on:
+            return "accepted", True, {}
+        return "sent back", False, {"task-1": "add the numbers"}
+
+    return reviewer, attempts
+
+
+@pytest.mark.asyncio
+async def test_a_rejected_task_runs_again() -> None:
+    """Verifies a rejected author runs again and the critic re-reviews it."""
+    order: list[str] = []
+    reviewer, _ = verdicts(accepts_on=2)
+    result = await Scheduler(REVIEWED, always(order=order), record([]), reviewer).run()
+    assert order == ["task-1", "task-1"]
+    assert result.revisions == {"task-2": 1}
+    assert result.status == "completed"
+
+
+@pytest.mark.asyncio
+async def test_a_critic_that_accepts_never_revises() -> None:
+    """Verifies work the critic accepts is not sent back at all."""
+    order: list[str] = []
+    reviewer, _ = verdicts(accepts_on=1)
+    result = await Scheduler(REVIEWED, always(order=order), record([]), reviewer).run()
+    assert order == ["task-1"]
+    assert result.revisions == {}
+
+
+@pytest.mark.asyncio
+async def test_a_critic_runs_out_of_revisions() -> None:
+    """Verifies a critic that never accepts stops rather than looping forever."""
+    reviewer, attempts = verdicts(accepts_on=99)
+    result = await Scheduler(REVIEWED, always(), record([]), reviewer, max_revisions=2).run()
+    assert result.revisions == {"task-2": 2}
+    assert result.bounded == ("task-2",)
+    assert result.status == "revision-bounded"
+    assert attempts["count"] == 3
+
+
+@pytest.mark.asyncio
+async def test_a_rejection_is_announced() -> None:
+    """Verifies the canvas is told which task was sent back, and why."""
+    seen: list[tuple[str, str, str]] = []
+
+    async def on_feedback(critic: str, author: str, note: str) -> None:
+        """Records one rejection.
+
+        Args:
+            critic: Task that rejected the work.
+            author: Task asked to do it again.
+            note: What the critic wants changed.
+        """
+        seen.append((critic, author, note))
+
+    reviewer, _ = verdicts(accepts_on=2)
+    await Scheduler(REVIEWED, always(), record([]), reviewer, on_feedback).run()
+    assert seen == [("task-2", "task-1", "add the numbers")]

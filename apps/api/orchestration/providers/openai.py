@@ -8,7 +8,7 @@ Contains:
     OpenAIProvider: reasons through OpenAI for prose answers and typed plans
     OpenAIProvider.verify(): confirms the credential and picks a live model
     OpenAIProvider.list_models(): lists the chat models the key can reach
-    OpenAIProvider.complete(): returns the model's prose answer to a prompt
+    OpenAIProvider.complete(): returns the model's prose answer, streaming it if asked
     OpenAIProvider.parse(): returns the model's answer validated against a schema
 """
 
@@ -25,7 +25,7 @@ from openai.types.chat import (
 )
 from pydantic import BaseModel
 
-from apps.api.orchestration.reasoning import ChatMessage, ReasoningFailed
+from apps.api.orchestration.reasoning import ChatMessage, OnDelta, ReasoningFailed
 
 PREFERRED_MODELS = ("gpt-5", "gpt-4.1", "gpt-4o")
 MAX_TOKENS = 16000
@@ -99,25 +99,51 @@ class OpenAIProvider:
         preferred = [name for name in PREFERRED_MODELS if name in chat]
         return preferred + sorted(name for name in chat if name not in preferred)
 
-    async def complete(self, system: str, prompt: str) -> str:
+    async def complete(
+        self,
+        system: str,
+        prompt: str,
+        on_delta: OnDelta | None = None,
+    ) -> str:
         """Returns the model's prose answer to one rendered prompt.
+
+        A caller that passes on_delta is handed the answer as it is written, so
+        a reviewer watching a node can read it being produced rather than
+        waiting for the whole thing.
 
         Args:
             system: Standing instructions describing the role that is answering.
             prompt: The question or task put to the model.
+            on_delta: Called with each text fragment as the model writes it.
 
         Returns:
             answer: The model's reply as plain text.
         """
-        response = await self._client.chat.completions.create(
+        messages: list[ChatCompletionMessageParam] = [
+            ChatCompletionSystemMessageParam(role="system", content=system),
+            ChatCompletionUserMessageParam(role="user", content=prompt),
+        ]
+        if on_delta is None:
+            response = await self._client.chat.completions.create(
+                model=self.model,
+                max_completion_tokens=MAX_TOKENS,
+                messages=messages,
+            )
+            return response.choices[0].message.content or ""
+
+        chunks: list[str] = []
+        stream = await self._client.chat.completions.create(
             model=self.model,
             max_completion_tokens=MAX_TOKENS,
-            messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": prompt},
-            ],
+            messages=messages,
+            stream=True,
         )
-        return response.choices[0].message.content or ""
+        async for chunk in stream:
+            text = chunk.choices[0].delta.content if chunk.choices else None
+            if text:
+                chunks.append(text)
+                on_delta(text)
+        return "".join(chunks)
 
     async def parse(
         self,

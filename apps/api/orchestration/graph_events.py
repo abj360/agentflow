@@ -6,6 +6,8 @@ Contains:
     node_created(): builds the frame announcing a newly planned task node
     edge_created(): builds the frame announcing a new dependency edge
     node_status_changed(): builds the frame announcing a task status transition
+    node_output(): builds the frame carrying one fragment of a task's output
+    edge_feedback(): builds the frame announcing a critic sending work back
     MAX_EVENTS_PER_FRAME: structural events one WebSocket frame may carry
     events_for_plan(): renders a validated task list as ordered structural events
     traced_events_for_plan(): emits a plan's structural events under OTel spans
@@ -74,6 +76,41 @@ def node_status_changed(task_id: str, status: TaskStatus, output: str = "") -> d
     if output:
         frame["output"] = output
     return frame
+
+
+def node_output(task_id: str, delta: str) -> dict[str, object]:
+    """Builds the frame carrying one fragment of a task's output.
+
+    Fragments are sent as the agent writes them so a reviewer who opens a
+    running node reads the work appearing, rather than an empty panel until the
+    task settles.
+
+    Args:
+        task_id: Id of the task the fragment belongs to.
+        delta: The text the agent has just produced.
+
+    Returns:
+        frame: Structural event the console appends to the node's output.
+    """
+    return {"kind": "node_output", "id": task_id, "delta": delta}
+
+
+def edge_feedback(critic: str, author: str, note: str) -> dict[str, object]:
+    """Builds the frame announcing a critic sending one task's work back.
+
+    This is not a dependency: the graph stays a DAG, and the return path is a
+    record of what happened rather than part of the structure. The console draws
+    it as a separate kind of edge for that reason.
+
+    Args:
+        critic: Id of the task that rejected the work.
+        author: Id of the task being asked to do it again.
+        note: What the critic asked the author to change.
+
+    Returns:
+        frame: Structural event the console draws as a feedback edge.
+    """
+    return {"kind": "edge_feedback", "from": critic, "to": author, "note": note}
 
 
 def events_for_plan(tasks: Sequence[PlannedTask]) -> list[dict[str, object]]:
