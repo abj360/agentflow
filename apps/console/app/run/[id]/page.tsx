@@ -2,46 +2,44 @@
  * page.tsx --- the single screen one orchestration run is watched from
  *
  * Contains:
- *   RunHeader: renders the run screen header with the truncated run id
  *   appendMessage(): adds one authored turn to a run's conversation
+ *   FAILED_TO_START: what the orchestrator says when a run never got going
+ *   EMPTY_PROGRESS: the working state shown before a graph exists to count
  *   orchestratorReplies(): turns the run's log lines into orchestrator turns
+ *   runProgress(): how far through its graph a run is, while one is running
  *   RunPage: hosts the chat, canvas, and raw-log surfaces for one run
  */
 
 "use client";
 
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { Canvas } from "../../../components/Canvas";
-import { ChatPanel, type ChatMessage } from "../../../components/ChatPanel";
-import { RunChainBadge } from "../../../components/RunChainBadge";
-import { TraceViewer } from "../../../components/TraceViewer";
+import {
+  ChatPanel,
+  type ChatMessage,
+  type Progress,
+} from "../../../components/ChatPanel";
+import { NodeInspector } from "../../../components/NodeInspector";
+import { PanelDivider } from "../../../components/PanelDivider";
+import { ChatSessionList } from "../../../components/ChatSessionList";
+import { usePublishTrace } from "../../../components/RunTrace";
 import { useApprovalShortcuts } from "../../../hooks/useApprovalShortcuts";
 import { usePendingApprovals } from "../../../hooks/usePendingApprovals";
+import { useResizablePanel } from "../../../hooks/useResizablePanel";
+import { useStickyToggle } from "../../../hooks/useStickyToggle";
+import { newRunId, useChatSessions } from "../../../hooks/useChatSessions";
 import { useRunGraph } from "../../../hooks/useRunGraph";
+import { useWovenTasks } from "../../../hooks/useWovenTasks";
 import type { TraceLogEvent } from "../../../hooks/useTraceSocket";
+import { startRun } from "../../../lib/api";
 import { activeEdges } from "../../../lib/edge-pulse";
-import { pairApprovals } from "../../../lib/graph-model";
+import { pairApprovals, type RunViewerTask } from "../../../lib/graph-model";
 
-/**
- * Renders the run screen header with the truncated run identifier.
- *
- * @param props.runId - Identifier of the run currently on screen.
- * @param props.isLive - Whether the trace socket is currently connected.
- * @returns The run header element.
- */
-function RunHeader({
-  runId,
-  isLive,
-}: Readonly<{ runId: string; isLive: boolean }>) {
-  return (
-    <header className="run-header">
-      <h1>Run {runId.slice(0, 8)}</h1>
-      <span className="run-liveness">{isLive ? "live" : "offline"}</span>
-      <RunChainBadge runId={runId} />
-    </header>
-  );
-}
+const FAILED_TO_START = "That instruction did not reach the orchestrator.";
+
+const EMPTY_PROGRESS: Progress = { done: 0, total: 0 };
 
 /**
  * Adds one authored turn to a run's conversation.
@@ -74,6 +72,28 @@ function orchestratorReplies(logs: readonly TraceLogEvent[]): ChatMessage[] {
 }
 
 /**
+ * Reports how far through its task graph the run is, while one is running.
+ *
+ * A run is one long request: the team can be working for minutes with nothing
+ * to show for it but node badges on a canvas the reviewer may not be looking
+ * at. This is what the chat says in the meantime.
+ *
+ * @param tasks - Tasks the canvas has been told about for this run.
+ * @returns progress - Finished and total counts, or null when nothing is running.
+ */
+function runProgress(tasks: readonly RunViewerTask[]): Progress | null {
+  if (tasks.length === 0) {
+    return null;
+  }
+  const settled = tasks.filter(
+    (task) => task.status === "done" || task.status === "failed",
+  ).length;
+  return settled === tasks.length
+    ? null
+    : { done: settled, total: tasks.length };
+}
+
+/**
  * Hosts the chat, canvas, and raw-log surfaces for one run.
  *
  * @param props.params - Route parameters carrying the run identifier.
@@ -84,10 +104,46 @@ export default function RunPage({
 }: Readonly<{ params: { id: string } }>) {
   // Hooks cannot sit behind the guard below, so an empty run id is handled by
   // the socket refusing to connect rather than by an early return.
-  const { tasks, pulses, logs, isLive } = useRunGraph(params.id);
+  const { tasks, pulses, logs } = useRunGraph(params.id);
+  const woven = useWovenTasks(tasks);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [awaiting, setAwaiting] = useState(false);
+  const repliesAtSend = useRef(0);
   const { approvals, dismiss } = usePendingApprovals();
   const [focusedTaskId, setFocusedTaskId] = useState<string | null>(null);
+  const explorer = useResizablePanel("agentflow.explorer", 240, "left");
+  const chat = useResizablePanel("agentflow.chat", 336, "right");
+  const sidebar = useStickyToggle("agentflow.sidebar.open", true);
+  const chatPanel = useStickyToggle("agentflow.chat.open", true);
+  const router = useRouter();
+  const { sessions, remember } = useChatSessions();
+  usePublishTrace(logs);
+
+  const replies = orchestratorReplies(logs);
+  const send = useCallback(
+    (instruction: string) => {
+      setMessages((prev) => appendMessage(prev, instruction));
+      repliesAtSend.current = replies.length;
+      setAwaiting(true);
+      remember(params.id, instruction.split("\n")[0] ?? instruction);
+      startRun(params.id, instruction).catch(() => {
+        setAwaiting(false);
+        setMessages((prev) => [
+          ...prev,
+          { author: "orchestrator", text: FAILED_TO_START },
+        ]);
+      });
+    },
+    [params.id, remember, replies.length],
+  );
+  // The coordinator's first reply is what says it heard the goal, so the
+  // composer keeps a spinner up until one lands rather than until the run ends.
+  const heard = replies.length > repliesAtSend.current;
+  const progress = awaiting && !heard ? EMPTY_PROGRESS : runProgress(tasks);
+  const focusedTask =
+    focusedTaskId === null
+      ? null
+      : tasks.find((task) => task.id === focusedTaskId) ?? null;
   const focusedApproval =
     focusedTaskId === null
       ? null
@@ -99,16 +155,38 @@ export default function RunPage({
     return <p className="run-empty">No run selected.</p>;
   }
   return (
-    <section className="run-screen" data-run={params.id}>
-      <RunHeader runId={params.id} isLive={isLive} />
-      <aside className="run-chat" aria-label="Run chat">
-        <ChatPanel
-          messages={[...messages, ...orchestratorReplies(logs)]}
-          onSend={(instruction) =>
-            setMessages((prev) => appendMessage(prev, instruction))
-          }
+    <section
+      className="run-screen"
+      data-run={params.id}
+      style={{
+        gridTemplateColumns: [
+          sidebar.on ? `${explorer.width}px auto` : "",
+          "minmax(0, 1fr)",
+          chatPanel.on ? `auto ${chat.width}px` : "",
+        ]
+          .filter((column) => column !== "")
+          .join(" "),
+      }}
+    >
+      {!sidebar.on ? null : (
+        <aside className="run-explorer" aria-label="Chat sessions">
+          <ChatSessionList
+            sessions={sessions}
+            currentId={params.id}
+            onOpen={(runId) => router.push(`/run/${runId}`)}
+            onNew={() => router.push(`/run/${newRunId()}`)}
+            onHide={sidebar.toggle}
+          />
+        </aside>
+      )}
+      {!sidebar.on ? null : (
+        <PanelDivider
+          label="Resize the plan explorer"
+          width={explorer.width}
+          onResizeStart={explorer.startResize}
+          onNudge={explorer.nudge}
         />
-      </aside>
+      )}
       <div className="run-canvas" aria-label="Run canvas">
         {tasks.length === 0 ||
         focusedTaskId !== null ||
@@ -116,16 +194,58 @@ export default function RunPage({
           <p className="canvas-hint">Select a node to act on it (a / r)</p>
         )}
         <Canvas
-          tasks={tasks}
+          tasks={woven}
           approvals={approvals}
           onResolve={dismiss}
           activeEdgeIds={activeEdges(pulses, Date.now())}
           onFocusTask={setFocusedTaskId}
         />
+        {sidebar.on ? null : (
+          <button
+            className="sidebar-reveal"
+            onClick={sidebar.toggle}
+            aria-label="Show the sidebar"
+            title="Show the sidebar"
+          >
+            ›
+          </button>
+        )}
+        {chatPanel.on ? null : (
+          <button
+            className="chat-reveal"
+            onClick={chatPanel.toggle}
+            aria-label="Show the chat panel"
+            title="Show the chat panel"
+          >
+            ‹
+          </button>
+        )}
+        {focusedTask === null ? null : (
+          <NodeInspector
+            task={focusedTask}
+            onClose={() => setFocusedTaskId(null)}
+          />
+        )}
       </div>
-      <aside className="run-log" aria-label="Raw trace log">
-        <TraceViewer events={logs} />
-      </aside>
+      {!chatPanel.on ? null : (
+        <PanelDivider
+          label="Resize the chat panel"
+          width={chat.width}
+          onResizeStart={chat.startResize}
+          onNudge={chat.nudge}
+        />
+      )}
+      {!chatPanel.on ? null : (
+        <aside className="run-chat" aria-label="Run chat">
+          <ChatPanel
+            messages={[...messages, ...replies]}
+            onSend={send}
+            onNewSession={() => router.push(`/run/${newRunId()}`)}
+            onHide={chatPanel.toggle}
+            progress={progress}
+          />
+        </aside>
+      )}
     </section>
   );
 }

@@ -34,23 +34,17 @@ import { useRelaxedLayout } from "../hooks/useRelaxedLayout";
 import type { Approval } from "../lib/api";
 import { edgeId } from "../lib/edge-pulse";
 import {
-  ORCHESTRATOR_ID,
   pairApprovals,
-  runTotals,
   speciesFor,
   type RunViewerTask,
 } from "../lib/graph-model";
 import type { PositionedTask } from "../lib/layout";
 import { spawnDelayMs } from "../lib/spawn";
 import { NODE_TYPES } from "./nodes";
-import type { OrchestratorNodeData } from "./nodes/OrchestratorNode";
 import type { TaskNodeData } from "./nodes/TaskNode";
 import { PulseEdge } from "./PulseEdge";
 
 import "reactflow/dist/style.css";
-
-// The layout centres every column on y=0, so the orchestrator sits there too.
-const ORCHESTRATOR_Y = 0;
 
 // React Flow remounts every custom edge when this map is a new object.
 const EDGE_TYPES: EdgeTypes = { pulse: PulseEdge };
@@ -72,38 +66,45 @@ export interface CanvasProps {
 /**
  * Turns a plan's dependencies into the edges React Flow draws.
  *
+ * An edge whose source has not been revealed yet is left out: React Flow drops
+ * an edge with a missing end anyway, and it would flicker in as the node lands.
+ *
  * @param tasks - Runtime-planned tasks carrying the ids they depend on.
  * @param lit - Ids of the edges a trace event is currently firing along.
- * @returns edges - One edge per dependency, plus one per root task.
+ * @returns edges - One edge per dependency between two revealed tasks.
  */
 function buildEdges(
   tasks: readonly RunViewerTask[],
   lit: ReadonlySet<string>,
 ): Edge[] {
-  const started = new Set(
-    tasks.filter((task) => task.status !== "pending").map((task) => task.id),
-  );
-  const fromOrchestrator = tasks
-    .filter((task) => task.dependsOn.length === 0)
-    .map((task) => ({ source: ORCHESTRATOR_ID, target: task.id }));
-  const fromDependencies = tasks.flatMap((task) =>
-    task.dependsOn.map((dependency) => ({
-      source: dependency,
-      target: task.id,
-    })),
-  );
-  return [...fromOrchestrator, ...fromDependencies].map(
-    ({ source, target }) => ({
-      id: edgeId(source, target),
-      type: "pulse",
-      source,
-      target,
-      data: {
-        active: lit.has(edgeId(source, target)),
-        pending: !started.has(target),
-      },
-    }),
-  );
+  const status = new Map(tasks.map((task) => [task.id, task.status]));
+  return tasks
+    .flatMap((task) =>
+      task.dependsOn.map((dependency) => ({
+        source: dependency,
+        target: task.id,
+      })),
+    )
+    .filter(({ source }) => status.has(source))
+    .map(({ source, target }) => {
+      const downstream = status.get(target);
+      const settled = downstream === "done" || downstream === "failed";
+      return {
+        id: edgeId(source, target),
+        type: "pulse",
+        source,
+        target,
+        data: {
+          // An edge sweeps while the work at its far end is actually running.
+          // Lighting it from the firing alone left it sweeping forever, because
+          // nothing re-renders the canvas once a run goes quiet.
+          active:
+            downstream === "running" ||
+            (!settled && lit.has(edgeId(source, target))),
+          pending: downstream === "pending",
+        },
+      };
+    });
 }
 
 /**
@@ -170,15 +171,8 @@ function CanvasSurface({
     [placements],
   );
 
-  const nodes: Node<TaskNodeData | OrchestratorNodeData>[] = useMemo(
+  const nodes: Node<TaskNodeData>[] = useMemo(
     () => [
-      {
-        id: ORCHESTRATOR_ID,
-        type: "orchestrator",
-        position: { x: 0, y: ORCHESTRATOR_Y },
-        draggable: false,
-        data: { label: "Orchestrator", ...runTotals(tasks) },
-      },
       ...tasks.map((task, index) => ({
         id: task.id,
         type: speciesFor(task),
@@ -207,9 +201,6 @@ function CanvasSurface({
 
   return (
     <div className="canvas">
-      {tasks.length > 0 ? null : (
-        <p className="canvas-placeholder">Waiting for the planner…</p>
-      )}
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -221,13 +212,18 @@ function CanvasSurface({
         nodesConnectable={false}
         elementsSelectable
         panOnScroll
+        proOptions={{ hideAttribution: true }}
         onNodeClick={(unused, node) => onFocusTask?.(node.id)}
         deleteKeyCode={null}
         multiSelectionKeyCode={null}
         onPaneClick={() => onFocusTask?.(null)}
       >
         <Background variant={BackgroundVariant.Dots} gap={18} size={1} />
-        <Controls showInteractive={false} />
+        <Controls
+          showInteractive={false}
+          showFitView={false}
+          position="bottom-right"
+        />
       </ReactFlow>
     </div>
   );

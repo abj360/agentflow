@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 470 120" width="470" height="120" role="img" aria-label="agentflow">
+  <style>
+    .ink { fill: #14161a; }
+    .orbit { stroke: #0f766e; stroke-opacity: 0.4; }
+    .spoke { stroke: #0f766e; stroke-opacity: 0.6; }
+    .agent { fill: #0f766e; }
+    .agent-light { fill: #7fbdb6; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #f4f5f6; }
+      .orbit { stroke: #5eead4; stroke-opacity: 0.4; }
+      .spoke { stroke: #5eead4; stroke-opacity: 0.6; }
+      .agent { fill: #5eead4; }
+      .agent-light { fill: #2f6f68; }
+    }
+  </style>
+  <g fill="none" stroke-linecap="round">
+    <path class="orbit" stroke-width="5" d="M77 30.56A34 34 0 1 1 43 30.56" />
+    <path class="spoke" stroke-width="3.4" d="M60 60L77 30.56M60 60L43 30.56M60 60v34" />
+  </g>
+  <circle class="agent" cx="77" cy="30.56" r="7" />
+  <circle class="agent-light" cx="43" cy="30.56" r="7" />
+  <circle class="agent" cx="60" cy="94" r="7" />
+  <circle class="agent" cx="60" cy="60" r="10.5" />
+  <text class="ink" x="136" y="79" font-family="Inter, SF Pro Display, Helvetica Neue, Arial, sans-serif" font-size="60" font-weight="600" letter-spacing="-1.5">agentflow</text>
+</svg>

@@ -39,9 +39,13 @@ export function TraceViewer({
         className="trace-toggle"
         aria-expanded={isRawLogOpen}
         aria-controls="raw-trace-log"
+        aria-label="Raw trace log"
         onClick={() => setRawLogOpen(!isRawLogOpen)}
       >
-        {isRawLogOpen ? "Hide" : "Show"} raw trace log{" "}
+        <span className="trace-toggle__chevron" aria-hidden="true">
+          {isRawLogOpen ? "\u25be" : "\u25b8"}
+        </span>
+        Trace
         <TraceEventCount count={events.length} />
       </button>
       {!isRawLogOpen ? null : <TraceTruncationNote total={events.length} />}
