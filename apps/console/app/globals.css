@@ -1,31 +1,39 @@
 :root {
-  --bg: #ffffff;
-  --fg: #1a1a1a;
-  --accent: #1d4ed8;
-  --muted: #6b7280;
-  --border: #e5e7eb;
+  --bg: #fbfbfb;
+  --fg: #14161a;
+  --accent: #0f766e;
+  --muted: #6b7076;
+  --border: #e5e7ea;
   --node-bg: #ffffff;
-  --node-orchestrator: #1d4ed8;
-  --node-approval: #b45309;
-  --edge: #d5dbe4;
-  --edge-active: #1d4ed8;
-  --node-elevation: 0 1px 2px rgb(0 0 0 / 0.06);
+  --node-approval: #92400e;
+  --status-done: #15803d;
+  --status-failed: #b91c1c;
+  --node-research: #0f766e;
+  --node-tool-call: #155e75;
+  --node-file-op: #3f3f46;
+  --edge: #d4d7dc;
+  --edge-active: #0f766e;
+  --node-elevation: 0 1px 2px rgb(20 22 26 / 0.06);
   --radius: 0.625rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0b1120;
-    --fg: #e2e8f0;
-    --accent: #60a5fa;
-    --muted: #7d8fa8;
-    --border: #1e293b;
-    --node-bg: #111c31;
-    --node-orchestrator: #60a5fa;
+    --bg: #000000;
+    --fg: #f4f5f6;
+    --accent: #5eead4;
+    --muted: #93989e;
+    --border: #232427;
+    --node-bg: #121316;
     --node-approval: #fbbf24;
-    --edge: #334155;
-    --edge-active: #60a5fa;
-    --node-elevation: 0 1px 2px rgb(0 0 0 / 0.4);
+    --status-done: #4ade80;
+    --status-failed: #f87171;
+    --node-research: #5eead4;
+    --node-tool-call: #7dd3fc;
+    --node-file-op: #d4d4d8;
+    --edge: #2d2e32;
+    --edge-active: #5eead4;
+    --node-elevation: 0 1px 3px rgb(0 0 0 / 0.75);
   }
 }
 
@@ -53,33 +61,8 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
-.logo {
-  font-weight: 600;
-  font-size: 0.875rem;
-  letter-spacing: -0.01em;
-}
-
-.topbar nav {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.topbar a {
-  color: var(--muted);
-  font-size: 0.8125rem;
-  text-decoration: none;
-  transition: color 120ms ease;
-}
-
-.topbar a:hover {
-  color: var(--fg);
-}
-
 main {
-  padding: 1rem 1.25rem;
-  max-width: 96rem;
-  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
 }
 
 @media (max-width: 40rem) {
@@ -195,18 +178,40 @@ code {
   color: var(--muted);
 }
 
+[data-theme="light"] {
+  --bg: #fbfbfb;
+  --fg: #14161a;
+  --accent: #0f766e;
+  --muted: #6b7076;
+  --border: #e5e7ea;
+  --node-bg: #ffffff;
+  --node-approval: #92400e;
+  --status-done: #15803d;
+  --status-failed: #b91c1c;
+  --node-research: #0f766e;
+  --node-tool-call: #155e75;
+  --node-file-op: #3f3f46;
+  --edge: #d4d7dc;
+  --edge-active: #0f766e;
+  --node-elevation: 0 1px 2px rgb(20 22 26 / 0.06);
+}
+
 [data-theme="dark"] {
-  --bg: #0b1120;
-  --fg: #e2e8f0;
-  --accent: #60a5fa;
-  --muted: #94a3b8;
-  --border: #1e293b;
-  --node-bg: #111c31;
-  --node-orchestrator: #60a5fa;
+  --bg: #000000;
+  --fg: #f4f5f6;
+  --accent: #5eead4;
+  --muted: #93989e;
+  --border: #232427;
+  --node-bg: #121316;
   --node-approval: #fbbf24;
-  --edge: #334155;
-  --edge-active: #60a5fa;
-  --node-elevation: 0 1px 2px rgb(0 0 0 / 0.4);
+  --status-done: #4ade80;
+  --status-failed: #f87171;
+  --node-research: #5eead4;
+  --node-tool-call: #7dd3fc;
+  --node-file-op: #d4d4d8;
+  --edge: #2d2e32;
+  --edge-active: #5eead4;
+  --node-elevation: 0 1px 3px rgb(0 0 0 / 0.75);
 }
 @media (prefers-color-scheme: dark) {
   .status-pending {
@@ -215,28 +220,11 @@ code {
   }
 }
 
-.theme-toggle {
-  margin-left: 0.75rem;
-}
-
 @media (prefers-color-scheme: dark) {
   .status-approved {
     background: #052e16;
     color: #4ade80;
   }
-}
-
-.footer {
-  padding: 0.5rem 1.25rem;
-  color: var(--muted);
-  font-size: 0.75rem;
-  border-top: 1px solid var(--border);
-}
-
-.topbar a:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 0.25rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -248,30 +236,30 @@ code {
 
 .run-screen {
   display: grid;
-  grid-template-columns: 19rem minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-columns: 15rem auto minmax(0, 1fr) auto 21rem;
+  grid-template-rows: minmax(0, 1fr);
   gap: 0.75rem;
-  height: calc(100vh - 8.5rem);
+  height: calc(100vh - 4.75rem);
 }
 
+.run-explorer,
 .run-chat,
 .run-canvas {
-  grid-row: 2;
+  /* No explicit grid-row here: naming a row for only some of the children
+     places those first and pushes the dividers to the end of the track list,
+     which puts the chat panel where the canvas should be. */
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--node-bg);
   overflow: hidden;
 }
 
-.run-canvas {
-  position: relative;
+.run-explorer {
+  overflow-y: auto;
 }
 
-.run-log {
-  grid-column: 1 / -1;
-  grid-row: 3;
-  max-height: 14rem;
-  overflow-y: auto;
+.run-canvas {
+  position: relative;
 }
 
 .run-header {
@@ -345,16 +333,6 @@ code {
   font-size: 0.75rem;
 }
 
-.canvas-node--orchestrator {
-  border-color: var(--node-orchestrator);
-  box-shadow: var(--node-elevation);
-  animation: none;
-  border-width: 2px;
-  padding: 0.875rem 1.25rem;
-  font-size: 0.9375rem;
-  min-width: 12rem;
-}
-
 .trace-panel {
   border-top: 1px solid var(--border);
   padding-top: 0.5rem;
@@ -381,34 +359,253 @@ code {
 }
 
 .chat-log {
+  display: flex;
+  flex-direction: column;
+  gap: 1.375rem;
   list-style: none;
   margin: 0;
-  padding: 0.75rem;
+  padding: 0.75rem 1rem 0.25rem;
   flex: 1;
   overflow-y: auto;
 }
 
-.chat-message p {
-  margin: 0.125rem 0 0.75rem;
-  font-size: 0.875rem;
+.chat-message {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
 }
 
 .chat-author {
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
-.chat-composer {
+.chat-message--you {
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--border);
+}
+
+.chat-panel__head {
   display: flex;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  border-top: 1px solid var(--border);
+  justify-content: flex-end;
+  padding: 0.5rem 0.5rem 0;
+  margin-bottom: -0.375rem;
 }
 
-.chat-composer input {
+/* An agent answers in markdown whether or not it was asked to, so a turn is
+   rendered rather than printed: otherwise the reviewer reads the asterisks. */
+.md {
+  font-size: 0.875rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.md__paragraph {
+  margin: 0 0 0.75rem;
+  /* a plan is one objective per line, so a turn has to keep those lines */
+  white-space: pre-wrap;
+}
+
+.md__heading {
+  margin: 1rem 0 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+.md > :first-child {
+  margin-top: 0;
+}
+
+.md > :last-child {
+  margin-bottom: 0;
+}
+
+.md__list {
+  margin: 0 0 0.75rem;
+  padding-left: 1.125rem;
+}
+
+.md__list li {
+  margin-bottom: 0.3125rem;
+}
+
+.md__code {
+  margin: 0 0 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background: var(--bg);
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.md code {
+  padding: 0.0625rem 0.25rem;
+  border-radius: 0.25rem;
+  background: color-mix(in srgb, var(--fg) 7%, transparent);
+  font-family: ui-monospace, monospace;
+  font-size: 0.8125em;
+}
+
+.md strong {
+  font-weight: 650;
+}
+
+.chat-working {
+  display: flex;
+  align-items: center;
+  gap: 0.4375rem;
+  margin: 0 1rem 0.5rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.chat-working__spinner {
+  width: 0.625rem;
+  height: 0.625rem;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-top-color: var(--accent);
+  border-radius: 999px;
+  animation: status-spin 700ms linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-working__spinner {
+    animation: none;
+    border-color: var(--accent);
+  }
+}
+
+/* The composer is a card, not a form row: the goal is usually a sentence or
+   two, and the controls under it belong to the message being written. */
+.chat-composer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.75rem;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  transition: border-color 120ms ease;
+}
+
+.chat-composer:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+}
+
+.chat-composer textarea {
+  width: 100%;
+  resize: none;
+  border: none;
+  padding: 0.25rem;
+  font: inherit;
+  background: none;
+  color: var(--fg);
+}
+
+.chat-composer textarea:focus,
+.chat-composer textarea:focus-visible {
+  border: none;
+  outline: none;
+}
+
+.chat-composer__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.chat-composer__new {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  line-height: 1;
+  font-size: 1rem;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  cursor: pointer;
+}
+
+.chat-composer__new:hover {
+  color: var(--fg);
+}
+
+.chat-composer__send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-left: auto;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.chat-composer__send:disabled {
+  color: var(--muted);
+  background: color-mix(in srgb, var(--fg) 7%, transparent);
+  cursor: default;
+}
+
+/* The empty panel says what to do with one keystroke hint and nothing else. */
+.chat-intro {
+  display: flex;
   flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.chat-intro__bot {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 0;
+  color: var(--muted);
+  font-family: ui-monospace, monospace;
+  font-size: 0.625rem;
+  line-height: 1.15;
+}
+
+/* Normal prose, not a flex row: at a narrow panel width a row of chips has
+   nowhere to wrap and squeezes the words into one column instead. */
+.chat-intro__hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+
+.chat-intro__hint kbd {
+  padding: 0.0625rem 0.3125rem;
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 0.25rem;
+  background: var(--bg);
+  font: inherit;
+  font-size: 0.6875rem;
 }
 
 @keyframes node-spawn {
@@ -580,26 +777,26 @@ code {
   opacity: 0.45;
 }
 
-@media (max-width: 60rem) {
+@media (max-width: 72rem) {
+  .panel-divider {
+    display: none;
+  }
+
   .run-screen {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    /* the inline template the dividers drive is overridden on narrow screens */
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+  }
+
+  .run-explorer {
+    grid-row: 2;
+    max-height: 10rem;
   }
 
   .run-chat {
     grid-row: 3;
     max-height: 16rem;
   }
-
-  .run-log {
-    grid-row: 4;
-  }
-}
-
-.chat-empty {
-  color: var(--muted);
-  font-size: 0.8125rem;
-  list-style: none;
 }
 
 @keyframes node-running {
@@ -664,4 +861,693 @@ code {
 .canvas-node--file-op .canvas-node__meta:first-of-type {
   text-transform: lowercase;
   letter-spacing: 0.01em;
+}
+
+/* ---------- the brand, top left ---------- */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand__word {
+  /* SF Pro on macOS, Segoe on Windows, Inter where it is installed: a display
+     face for the wordmark rather than the body stack the rest of the UI uses. */
+  font-family: "Inter", "SF Pro Display", ui-sans-serif, system-ui, "Segoe UI",
+    sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+
+.mark {
+  display: block;
+  height: 1.75rem;
+  width: auto;
+}
+
+.mark__orbit {
+  stroke: color-mix(in srgb, var(--accent) 55%, transparent);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.mark__spoke {
+  stroke: color-mix(in srgb, var(--accent) 70%, transparent);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+}
+
+.mark__agent {
+  fill: var(--accent);
+}
+
+.mark__agent--light {
+  fill: color-mix(in srgb, var(--accent) 55%, var(--node-bg));
+}
+
+.mark__core {
+  fill: var(--accent);
+}
+
+/* ---------- the toolbar, top right ---------- */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.menu {
+  position: relative;
+}
+
+.menu__open,
+.toolbar .theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: none;
+  color: var(--muted);
+  border-radius: 0.375rem;
+  background: none;
+  cursor: pointer;
+}
+
+.menu__open:hover,
+.toolbar .theme-toggle:hover {
+  color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 7%, transparent);
+}
+
+.menu__open[aria-expanded="true"] {
+  color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 10%, transparent);
+}
+
+.menu__panel {
+  position: absolute;
+  top: calc(100% + 0.375rem);
+  right: 0;
+  z-index: 20;
+  width: 22rem;
+  max-height: 22rem;
+  overflow-y: auto;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--node-bg);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+}
+
+.menu__panel--settings {
+  width: 17rem;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.375rem 0.75rem;
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+.facts dt {
+  color: var(--muted);
+}
+
+.facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.facts__note {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.trace-toggle__chevron {
+  display: inline-block;
+  width: 0.75rem;
+  color: var(--muted);
+}
+
+/* ---------- the sessions sidebar ---------- */
+
+.sessions {
+  display: block;
+  padding: 0.625rem 0.5rem;
+}
+
+.sessions__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.25rem 0.375rem;
+}
+
+.sessions__title {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sessions__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.sessions__new {
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  line-height: 1;
+  color: var(--muted);
+  border: none;
+  background: none;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.sessions__new:hover {
+  color: var(--fg);
+}
+
+.sessions__hide,
+.sidebar-reveal,
+.chat-panel__hide,
+.chat-reveal {
+  padding: 0 0.25rem;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sessions__hide:hover,
+.sidebar-reveal:hover,
+.chat-panel__hide:hover,
+.chat-reveal:hover {
+  color: var(--fg);
+}
+
+/* A folded panel comes back from the edge it folded into. */
+.sidebar-reveal,
+.chat-reveal {
+  position: absolute;
+  top: 0.5rem;
+  z-index: 2;
+  padding: 0.125rem 0.375rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--node-bg);
+}
+
+.sidebar-reveal {
+  left: 0.5rem;
+}
+
+.chat-reveal {
+  right: 0.5rem;
+}
+
+.sessions__empty {
+  margin: 0;
+  padding: 0 0.25rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.sessions__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sessions__row {
+  display: block;
+  width: 100%;
+  padding: 0.3125rem 0.375rem;
+  border: none;
+  border-radius: 0.375rem;
+  background: none;
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.8125rem;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.sessions__row:hover {
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+}
+
+.sessions__row--selected {
+  background: color-mix(in srgb, var(--fg) 9%, transparent);
+  font-weight: 500;
+}
+
+/* ---------- the draggable panel dividers ---------- */
+
+/* The hit area is wider than the line so the divider is grabbable, and the
+   line itself brightens on hover so it reads as something you can pull. */
+.panel-divider {
+  width: 0.5rem;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: col-resize;
+  position: relative;
+}
+
+.panel-divider::after {
+  content: "";
+  position: absolute;
+  inset: 0 calc(50% - 1px);
+  border-radius: 1px;
+  background: var(--border);
+  transition: background 120ms ease;
+}
+
+.panel-divider:hover::after,
+.panel-divider:focus-visible::after {
+  background: color-mix(in srgb, var(--accent) 65%, var(--border));
+}
+
+.panel-divider:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-divider::after {
+    transition: none;
+  }
+}
+
+/* ---------- the model picker ---------- */
+
+.picker {
+  position: relative;
+}
+
+.picker__open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  max-width: 11rem;
+  padding: 0.1875rem 0.5rem;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.picker__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker__open:hover {
+  color: var(--fg);
+  border-color: var(--muted);
+}
+
+.picker__open[data-ready="true"] {
+  color: var(--fg);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+/* The panel opens upward: the picker sits on the composer at the bottom of the
+   panel, so a downward menu would open off the end of the screen. */
+.picker__panel {
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 20;
+  width: 15rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--node-bg);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+}
+
+.picker__title {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.picker__choice {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.25rem;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.8125rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.picker__choice:hover {
+  border-color: var(--muted);
+  color: var(--fg);
+}
+
+.picker__choice[aria-current="true"] {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+.picker__models {
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.picker__key {
+  display: block;
+  width: 100%;
+  padding: 0.4375rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.8125rem;
+}
+
+.picker__key:focus,
+.picker__key:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+}
+
+.picker__connect {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+  border-radius: 0.375rem;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.picker__connect:disabled {
+  border-color: var(--border);
+  background: none;
+  color: var(--muted);
+  cursor: default;
+}
+
+.picker__switch {
+  width: 100%;
+  margin-top: 0.375rem;
+  padding: 0.25rem;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.picker__switch:hover {
+  color: var(--fg);
+}
+
+.picker__error {
+  margin: 0.5rem 0 0;
+  color: var(--status-failed);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.picker__note {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+}
+
+/* ---------- the node status glyphs ---------- */
+
+/* A colour alone does not say whether a task finished or failed, so each state
+   carries a glyph: a tick, a cross, or a ring that is visibly turning. */
+.canvas-node__status {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.canvas-node__status--done {
+  color: #ffffff;
+  background: var(--status-done);
+}
+
+.canvas-node__status--failed {
+  color: #ffffff;
+  background: var(--status-failed);
+}
+
+.canvas-node__status--awaiting-approval {
+  color: #ffffff;
+  background: var(--node-approval);
+}
+
+.canvas-node__status--running {
+  border: 2px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-top-color: var(--accent);
+  animation: status-spin 700ms linear infinite;
+}
+
+@keyframes status-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas-node__status--running {
+    animation: none;
+    border-color: var(--accent);
+  }
+}
+
+/* Each species gets its own outline, so the shape says what the agent is
+   before the label is read. */
+.canvas-node--research {
+  border-left: 2px solid var(--node-research);
+  border-radius: 999px;
+  padding-left: 0.875rem;
+}
+
+.canvas-node--tool-call {
+  border-left: 2px solid var(--node-tool-call);
+}
+
+.canvas-node--file-op {
+  border-left: 2px solid var(--node-file-op);
+  border-radius: 0.25rem 0.75rem 0.25rem 0.75rem;
+}
+
+/* ---------- zoom, kept quiet ---------- */
+
+/* Zoom sits bottom-right as one horizontal strip: it is a fallback for pinch
+   and scroll, not something the eye should land on before the graph. */
+.canvas .react-flow__controls {
+  display: flex;
+  gap: 1px;
+  box-shadow: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--node-bg);
+  overflow: hidden;
+  opacity: 0.45;
+  transition: opacity 120ms ease;
+}
+
+.canvas .react-flow__controls:hover {
+  opacity: 1;
+}
+
+.canvas .react-flow__controls-button {
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0.3125rem;
+  border: none;
+  background: none;
+  fill: var(--muted);
+}
+
+.canvas .react-flow__controls-button:hover {
+  background: color-mix(in srgb, var(--fg) 7%, transparent);
+  fill: var(--fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas .react-flow__controls {
+    transition: none;
+  }
+}
+
+/* ---------- the node inspector ---------- */
+
+/* The inspector opens over the right edge of the canvas rather than in its own
+   column: a node's detail is about the graph, and pushing the graph sideways
+   every time one is opened would move the node the reviewer just clicked. */
+.inspector {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(21rem, 60%);
+  padding: 0.875rem 1rem 1.25rem;
+  border-left: 1px solid var(--border);
+  background: var(--node-bg);
+  overflow-y: auto;
+  z-index: 3;
+}
+
+.inspector__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inspector__eyebrow {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.inspector__close {
+  padding: 0 0.25rem;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.inspector__close:hover {
+  color: var(--fg);
+}
+
+.inspector__title {
+  margin: 0.375rem 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.inspector__status {
+  display: inline-block;
+  margin: 0 0 0.875rem;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.inspector__status--done {
+  border-color: color-mix(in srgb, var(--status-done) 45%, var(--border));
+  color: var(--status-done);
+}
+
+.inspector__status--failed {
+  border-color: color-mix(in srgb, var(--status-failed) 45%, var(--border));
+  color: var(--status-failed);
+}
+
+.inspector__status--awaiting-approval {
+  border-color: color-mix(in srgb, var(--node-approval) 45%, var(--border));
+  color: var(--node-approval);
+}
+
+.inspector__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.875rem 0.75rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--border);
+}
+
+.inspector__field {
+  min-width: 0;
+}
+
+.inspector__label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.inspector__value {
+  margin: 0.125rem 0 0;
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.inspector__output {
+  margin-top: 1rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--border);
+}
+
+.inspector__output .md {
+  margin-top: 0.375rem;
+  font-size: 0.8125rem;
 }

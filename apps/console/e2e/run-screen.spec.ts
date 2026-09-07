@@ -31,9 +31,9 @@ function rawLogToggle(page: Page): Locator {
 }
 
 test.describe("unified run screen", () => {
-  test("shows the run id in the header", async ({ page }) => {
+  test("names the product, not the page", async ({ page }) => {
     await openRun(page);
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Run");
+    await expect(page.getByText("Agentflow", { exact: true })).toBeVisible();
   });
 
   test("puts chat and canvas on the same screen", async ({ page }) => {
@@ -47,14 +47,11 @@ test.describe("unified run screen", () => {
     await expect(page.locator(".canvas")).toBeVisible();
   });
 
-  test("anchors the graph on the orchestrator node", async ({ page }) => {
+  test("draws no node until a task is planned", async ({ page }) => {
     await openRun(page);
-    // React Flow measures the pane before it paints, so wait for attachment
-    // rather than visibility or the assertion races the first layout pass.
-    await page.locator(".canvas-node--orchestrator").waitFor({
-      state: "attached",
-    });
-    await expect(page.locator(".canvas-node--orchestrator")).toBeVisible();
+    // The coordinator is the chat panel, not a node, so an unplanned run
+    // has nothing to draw and the canvas stays deliberately empty.
+    await expect(page.locator(".canvas-node")).toHaveCount(0);
   });
 });
 
@@ -128,11 +125,6 @@ test("the chat composer clears after sending", async ({ page }) => {
   await expect(composer).toHaveValue("");
 });
 
-test("the header reports the stream state", async ({ page }) => {
-  await openRun(page);
-  await expect(page.locator(".run-liveness")).toHaveText(/live|offline/);
-});
-
 test("a short log shows no truncation note", async ({ page }) => {
   await openRun(page);
   await rawLogToggle(page).click();
@@ -149,13 +141,9 @@ test("the send button is disabled until something is typed", async ({
   await expect(send).toBeEnabled();
 });
 
-test("the canvas keeps the orchestrator pinned while panning", async ({
-  page,
-}) => {
+test("the canvas pane stays mounted while panning", async ({ page }) => {
   await openRun(page);
-  const orchestrator = page.locator(".canvas-node--orchestrator");
-  await orchestrator.waitFor({ state: "attached" });
-  await expect(orchestrator).toBeVisible();
+  await expect(page.locator(".react-flow__pane")).toBeVisible();
 });
 
 test("the run screen survives a reload", async ({ page }) => {
@@ -166,12 +154,7 @@ test("the run screen survives a reload", async ({ page }) => {
 
 test("the whole run fits on one screen", async ({ page }) => {
   await openRun(page);
-  for (const region of ["Run chat", "Run canvas", "Raw trace log"]) {
+  for (const region of ["Chat sessions", "Run canvas", "Run chat"]) {
     await expect(page.getByLabel(region)).toBeVisible();
   }
-});
-
-test("the topbar links back to a run", async ({ page }) => {
-  await openRun(page);
-  await expect(page.getByRole("link", { name: "Run" })).toBeVisible();
 });

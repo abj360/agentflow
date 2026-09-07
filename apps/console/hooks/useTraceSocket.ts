@@ -50,6 +50,8 @@ export interface NodeStatusChangedEvent {
   kind: "node_status_changed";
   id: string;
   status: TaskStatus;
+  at?: number;
+  output?: string;
 }
 
 export type StructuralEvent =

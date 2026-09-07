@@ -6,11 +6,14 @@
  */
 
 import type { Metadata } from "next";
-import { ThemeToggle } from "../components/ThemeToggle";
+
+import { AgentflowMark } from "../components/AgentflowMark";
+import { RunTraceProvider } from "../components/RunTrace";
+import { TopbarActions } from "../components/TopbarActions";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "agentflow console",
+  title: "Agentflow",
   description: "Live task graph and approvals for one agentflow run",
 };
 
@@ -20,15 +23,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <header className="topbar">
-          <span className="logo">agentflow console</span>
-          <nav>
-            <a href="/run/default">Run</a>
-            <ThemeToggle />
-          </nav>
-        </header>
-        <main>{children}</main>
-        <footer className="footer">agentflow</footer>
+        <RunTraceProvider>
+          <header className="topbar">
+            <span className="brand">
+              <AgentflowMark />
+              <span className="brand__word">Agentflow</span>
+            </span>
+            <TopbarActions />
+          </header>
+          <main>{children}</main>
+        </RunTraceProvider>
       </body>
     </html>
   );

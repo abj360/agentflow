@@ -3,9 +3,11 @@
  *
  * Contains:
  *   TaskNodeData: everything one task node needs, handed down by the canvas
+ *   STATUS_BADGE: the glyph and label each lifecycle state is signalled with
  *   SPAWN_STYLES: cached style objects, so a re-render never rebuilds one
  *   shellClass(): the class list the node shell renders with
  *   spawnStyle(): the inline style that staggers one node's mount animation
+ *   StatusBadge: renders the tick, cross, or spinner a task's state is read by
  *   NodeCost: renders a task's token and tool-call counters
  *   TaskNode: renders one planned task, spawning in when it first mounts
  */
@@ -28,6 +30,38 @@ export interface TaskNodeData {
   toolCallCount: number;
   approval?: Readonly<Approval>;
   onResolve?: (approvalId: string) => void;
+}
+
+/* A colour alone does not say whether a task finished or failed, and on the
+   canvas the two dots sat two pixels apart. Each state gets a glyph as well. */
+const STATUS_BADGE: Readonly<
+  Record<TaskStatus, { glyph: string; label: string }>
+> = {
+  pending: { glyph: "\u25CB", label: "Pending" },
+  running: { glyph: "", label: "Running" },
+  "awaiting-approval": { glyph: "!", label: "Waiting for approval" },
+  done: { glyph: "\u2713", label: "Done" },
+  failed: { glyph: "\u2715", label: "Failed" },
+};
+
+/**
+ * Renders the glyph a task's lifecycle state is read by.
+ *
+ * @param props.status - Lifecycle state the task is currently in.
+ * @returns The status badge element.
+ */
+function StatusBadge({ status }: Readonly<{ status: TaskStatus }>) {
+  const badge = STATUS_BADGE[status];
+  return (
+    <span
+      className={`canvas-node__status canvas-node__status--${status}`}
+      role="img"
+      aria-label={badge.label}
+      title={badge.label}
+    >
+      {badge.glyph}
+    </span>
+  );
 }
 
 /**
@@ -111,9 +145,7 @@ export function TaskNode({
       data-status={data.status}
     >
       <Handle type="target" position={Position.Left} />
-      <span
-        className={`canvas-node__status canvas-node__status--${data.status}`}
-      />
+      <StatusBadge status={data.status} />
       <strong title={`${species}: ${data.title}`}>{data.title}</strong>
       <span className="canvas-node__meta">{data.assignee}</span>
       {detail === undefined ? null : (

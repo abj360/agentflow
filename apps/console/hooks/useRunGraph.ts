@@ -4,6 +4,8 @@
  * Contains:
  *   TaskGraph: the tasks and edge firings folded out of the structural frames
  *   RunGraph: everything one run screen reads off a single trace connection
+ *   SETTLED: the statuses that stop a task's clock
+ *   applyStatus(): applies one status transition to the task it names
  *   applyStructuralEvent(): folds one structural frame into a task list
  *   useRunGraph(): keeps a run's task list and edge pulses in step with the socket
  */
@@ -13,11 +15,12 @@
 import { useMemo } from "react";
 
 import { edgeId, type EdgePulse } from "../lib/edge-pulse";
-import type { RunViewerTask } from "../lib/graph-model";
+import type { RunViewerTask, TaskStatus } from "../lib/graph-model";
 import {
   isLogEvent,
   isStructuralEvent,
   useTraceSocket,
+  type NodeStatusChangedEvent,
   type StructuralEvent,
   type TraceLogEvent,
 } from "./useTraceSocket";
@@ -30,6 +33,33 @@ export interface TaskGraph {
 export interface RunGraph extends TaskGraph {
   readonly logs: TraceLogEvent[];
   readonly isLive: boolean;
+}
+
+const SETTLED = new Set<TaskStatus>(["done", "failed"]);
+
+/**
+ * Applies one status transition to the task it names.
+ *
+ * The transition carries the moment it happened, which is what lets a node
+ * report how long it took: the console records the timestamps rather than
+ * timing the arrival of frames, so a slow socket cannot inflate a duration.
+ *
+ * @param task - The task as the canvas has it now.
+ * @param event - The transition that just arrived for it.
+ * @returns task - The task with the transition applied.
+ */
+function applyStatus(
+  task: RunViewerTask,
+  event: NodeStatusChangedEvent,
+): RunViewerTask {
+  const at = event.at === undefined ? null : event.at;
+  return {
+    ...task,
+    status: event.status,
+    output: event.output ?? task.output,
+    startedAt: event.status === "running" ? at : task.startedAt,
+    finishedAt: SETTLED.has(event.status) ? at : task.finishedAt,
+  };
 }
 
 /**
@@ -70,7 +100,7 @@ export function applyStructuralEvent(
     return {
       ...graph,
       tasks: graph.tasks.map((task) =>
-        task.id === event.id ? { ...task, status: event.status } : task,
+        task.id === event.id ? applyStatus(task, event) : task,
       ),
     };
   }

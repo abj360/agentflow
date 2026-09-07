@@ -10,12 +10,10 @@ import type { NodeTypes } from "reactflow";
 
 import { ApprovalNode } from "./ApprovalNode";
 import { FileOpNode } from "./FileOpNode";
-import { OrchestratorNode } from "./OrchestratorNode";
 import { ResearchNode } from "./ResearchNode";
 import { ToolCallNode } from "./ToolCallNode";
 
 export const NODE_TYPES: NodeTypes = {
-  orchestrator: OrchestratorNode,
   research: ResearchNode,
   "tool-call": ToolCallNode,
   "file-op": FileOpNode,

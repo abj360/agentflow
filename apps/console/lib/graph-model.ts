@@ -5,11 +5,8 @@
  *   TaskStatus: lifecycle states a task node moves through
  *   RunViewerTask: one runtime-planned task, exactly as the API streams it
  *   TaskSpecies: the node species the canvas renders a task as
- *   ORCHESTRATOR_ID: id of the fixed central node every run hangs off
  *   speciesFor(): resolves which species the canvas renders a task as
- *   RunTotals: the run-level counters the orchestrator node reports
  *   pairApprovals(): pairs each waiting task with a pending approval request
- *   runTotals(): totals a run's finished tasks and token spend
  */
 
 import type { Approval } from "./api";
@@ -32,9 +29,8 @@ export interface RunViewerTask {
   tokens: number;
   retries: number;
   toolCallCount: number;
+  output?: string;
 }
-
-export const ORCHESTRATOR_ID = "orchestrator";
 
 export type TaskSpecies = "research" | "tool-call" | "file-op" | "approval";
 
@@ -82,26 +78,4 @@ export function pairApprovals(
       }
     });
   return paired;
-}
-
-export interface RunTotals {
-  taskCount: number;
-  doneCount: number;
-  tokens: number;
-}
-
-/**
- * Totals a run's finished tasks and token spend for the orchestrator node.
- *
- * @param tasks - Runtime-planned tasks streamed in for this run so far.
- * @returns totals - Task count, finished count, and accumulated tokens.
- */
-export function runTotals(
-  tasks: readonly Readonly<RunViewerTask>[],
-): Readonly<RunTotals> {
-  return {
-    taskCount: tasks.length,
-    doneCount: tasks.filter((task) => task.status === "done").length,
-    tokens: tasks.reduce((total, task) => total + task.tokens, 0),
-  };
 }

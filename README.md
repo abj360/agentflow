@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/media/wordmark.png" alt="agentflow" width="520" />
+<img src="docs/media/wordmark.svg" alt="agentflow" width="420" />
 
 [![python](https://img.shields.io/badge/python-3.12+-0d9488)](pyproject.toml)
 [![fastapi](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](apps/api)
