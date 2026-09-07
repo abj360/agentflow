@@ -4,17 +4,22 @@ main.py --- FastAPI application entrypoint for the agentflow orchestrator API
 
 Contains:
     StartRunRequest: body accepted when a caller starts a run
+    datastore_unavailable(): turns an unreachable datastore into a readable 503
     create_app(): builds and configures the FastAPI application
     app: module-level ASGI application instance
 """
 
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+import logging
+
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from apps.api.approvals.routes import router as approvals_router
 from apps.api.audit.routes import router as audit_router
 from apps.api.config import get_settings
+from apps.api.db import DatastoreUnavailable
 from apps.api.middleware.rate_limit import RateLimitMiddleware
 from apps.api.observability.metrics import metrics_endpoint
 from apps.api.observability.tracing import setup_tracing
@@ -26,6 +31,28 @@ from apps.api.orchestration.graph_events import (
 from apps.api.orchestration.loop import run_session
 from apps.api.orchestration.task_planner import TaskPlanner, TaskStatus
 from apps.api.trace_hub import TraceHub
+
+logger = logging.getLogger(__name__)
+
+
+async def datastore_unavailable(request: Request, error: Exception) -> JSONResponse:
+    """Turns an unreachable datastore into a 503 the console can actually read.
+
+    An unhandled database error is raised above the CORS layer, so the browser
+    reports it as a CORS failure with no status code at all and the console has
+    nothing to show the reviewer. Handling it here keeps the response inside the
+    CORS middleware, which is the difference between "the API is down" and an
+    error that looks like a misconfigured allowlist.
+
+    Args:
+        request: The request whose datastore call failed.
+        error: The datastore error raised underneath the route.
+
+    Returns:
+        response: A 503 naming the datastore as the unavailable dependency.
+    """
+    logger.error("datastore unavailable for %s %s: %s", request.method, request.url.path, error)
+    return JSONResponse(status_code=503, content={"detail": "datastore unavailable"})
 
 
 class StartRunRequest(BaseModel):
@@ -49,6 +76,7 @@ def create_app() -> FastAPI:
     hub = TraceHub()
     if settings.otel_exporter_otlp_endpoint:
         setup_tracing(app, service_name=settings.otel_service_name)
+    app.add_exception_handler(DatastoreUnavailable, datastore_unavailable)
     app.include_router(audit_router)
     app.include_router(approvals_router)
     app.add_route("/metrics", metrics_endpoint)
